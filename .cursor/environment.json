@@ -1,0 +1,17 @@
+{
+  "name": "Max-Vitter",
+  "install": "true",
+  "terminals": [
+    {
+      "name": "studio-preview",
+      "command": "python3 -m http.server 8080 --bind 0.0.0.0 --directory /workspace",
+      "description": "Static preview of the current Max-Vitter site and work files"
+    }
+  ],
+  "ports": [
+    {
+      "name": "preview",
+      "port": 8080
+    }
+  ]
+}

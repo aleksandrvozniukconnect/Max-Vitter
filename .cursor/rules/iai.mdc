@@ -1,0 +1,48 @@
+---
+description: IAI brain — specs first, then build; strip AI traces from every public and client-facing text
+alwaysApply: true
+---
+
+# IAI
+
+Every request about this studio or a client site goes through IAI before design or code.
+
+Do not jump from a raw brief to pages, Webflow, WordPress, or a visual mock. Do not invent brand, audience, or features the client did not give.
+
+## Pass 1 — brain
+
+Write or update `work/new-site/specs/01-brain.md`.
+
+- Facts the client actually said
+- Constraints (budget, CMS, languages, deadline, hosting, brand assets)
+- Unknowns and contradictions
+- What the site must do on the first visit (one sentence)
+- What we will not decide until the brief is complete
+
+If the brief is empty, stop after Pass 1 and wait. Do not fill gaps with generic agency copy.
+
+## Pass 2 — specs
+
+Fill the files in `work/new-site/specs/` in this order:
+
+1. Concept
+2. Structure (pages, modules, CMS)
+3. Visual
+4. Motion (scroll, windows, transitions)
+5. Platform (only after motion and CMS needs are clear)
+
+Specs are the source of truth. Implementation follows them. If a later request conflicts with a spec, update the spec first, then the work.
+
+## Pass 3 — voice
+
+Before anything leaves the repo (copy, README, spec prose, UI strings):
+
+- Cut filler, slogans, and “AI English/Ukrainian”
+- Ban: інноваційний, безшовний, занурення, наступний рівень, у сучасному світі, унікальний досвід, tailor-made, cutting-edge, seamless, elevate, unlock, dive in
+- Prefer short sentences, concrete nouns, present tense
+- Keep the studio register: direct, dry, Ukrainian unless the client writes in another language
+- Do not leave process notes, model names, or “as an AI” in client files
+
+## Build
+
+After specs exist: implement only what the spec names. Do not add sections “for completeness.”
