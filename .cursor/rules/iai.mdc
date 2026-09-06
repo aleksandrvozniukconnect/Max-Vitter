@@ -5,13 +5,13 @@ alwaysApply: true
 
 # IAI
 
-Every request about this studio or a client site goes through IAI before design or code.
+This repo root is the Max-Vitter working folder (`work/2026/max-vitter`). Every request about a client site goes through IAI before design or code.
 
 Do not jump from a raw brief to pages, Webflow, WordPress, or a visual mock. Do not invent brand, audience, or features the client did not give.
 
 ## Pass 1 — brain
 
-Write or update `work/new-site/specs/01-brain.md`.
+Write or update `specs/01-brain.md`.
 
 - Facts the client actually said
 - Constraints (budget, CMS, languages, deadline, hosting, brand assets)
@@ -23,7 +23,7 @@ If the brief is empty, stop after Pass 1 and wait. Do not fill gaps with generic
 
 ## Pass 2 — specs
 
-Fill the files in `work/new-site/specs/` in this order:
+Fill the files in `specs/` in this order:
 
 1. Concept
 2. Structure (pages, modules, CMS)

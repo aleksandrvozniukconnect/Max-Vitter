@@ -7,14 +7,14 @@ fail=0
 need=(
   ".cursor/rules/iai.mdc"
   ".cursor/environment.json"
-  "work/new-site/README.md"
-  "work/new-site/BRIEF.md"
-  "work/new-site/specs/01-brain.md"
-  "work/new-site/specs/02-concept.md"
-  "work/new-site/specs/03-structure.md"
-  "work/new-site/specs/04-visual.md"
-  "work/new-site/specs/05-motion.md"
-  "work/new-site/specs/06-platform.md"
+  "README.md"
+  "BRIEF.md"
+  "specs/01-brain.md"
+  "specs/02-concept.md"
+  "specs/03-structure.md"
+  "specs/04-visual.md"
+  "specs/05-motion.md"
+  "specs/06-platform.md"
 )
 
 for f in "${need[@]}"; do
@@ -27,9 +27,9 @@ done
 python3 -m json.tool "$root/.cursor/environment.json" >/dev/null
 
 if grep -Eiq 'seamless|cutting-edge|elevate your|dive in|у сучасному світі|безшовн|зануртеся' \
-  "$root/work/new-site/specs/06-platform.md" \
-  "$root/work/new-site/README.md" \
-  "$root/work/new-site/BRIEF.md"; then
+  "$root/specs/06-platform.md" \
+  "$root/README.md" \
+  "$root/BRIEF.md"; then
   echo "voice: banned phrase leaked into pipeline files" >&2
   fail=1
 fi
