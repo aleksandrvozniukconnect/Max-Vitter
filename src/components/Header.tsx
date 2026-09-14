@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Logo } from './Logo'
 import { useMarket } from '../context/MarketContext'
 import { marketIds, markets, nav } from '../content/site'
@@ -93,21 +94,24 @@ export function Header() {
         </button>
       </div>
 
-      {menuOpen ? (
-        <div className={styles.overlay} role="dialog" aria-label="Menu">
-          <nav className={styles.overlayNav}>
-            <a href="#top" onClick={closeMenu}>
-              Home
-            </a>
-            {nav.map((item) => (
-              <a key={item.href} href={item.href} onClick={closeMenu}>
-                {item.label}
-              </a>
-            ))}
-          </nav>
-          <p className={styles.overlayNote}>{markets[marketId].overlay}</p>
-        </div>
-      ) : null}
+      {menuOpen
+        ? createPortal(
+            <div className={styles.overlay} role="dialog" aria-label="Menu">
+              <nav className={styles.overlayNav}>
+                <a href="#top" onClick={closeMenu}>
+                  Home
+                </a>
+                {nav.map((item) => (
+                  <a key={item.href} href={item.href} onClick={closeMenu}>
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+              <p className={styles.overlayNote}>{markets[marketId].overlay}</p>
+            </div>,
+            document.body,
+          )
+        : null}
     </header>
   )
 }

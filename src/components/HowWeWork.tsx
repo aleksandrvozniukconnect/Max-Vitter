@@ -1,4 +1,4 @@
-import { howWeWork, howWeWorkSteps } from '../content/site'
+import { howWeWork, howWeWorkSteps, photos } from '../content/site'
 import { Reveal } from './Reveal'
 import styles from './HowWeWork.module.css'
 
@@ -11,6 +11,11 @@ export function HowWeWork() {
           <h2 className={styles.title}>{howWeWork.introTitle}</h2>
           <p className={styles.lede}>{howWeWork.introLede}</p>
         </Reveal>
+      </div>
+
+      <div className={styles.media}>
+        <img src={photos.process} alt="" />
+        <span>Temporary plant photography</span>
       </div>
 
       <div className={styles.band}>
