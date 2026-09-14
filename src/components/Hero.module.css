@@ -1,0 +1,118 @@
+.hero {
+  background: #fff;
+}
+
+.copy {
+  width: min(920px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 72px 0 56px;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 28px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0 auto 28px;
+  max-width: 18ch;
+  font-size: clamp(2.6rem, 7vw, 5.35rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+}
+
+.lede {
+  margin: 0 auto 20px;
+  max-width: 38rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #333;
+}
+
+.market {
+  margin: 0 auto;
+  max-width: 34rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #666;
+}
+
+.media {
+  position: relative;
+  width: 100%;
+  height: min(62vh, 640px);
+  overflow: hidden;
+}
+
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.caption {
+  position: absolute;
+  left: 20px;
+  bottom: 16px;
+  padding: 4px 8px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.details {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  padding: 28px 28px 8px;
+}
+
+.details figure {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.details img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detailA {
+  width: min(280px, 38vw);
+  height: 160px;
+}
+
+.detailB {
+  width: min(420px, 52vw);
+  height: 210px;
+}
+
+@media (min-width: 900px) {
+  .copy {
+    padding: 96px 0 72px;
+  }
+
+  .details {
+    padding: 36px 40px 12px;
+  }
+
+  .detailA {
+    width: 300px;
+    height: 180px;
+  }
+
+  .detailB {
+    width: 520px;
+    height: 240px;
+  }
+}
