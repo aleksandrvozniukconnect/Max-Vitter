@@ -83,7 +83,7 @@ export const howWeWorkSteps = [
 ] as const
 
 export const howWeWork = {
-  rail: 'How we work with you',
+  rail: 'The production sequence',
   introTitle: 'How We Work',
   introLede:
     'Most millwork projects lose the drawing between the studio and the floor. We built a short, readable sequence so that does not happen: six steps you can follow, then a deeper journey with three gates nothing ships without.',
