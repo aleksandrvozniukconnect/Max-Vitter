@@ -1,5 +1,5 @@
 .section {
-  background: #fff;
+  background: var(--white);
 }
 
 .intro {
@@ -9,36 +9,14 @@
   text-align: center;
 }
 
-.eyebrow {
-  margin: 0 0 18px;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.title {
-  margin: 0 0 20px;
-  font-size: clamp(2.4rem, 6vw, 4.4rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
-}
-
-.lede {
-  margin: 0 auto;
-  max-width: 38rem;
-  color: #333;
-  line-height: 1.7;
-}
-
 .media {
-  position: relative;
-  width: min(1180px, calc(100% - 40px));
-  margin: 0 auto 36px;
+  width: min(var(--wrap), calc(100% - 40px));
+  margin: 0 auto -80px;
   height: min(42vh, 420px);
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--radius);
+  position: relative;
+  z-index: 1;
 }
 
 .media img {
@@ -47,38 +25,45 @@
   object-fit: cover;
 }
 
-.media span {
-  position: absolute;
-  left: 16px;
-  bottom: 12px;
-  padding: 4px 8px;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.45);
-}
-
 .band {
   background: var(--paper);
-  padding: 48px 20px 72px;
+  padding: 128px 20px 80px;
 }
 
 .bandInner {
   display: grid;
   grid-template-columns: 1fr;
   gap: 28px;
-  width: min(1180px, 100%);
+  width: min(var(--wrap), 100%);
   margin: 0 auto;
 }
 
 .rail {
+  display: none;
   margin: 0;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 8px 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rail li + li {
+  margin-top: 10px;
+}
+
+.rail a {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.rail a:hover {
+  color: var(--ink);
+}
+
+.rail span {
+  font-family: var(--display);
+  font-size: 13px;
+  color: var(--ink);
 }
 
 .cards {
@@ -91,50 +76,117 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
-  padding: 32px 28px;
-  background: #fff;
-  border-radius: 18px;
+  padding: 30px 26px;
+  background: var(--white);
+  border-radius: var(--radius);
+}
+
+.cardHead {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  scroll-margin-top: 96px;
+}
+
+.n {
+  font-family: var(--display);
+  font-size: 0.95rem;
+  color: var(--ink-soft);
 }
 
 .card h3 {
   margin: 0;
-  font-size: 1.28rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: 1.7rem;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
-.card p {
+.cardBody p {
   margin: 0;
-  color: #333;
+  color: var(--ink-soft);
   line-height: 1.7;
   font-size: 0.98rem;
 }
 
+.deliverable {
+  margin-top: 16px !important;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink) !important;
+}
+
+.deliverable span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.gate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-top: 18px !important;
+}
+
+.stamp {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1.5px solid var(--brass);
+  border-radius: 4px;
+  transform: rotate(-1.2deg);
+  font-family: var(--display);
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass-ink);
+  box-shadow: inset 0 0 0 3px var(--white), inset 0 0 0 4px var(--brass);
+}
+
+.gateNote {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
 @media (min-width: 900px) {
   .band {
-    padding: 72px 48px 96px;
+    padding: 160px 48px 104px;
   }
 
   .bandInner {
     grid-template-columns: 220px 1fr;
-    gap: 36px;
+    gap: 40px;
   }
 
   .intro {
-    padding: 104px 24px 48px;
+    padding: 112px 24px 48px;
   }
 
   .rail {
+    display: block;
     position: sticky;
     top: 108px;
     align-self: start;
-    padding-top: 28px;
+    padding-top: 6px;
   }
 
   .card {
-    grid-template-columns: 0.9fr 1.2fr;
+    grid-template-columns: 0.8fr 1.4fr;
     gap: 40px;
     padding: 42px 48px;
     align-items: start;
+  }
+
+  .cardHead {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card h3 {
+    font-size: 2.2rem;
   }
 }

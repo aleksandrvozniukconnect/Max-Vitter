@@ -1,7 +1,14 @@
 .footer {
-  background: #000;
-  color: #fff;
+  background: var(--ink);
+  color: var(--white);
   padding: 64px 20px 32px;
+}
+
+.tagline {
+  margin: 14px 0 0;
+  color: #c9c9c9;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
 }
 
 .grid {

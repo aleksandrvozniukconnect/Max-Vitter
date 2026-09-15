@@ -1,196 +1,212 @@
 export const marketIds = ['UA', 'US', 'ME'] as const
 export type MarketId = (typeof marketIds)[number]
 
-export const markets = {
+export type Market = {
+  id: MarketId
+  label: string
+  city: string
+  role: string
+  person: string
+  phone: string
+  email: string
+  hours: string
+  heroLine: string
+}
+
+export const markets: Record<MarketId, Market> = {
   UA: {
-    id: 'UA' as const,
-    code: 'UA',
+    id: 'UA',
     label: 'Ukraine',
-    desk: 'Kyiv production desk',
-    email: 'ua@designchoice.work',
+    city: 'Kyiv region',
+    role: 'Plant, engineering, QC',
+    person: 'Name, role',
     phone: '+380 44 000 00 00',
-    note: 'Engineering and the plant sit together. The drawing does not travel far from the people who will cut it.',
-    overlay:
-      'Ukraine overlay — production, engineering, and the floor. One sequence from first file to handover.',
+    email: 'ua@designchoice.work',
+    hours: '09:00–18:00 EET',
+    heroLine: 'Plant and engineering in Kyiv region. Projects in Ukraine, the United States and the Adriatic.',
   },
   US: {
-    id: 'US' as const,
-    code: 'US',
+    id: 'US',
     label: 'United States',
-    desk: 'US project desk',
-    email: 'us@designchoice.work',
+    city: 'Miami / New York',
+    role: 'Project desk, install crews',
+    person: 'Name, role',
     phone: '+1 646 000 0000',
-    note: 'English-language coordination for North American sites. Production remains in Ukraine.',
-    overlay:
-      'United States overlay — calendar, language, and logistics from a US-facing desk. The plant stays in Ukraine.',
+    email: 'us@designchoice.work',
+    hours: '09:00–18:00 ET',
+    heroLine: 'A US project desk in your time zone. Production stays in Ukraine; the crate arrives labelled to your floor plan.',
   },
   ME: {
-    id: 'ME' as const,
-    code: 'ME',
+    id: 'ME',
     label: 'Montenegro',
-    desk: 'Adriatic coordination',
-    email: 'me@designchoice.work',
+    city: 'Tivat / Boka Bay',
+    role: 'Site coordination, partner install',
+    person: 'Name, role',
     phone: '+382 20 000 000',
-    overlay:
-      'Montenegro overlay — the same production sequence, with site coordination for Adriatic work.',
-    note: 'Install windows and last-mile coordination for Montenegro and nearby Adriatic sites.',
+    email: 'me@designchoice.work',
+    hours: '09:00–18:00 CET',
+    heroLine: 'Site coordination on the Boka Bay. The same sequence, with install windows planned around the Adriatic season.',
   },
 }
 
 export const nav = [
   { href: '#how', label: 'How we work' },
-  { href: '#journey', label: 'Journey' },
+  { href: '#capabilities', label: 'Capabilities' },
+  { href: '#projects', label: 'Projects' },
   { href: '#start', label: 'Send your project' },
 ] as const
 
 export const hero = {
-  eyebrow: 'One partner. Every stage of the way.',
+  eyebrow: 'B2B millwork and custom joinery · Ukraine',
   title: 'One partner. Every stage. One accountable result.',
-  lede: 'Design Choice is a Ukrainian millwork and custom joinery partner for designers, architects, developers, and general contractors. Hand us a complex project — this is what happens next.',
+  lede: 'Design Choice is the plant that designers, architects, developers and general contractors hand their complex interiors to. Hand us a project — this is what happens next.',
+  primary: { href: '#how', label: 'How we work' },
+  secondary: { href: '#start', label: 'Send your project' },
 }
 
-export const howWeWorkSteps = [
+export const audiences = {
+  eyebrow: 'Who we work with',
+  title: 'Built for the professional who owns the drawing.',
+  items: [
+    {
+      key: 'designers',
+      title: 'Interior designers',
+      body: 'We do not simplify your intent. We find the engineering that lets it be built.',
+    },
+    {
+      key: 'architects',
+      title: 'Architects',
+      body: 'Shop drawings, details and tolerances you can approve, then hold us to.',
+    },
+    {
+      key: 'developers',
+      title: 'Developers and general contractors',
+      body: 'One contract, one schedule, one team responsible for the gaps between trades.',
+    },
+    {
+      key: 'partners',
+      title: 'Millwork partners',
+      body: 'A production backend for your projects: your drawings, our plant, your name on the job.',
+    },
+  ],
+} as const
+
+export type Step = {
+  key: string
+  n: string
+  title: string
+  body: string
+  deliverable: string
+  gate?: string
+}
+
+export const howWeWork = {
+  eyebrow: 'How we work',
+  title: 'Six steps. Three signatures.',
+  lede: 'A project moves through six steps you can follow. Three of them end with a stamp — nothing moves past it without your signature or ours.',
+  rail: 'The sequence',
+}
+
+export const steps: readonly Step[] = [
   {
     key: 'consult',
-    title: 'Step 1 — Consult',
-    body: 'Every project starts with the package, not a sales script. Send the drawings, the constraints, the calendar, and the questions you cannot leave open. We read the brief as a production team: what is buildable, what is missing, and which samples must be real before anyone talks about a date.',
+    n: '01',
+    title: 'Consult',
+    body: 'Every project starts with the package, not a sales script. Send the drawings, the constraints, the calendar and the questions you cannot leave open. We read the brief as a production team: what is buildable, what is missing, which samples must be real before anyone talks about a date.',
+    deliverable: 'A scoped estimate with the open questions listed, not hidden.',
   },
   {
     key: 'design',
-    title: 'Step 2 — Design',
-    body: 'Engineering turns the concept into a set that can be cut. Joinery, materials, tolerances, hardware, and edge conditions are resolved in drawings you can approve. You see the buildable version — not a mood, and not a promise the floor cannot keep.',
+    n: '02',
+    title: 'Design',
+    body: 'Engineering turns the concept into a set that can be cut. Joinery, materials, tolerances, hardware and edge conditions are resolved in drawings you can approve. You see the buildable version, not a mood and not a promise the floor cannot keep.',
+    deliverable: 'Shop drawings, material and hardware schedule, physical samples.',
   },
   {
     key: 'confirm',
-    title: 'Step 3 — Confirm',
-    body: 'Contract, specification, finishes, and timeline lock in writing. Production does not start on a verbal maybe. If something in the set will not hold for the window or the budget, we say so here — before a machine moves.',
+    n: '03',
+    title: 'Confirm',
+    body: 'Contract, specification, finishes and timeline lock in writing. Production does not start on a verbal maybe. If something in the set will not hold for the window or the budget, we say so here, before a machine moves.',
+    deliverable: 'Signed contract and the approved drawing set as the single source of truth.',
+    gate: 'Approved for Production',
   },
   {
     key: 'manufacture',
-    title: 'Step 4 — Manufacture',
-    body: 'Procurement and manufacturing follow the approved set. The plant executes; it does not interpret. Assemblies are built to the drawing that was signed, in the sequence the job actually needs.',
+    n: '04',
+    title: 'Manufacture',
+    body: 'Procurement and manufacturing follow the approved set. The plant executes; it does not interpret. A control assembly proves the joinery before packing, and an inspector who did not build the piece reads it against the drawing.',
+    deliverable: 'Batch photos as work progresses and a signed QC sheet per unit.',
+    gate: 'QC Approved',
   },
   {
     key: 'deliver',
-    title: 'Step 5 — Deliver',
-    body: 'Packing is part of the product. Logistics are aimed at the install window, including phased drops. You know what is on a crate, which floor it belongs to, and when it is allowed to move.',
+    n: '05',
+    title: 'Deliver',
+    body: 'Packing is part of the product. Crates are labelled to the install plan, so the site team knows what is in a box, which floor it belongs to and when it may move. Sea, road or air: the paperwork follows the same marks.',
+    deliverable: 'Packing list keyed to drawing marks, loading photos, export documents.',
+    gate: 'Approved for Shipment',
   },
   {
     key: 'support',
-    title: 'Step 6 — Support',
-    body: 'Install is coordinated, handover is documented, and warranty terms are explicit. After the job, we review what held and what did not — so the next project inherits a tighter standard, not a repeated guess.',
+    n: '06',
+    title: 'Support',
+    body: 'Our crew installs, or your local team installs with our marks, drawings and remote support. Handover is documented by zone. Warranty terms are explicit. After the job we write down what held and what did not, so the next project inherits a tighter standard.',
+    deliverable: 'Signed handover, warranty terms, one named contact after the job.',
   },
-] as const
+]
 
-export const howWeWork = {
-  rail: 'The production sequence',
-  introTitle: 'How We Work',
-  introLede:
-    'Most millwork projects lose the drawing between the studio and the floor. We built a short, readable sequence so that does not happen: six steps you can follow, then a deeper journey with three gates nothing ships without.',
+export const plant = {
+  eyebrow: 'Made in our own plant',
+  title: 'Engineering, production and inspection under one roof.',
+  body: 'The drawing does not travel far from the people who cut it. Machining, veneer, finishing, assembly, quality control and packing are in one building in Kyiv region. Visit it, or walk it with us on a call.',
+  facts: ['Own engineering office', 'Own production floor', 'Independent QC'],
 }
 
-export const mosaic = {
-  eyebrow: 'Visual direction',
-  title: 'Material. Geometry. Sequence.',
-  subtitle: 'From first line to final detail.',
-  capabilities: [
-    'Architectural millwork',
-    'Custom joinery',
-    'Built-in systems',
-    'Spec engineering',
-    'Control assemblies',
-    'Independent QC',
-    'Crating & logistics',
-    'Install coordination',
+export const capabilities = {
+  eyebrow: 'Capabilities',
+  title: 'If the interior is complex, the whole interior is our scope.',
+  items: [
+    { key: 'kitchens', title: 'Kitchens and built-ins', body: 'Carcass systems, fronts, worktops, integrated appliances.' },
+    { key: 'wardrobes', title: 'Wardrobes and dressing rooms', body: 'Walk-in and built-in, with lighting and hardware.' },
+    { key: 'walls', title: 'Wall systems and doors', body: 'Panelling, concealed doors, acoustic and feature walls.' },
+    { key: 'millwork', title: 'Furniture and millwork', body: 'Loose pieces and the joinery that ties a room together.' },
   ],
-  projects: [
+} as const
+
+export const projects = {
+  eyebrow: 'Projects',
+  title: 'Told the way they were built.',
+  lede: 'Challenge, engineering, delivery, result. Photography and names are placeholders until the client releases the cases.',
+  items: [
     {
-      title: 'Hospitality suites',
-      challenge: 'One architect set, repeated across rooms, with a fixed install window.',
+      key: 'hospitality',
+      title: 'Hotel, 64 keys',
+      sector: 'Hospitality',
+      challenge: 'One architect set repeated across rooms, with a fixed install window.',
       result: 'One approved assembly. Install ran to the window. The handover pack was the set that was built.',
     },
     {
+      key: 'residential',
       title: 'Residential tower kitchens',
+      sector: 'Residential',
       challenge: 'Developer drawings arrived as layouts and finish notes, not a buildable set.',
-      result: 'Engineering closed the set before production. Units were packed by floor.',
+      result: 'Engineering closed the set before production. Units were packed and delivered by floor.',
+    },
+    {
+      key: 'villa',
+      title: 'Villa, Boka Bay',
+      sector: 'Private residence',
+      challenge: 'Full interior package for an Adriatic site with seasonal access.',
+      result: 'Shipped by road and sea in two phases. Installed by our crew inside the agreed window.',
     },
   ],
+} as const
+
+export const ground = {
+  eyebrow: 'On the ground',
+  title: 'Someone in your time zone.',
+  lede: 'We work directly with the design professional, not through dealers. In each market there is a person you can call.',
 }
-
-export type JourneyChapter = {
-  kind: 'chapter'
-  n: number
-  title: string
-  body: string
-}
-
-export type JourneyGate = {
-  kind: 'gate'
-  stamp: string
-  note: string
-}
-
-export type JourneyItem = JourneyChapter | JourneyGate
-
-export const journey: JourneyItem[] = [
-  {
-    kind: 'chapter',
-    n: 1,
-    title: 'Understand',
-    body: 'Intake, analysis, estimate, materials and samples. We take the package apart until the job is legible: scope, constructability, lead times, and the samples that must exist before a number means anything.',
-  },
-  {
-    kind: 'chapter',
-    n: 2,
-    title: 'Define',
-    body: 'Contract, engineering, approvals. The set becomes the source of truth. What is not on the drawing is not on the floor.',
-  },
-  {
-    kind: 'gate',
-    stamp: 'Approved for Production',
-    note: 'Nothing is cut until the set is signed. This gate is a decision, not a courtesy.',
-  },
-  {
-    kind: 'chapter',
-    n: 3,
-    title: 'Make',
-    body: 'Procurement and manufacturing. Materials are bought to the approved spec. Assemblies run in the order the site will need them.',
-  },
-  {
-    kind: 'chapter',
-    n: 4,
-    title: 'Verify',
-    body: 'Control assembly and independent QC. A first assembly proves the joinery. QC reads the work against the approved set — not against memory.',
-  },
-  {
-    kind: 'gate',
-    stamp: 'QC Approved',
-    note: 'Independent of the team that built it. If it does not match the set, it does not move.',
-  },
-  {
-    kind: 'chapter',
-    n: 5,
-    title: 'Deliver',
-    body: 'Packing and logistics. Crates are labeled to the install plan. The calendar of the site outranks the convenience of the plant.',
-  },
-  {
-    kind: 'gate',
-    stamp: 'Approved for Shipment',
-    note: 'Released only when packing, documents, and the QC stamp agree. Nothing leaves on a hope.',
-  },
-  {
-    kind: 'chapter',
-    n: 6,
-    title: 'Complete',
-    body: 'Install, handover, warranty. Coordination on site, a documented handover, and terms that are readable when something later needs a match.',
-  },
-  {
-    kind: 'chapter',
-    n: 7,
-    title: 'Improve',
-    body: 'Post-project analysis becomes a new standard. What failed the sequence is written down so the next job does not have to discover it again.',
-  },
-]
 
 export const closing = {
   title: 'Your concept. Our responsibility for delivery.',
@@ -200,35 +216,18 @@ export const closing = {
 export const sendForm = {
   eyebrow: 'Start',
   title: 'Send your project',
-  lede: 'Name, company, country, type, timing, and a comment. Attach PDF, DWG, XLS, or a cloud link. This page collects the package — it does not upload to a live backend yet.',
-  projectTypes: [
-    'Hospitality',
-    'Residential',
-    'Workplace',
-    'Civic / cultural',
-    'Retail',
-    'Other',
-  ],
-  timings: [
-    'Already on a calendar',
-    'This quarter',
-    'This year',
-    'Exploring',
-  ],
-  acceptHint: 'PDF, DWG, XLS — or a cloud link',
+  lede: 'Start as early as you can. Send the drawings you have today and we will tell you what happens next.',
+  projectTypes: ['Hospitality', 'Residential', 'Workplace', 'Civic / cultural', 'Retail', 'Other'],
+  timings: ['Already on a calendar', 'This quarter', 'This year', 'Exploring'],
+  acceptHint: 'PDF, DWG, XLS or a cloud link',
+  thanksTitle: 'Package noted.',
+  thanksBody: 'A production lead reads the files next. This preview does not upload anything yet.',
 }
 
-export const company = {
-  blurb:
-    'Design Choice is a Ukrainian B2B production partner for custom millwork and joinery. We are not a retail catalog. We are the plant you can hand a complex project — with a sequence you can follow from first file to handover.',
-  partners: [
-    'Architecture studios',
-    'Interior designers',
-    'Developers',
-    'General contractors',
-    'Material mills',
-    'Hardware houses',
-  ],
+export const footer = {
+  tagline: 'B2B custom millwork manufacturing',
+  languages: 'EN · UK',
+  legal: 'Design Choice',
 }
 
 export const photos = {
@@ -236,20 +235,23 @@ export const photos = {
   detailA: '/images/hero-detail-a.jpg',
   detailB: '/images/hero-detail-b.jpg',
   process: '/images/process-floor.jpg',
-  mosaicMaterial: '/images/mosaic-material.jpg',
-  mosaicGeometry: '/images/mosaic-geometry.jpg',
-  mosaicDrawing: '/images/mosaic-drawing.jpg',
-  mosaicInterior: '/images/mosaic-interior.jpg',
-  projectA: '/images/project-a.jpg',
-  projectB: '/images/project-b.jpg',
+  plant: '/images/company.jpg',
+  capabilities: [
+    '/images/mosaic-interior.jpg',
+    '/images/mosaic-material.jpg',
+    '/images/mosaic-geometry.jpg',
+    '/images/mosaic-drawing.jpg',
+  ],
+  projects: ['/images/project-a.jpg', '/images/project-b.jpg', '/images/mosaic-interior.jpg'],
   cta: '/images/cta-floor.jpg',
-  company: '/images/company.jpg',
 }
 
-export function chaptersOf(items: readonly JourneyItem[]): JourneyChapter[] {
-  return items.filter((item): item is JourneyChapter => item.kind === 'chapter')
+export const brand = {
+  logoDark: '/brand/Logo-02.svg',
+  logoLight: '/brand/Logo-04.svg',
+  iconDark: '/brand/icon-black.png',
 }
 
-export function gatesOf(items: readonly JourneyItem[]): JourneyGate[] {
-  return items.filter((item): item is JourneyGate => item.kind === 'gate')
+export function gatesOf(items: readonly Step[]): string[] {
+  return items.flatMap((step) => (step.gate ? [step.gate] : []))
 }

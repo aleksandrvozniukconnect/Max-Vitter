@@ -1,42 +1,35 @@
-# Design Choice
+# Design Choice — B2B millwork production partner
 
-**[Live preview](https://temporary-brisk-cypress-yxgnuxj.vercel.app)** — temporary Vercel URL (expires ~2026-09-15 23:21 UTC unless claimed).
+Single-page site in the register of [foliot.com/how-we-work](https://www.foliot.com/how-we-work): one partner, six steps, stacked cards on paper, a black CTA panel. Copy, logo and structure are Design Choice.
 
-Commercial website for **Design Choice** — a Ukrainian B2B millwork and custom joinery production partner for designers, architects, developers, and general contractors.
+## Structure (one owner per fact, nothing repeated)
 
-This rebuild replaces the old Woodhouse static page. Visual language follows Foliot Furniture’s how-we-work page (whitespace, Poppins-scale type, beige process cards, sticky header, fade reveals, black CTA panel). Information architecture follows the Design Choice Foliot×Kettal prototype: one tree, UA / US / ME overlay.
+1. Hero — positioning, two calls
+2. Who we work with — four audiences
+3. How we work — six steps; the three gates (Approved for Production, QC Approved, Approved for Shipment) are stamps inside steps 3, 4 and 5; each step names what the client receives
+4. Made in our own plant
+5. Capabilities — four tiles
+6. Projects — three cases (placeholders until the client releases photos)
+7. On the ground — UA / US / ME, one person per market; the header globe and these cards drive the same market overlay
+8. Closing CTA
+9. Send your project — UI-only intake, files and cloud link
+10. Footer
 
-## Preview
+Content lives in `src/content/site.ts`. Tests in `src/content/site.test.ts` pin the structure: six steps, three gates in order, four audiences, four capabilities, three projects, no unverified numbers.
+
+## Brand
+
+From the DSGN Choice logo guideline: black `#111318`, white `#FCFBFA`, Oswald for display, Mulish for text. Logos in `public/brand/`. Paper `#EEE7E1` and a brass accent for stamps come from the Foliot-style direction.
+
+## Run
 
 ```bash
 npm install
 npm run dev
-```
-
-Open the printed local URL (Vite defaults to `http://localhost:5173`).
-
-```bash
 npm run test
 npm run build
-npm run preview
 ```
 
-## Page structure
+## Not in this version
 
-Single-page spine, in this order:
-
-1. **Sticky header** — Design Choice mark, anchors to How we work / Journey / Send project, UA·US·ME market control, Send CTA, mobile menu
-2. **Hero** — “One partner. Every stage. One accountable result.” plus cinematic media
-3. **How we work** (`#how`) — beige band, Foliot-style stacked cards: Consult → Design → Confirm → Manufacture → Deliver → Support
-4. **Visual direction** — Kettal-like mosaic (“Material. Geometry. Sequence.” / “From first line to final detail.”), quiet capabilities and two Challenge→Result cases
-5. **Journey** (`#journey`) — 7 chapters with 3 gates: Understand → Define → **Approved for Production** → Make → Verify → **QC Approved** → Deliver → **Approved for Shipment** → Complete → Improve
-6. **Closing CTA** — “Your concept. Our responsibility for delivery.”
-7. **Send your project** (`#start`) — UI-only intake (PDF / DWG / XLS / cloud link) and footer
-
-## Stack
-
-Vite + React + TypeScript, CSS modules, Framer Motion (respects `prefers-reduced-motion`). Placeholder photography lives in `public/images` and is labeled as temporary.
-
-## Out of scope (this version)
-
-CMS, live file upload, Presenter offline mode, frame-scrubbed plant video.
+CMS, live upload, UK translation, real photography, the full 15-stage path (kept off the home page on purpose).
