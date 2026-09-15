@@ -1,30 +1,37 @@
 import { describe, expect, it } from 'vitest'
 import {
-  chaptersOf,
+  audiences,
+  capabilities,
   gatesOf,
-  howWeWorkSteps,
-  journey,
+  hero,
   marketIds,
   markets,
-  mosaic,
   nav,
+  photos,
+  projects,
+  steps,
 } from './site'
 
 describe('Design Choice content model', () => {
-  it('exposes UA / US / ME market overlay', () => {
+  it('exposes UA / US / ME with a person, phone and hours per market', () => {
     expect([...marketIds]).toEqual(['UA', 'US', 'ME'])
-    expect(markets.UA.desk).toMatch(/production/i)
-    expect(markets.US.desk).toMatch(/US/i)
-    expect(markets.ME.desk).toMatch(/Adriatic/i)
+    for (const id of marketIds) {
+      const m = markets[id]
+      expect(m.person.length).toBeGreaterThan(0)
+      expect(m.phone.length).toBeGreaterThan(0)
+      expect(m.hours).toMatch(/\d{2}:\d{2}/)
+      expect(m.heroLine.length).toBeGreaterThan(20)
+    }
   })
 
-  it('keeps nav to How we work, Journey, Send project', () => {
-    expect(nav.map((item) => item.href)).toEqual(['#how', '#journey', '#start'])
+  it('keeps nav to the four owner pages, no Journey duplicate', () => {
+    expect(nav.map((item) => item.href)).toEqual(['#how', '#capabilities', '#projects', '#start'])
+    expect(nav.map((item) => item.label)).not.toContain('Journey')
   })
 
-  it('has six How We Work steps in Foliot order', () => {
-    expect(howWeWorkSteps).toHaveLength(6)
-    expect(howWeWorkSteps.map((step) => step.key)).toEqual([
+  it('has six Foliot-order steps, each with a deliverable', () => {
+    expect(steps).toHaveLength(6)
+    expect(steps.map((step) => step.key)).toEqual([
       'consult',
       'design',
       'confirm',
@@ -32,45 +39,42 @@ describe('Design Choice content model', () => {
       'deliver',
       'support',
     ])
+    for (const step of steps) {
+      expect(step.deliverable.length).toBeGreaterThan(10)
+      expect(step.n).toMatch(/^0[1-6]$/)
+    }
   })
 
-  it('has seven journey chapters and three gates in production order', () => {
-    const chapters = chaptersOf(journey)
-    const gates = gatesOf(journey)
-    expect(chapters).toHaveLength(7)
-    expect(chapters.map((chapter) => chapter.title)).toEqual([
-      'Understand',
-      'Define',
-      'Make',
-      'Verify',
-      'Deliver',
-      'Complete',
-      'Improve',
-    ])
-    expect(gates).toHaveLength(3)
-    expect(gates.map((gate) => gate.stamp)).toEqual([
-      'Approved for Production',
-      'QC Approved',
-      'Approved for Shipment',
-    ])
-    expect(journey.map((item) => (item.kind === 'chapter' ? item.title : item.stamp))).toEqual([
-      'Understand',
-      'Define',
-      'Approved for Production',
-      'Make',
-      'Verify',
-      'QC Approved',
-      'Deliver',
-      'Approved for Shipment',
-      'Complete',
-      'Improve',
-    ])
+  it('folds the three gates into steps 3, 4 and 5 in production order', () => {
+    expect(gatesOf(steps)).toEqual(['Approved for Production', 'QC Approved', 'Approved for Shipment'])
+    expect(steps[2].gate).toBe('Approved for Production')
+    expect(steps[3].gate).toBe('QC Approved')
+    expect(steps[4].gate).toBe('Approved for Shipment')
+    expect(steps[0].gate).toBeUndefined()
+    expect(steps[5].gate).toBeUndefined()
   })
 
-  it('keeps the Kettal mosaic phrases and quiet capabilities', () => {
-    expect(mosaic.title).toBe('Material. Geometry. Sequence.')
-    expect(mosaic.subtitle).toBe('From first line to final detail.')
-    expect(mosaic.capabilities.length).toBeGreaterThanOrEqual(6)
-    expect(mosaic.projects).toHaveLength(2)
+  it('does not list more than six stage titles anywhere on the home page', () => {
+    const titles = steps.map((step) => step.title)
+    expect(new Set(titles).size).toBe(6)
+  })
+
+  it('states positioning once in the hero, not in section ledes', () => {
+    expect(hero.title).toBe('One partner. Every stage. One accountable result.')
+    expect(audiences.title).not.toContain('One partner')
+  })
+
+  it('has four audiences, four capabilities and three projects with photos', () => {
+    expect(audiences.items).toHaveLength(4)
+    expect(capabilities.items).toHaveLength(4)
+    expect(photos.capabilities).toHaveLength(4)
+    expect(projects.items).toHaveLength(3)
+    expect(photos.projects).toHaveLength(3)
+  })
+
+  it('does not publish unverified numbers', () => {
+    const text = JSON.stringify({ hero, audiences, capabilities, projects, steps })
+    expect(text).not.toMatch(/86\s?%/)
+    expect(text).not.toMatch(/\d+\s?m²/)
   })
 })

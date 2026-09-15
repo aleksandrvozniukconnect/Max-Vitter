@@ -1,8 +1,9 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { hero, photos } from '../content/site'
 import { useMarket } from '../context/MarketContext'
-import { Reveal } from './Reveal'
 import styles from './Hero.module.css'
+
+const ease = [0.22, 1, 0.36, 1] as const
 
 export function Hero() {
   const reduce = useReducedMotion()
@@ -12,18 +13,18 @@ export function Hero() {
     <section className={styles.hero} id="top">
       <div className={styles.copy}>
         <motion.p
-          className={styles.eyebrow}
-          initial={reduce ? false : { opacity: 0, color: '#f3f1ee' }}
-          animate={{ opacity: 1, color: '#111111' }}
-          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+          className="eyebrow"
+          initial={reduce ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.9, ease }}
         >
           {hero.eyebrow}
         </motion.p>
         <motion.h1
           className={styles.title}
-          initial={reduce ? false : { opacity: 0, color: '#f2eee9' }}
-          animate={{ opacity: 1, color: '#000000' }}
-          transition={{ duration: 1.35, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+          initial={reduce ? false : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.1, delay: 0.06, ease }}
         >
           {hero.title}
         </motion.h1>
@@ -31,26 +32,29 @@ export function Hero() {
           className={styles.lede}
           initial={reduce ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.9, delay: 0.22, ease }}
         >
           {hero.lede}
         </motion.p>
-        <p className={styles.market}>{market.note}</p>
+        <motion.div
+          className={styles.actions}
+          initial={reduce ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.4, ease }}
+        >
+          <a className="pill" href={hero.primary.href}>
+            {hero.primary.label}
+          </a>
+          <a className="pill pill--ghost" href={hero.secondary.href}>
+            {hero.secondary.label}
+          </a>
+        </motion.div>
       </div>
 
       <div className={styles.media}>
         <img src={photos.hero} alt="" />
-        <span className={styles.caption}>Temporary plant photography</span>
+        <p className={styles.marketLine}>{market.heroLine}</p>
       </div>
-
-      <Reveal className={styles.details}>
-        <figure className={styles.detailA}>
-          <img src={photos.detailB} alt="" />
-        </figure>
-        <figure className={styles.detailB}>
-          <img src={photos.detailA} alt="" />
-        </figure>
-      </Reveal>
     </section>
   )
 }

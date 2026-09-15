@@ -8,7 +8,7 @@
   gap: 24px;
   height: 76px;
   padding: 0 28px;
-  background: #fff;
+  background: var(--white);
 }
 
 .brand {
@@ -27,7 +27,7 @@
 }
 
 .desktopNav a {
-  color: #111;
+  color: var(--ink);
 }
 
 .desktopNav a:hover {
@@ -66,7 +66,7 @@
   margin: 0;
   padding: 8px;
   list-style: none;
-  background: #fff;
+  background: var(--white);
   border: 1px solid var(--rule);
   border-radius: 14px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
@@ -105,8 +105,8 @@
   gap: 12px;
   padding: 11px 16px 11px 18px;
   border-radius: 999px;
-  background: #000;
-  color: #fff;
+  background: var(--ink);
+  color: var(--white);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -115,14 +115,14 @@
 }
 
 .cta:hover {
-  background: #222;
+  background: #2a2d34;
 }
 
 .ctaDot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--white);
 }
 
 .burger {
@@ -135,7 +135,7 @@
   gap: 5px;
   border: 1px solid var(--rule);
   border-radius: 12px;
-  background: #fff;
+  background: var(--white);
   cursor: pointer;
 }
 
@@ -143,7 +143,7 @@
   display: block;
   width: 16px;
   height: 1.5px;
-  background: #000;
+  background: var(--ink);
 }
 
 .burgerOpen span:first-child {
@@ -158,7 +158,7 @@
   position: fixed;
   inset: 76px 0 0;
   width: 100%;
-  background: #fff;
+  background: var(--white);
   padding: 48px 28px;
   z-index: 90;
   display: flex;
@@ -174,16 +174,40 @@
 
 .overlayNav a {
   font-size: clamp(2rem, 6vw, 3.2rem);
-  font-weight: 700;
+  font-family: var(--display); font-weight: 500; text-transform: uppercase;
   letter-spacing: -0.04em;
   line-height: 1.1;
-  color: #000;
+  color: var(--ink);
 }
 
 .overlayNote {
   max-width: 28rem;
   color: #555;
   line-height: 1.6;
+}
+
+@media (max-width: 599px) {
+  .header {
+    height: 64px;
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  .brand img {
+    height: 34px;
+  }
+
+  .cta {
+    display: none;
+  }
+
+  .actions {
+    gap: 4px;
+  }
+
+  .overlay {
+    inset: 64px 0 0;
+  }
 }
 
 @media (min-width: 960px) {

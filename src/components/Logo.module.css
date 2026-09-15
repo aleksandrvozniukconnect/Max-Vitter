@@ -1,32 +1,9 @@
 .logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: #000;
-}
-
-.mark {
-  width: 36px;
-  height: 36px;
   display: block;
-  flex-shrink: 0;
+  height: 44px;
+  width: auto;
 }
 
-.wordmark {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.05;
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: -0.02em;
-  text-transform: lowercase;
-}
-
-.compact .mark {
-  width: 32px;
-  height: 32px;
-}
-
-.compact .wordmark {
-  font-size: 12px;
+.compact {
+  height: 36px;
 }

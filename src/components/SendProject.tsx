@@ -55,17 +55,14 @@ export function SendProject() {
         <h2>{sendForm.title}</h2>
         <p className={styles.lede}>{sendForm.lede}</p>
         <p className={styles.desk}>
-          {market.desk} · {market.email} · {market.phone}
+          {market.label} · {market.email} · {market.phone}
         </p>
       </Reveal>
 
       {submitted ? (
         <Reveal className={styles.thanks}>
-          <h3>Package noted.</h3>
-          <p>
-            This is a UI-only intake. A production lead would read the files next. Nothing was uploaded
-            from this preview.
-          </p>
+          <h3>{sendForm.thanksTitle}</h3>
+          <p>{sendForm.thanksBody}</p>
         </Reveal>
       ) : (
         <form className={styles.form} onSubmit={onSubmit} noValidate>

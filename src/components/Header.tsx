@@ -107,7 +107,7 @@ export function Header() {
                   </a>
                 ))}
               </nav>
-              <p className={styles.overlayNote}>{markets[marketId].overlay}</p>
+              <p className={styles.overlayNote}>{markets[marketId].heroLine}</p>
             </div>,
             document.body,
           )
