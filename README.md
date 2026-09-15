@@ -1,6 +1,6 @@
 # Design Choice
 
-**[Live preview](https://temporary-instant-ocarina-bo64guj.vercel.app)** — temporary Vercel URL (expires ~2026-09-15 08:04 UTC unless claimed).
+**[Live preview](https://temporary-brisk-cypress-yxgnuxj.vercel.app)** — temporary Vercel URL (expires ~2026-09-15 23:21 UTC unless claimed).
 
 Commercial website for **Design Choice** — a Ukrainian B2B millwork and custom joinery production partner for designers, architects, developers, and general contractors.
 
