@@ -1,5 +1,7 @@
 # Design Choice
 
+**[Live preview](https://temporary-instant-ocarina-bo64guj.vercel.app)** — temporary Vercel URL (expires ~2026-09-15 08:04 UTC unless claimed).
+
 Commercial website for **Design Choice** — a Ukrainian B2B millwork and custom joinery production partner for designers, architects, developers, and general contractors.
 
 This rebuild replaces the old Woodhouse static page. Visual language follows Foliot Furniture’s how-we-work page (whitespace, Poppins-scale type, beige process cards, sticky header, fade reveals, black CTA panel). Information architecture follows the Design Choice Foliot×Kettal prototype: one tree, UA / US / ME overlay.
