@@ -1,2 +1,2 @@
 # Max-Vitter
-**Design Choice** — [Live preview](https://temporary-rushing-reef-az8o5uz.vercel.app)
+**Design Choice** — [Live preview](https://temporary-brisk-kazoo-aqkgnef.vercel.app)
