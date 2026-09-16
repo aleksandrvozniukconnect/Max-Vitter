@@ -109,15 +109,12 @@ describe('Design Choice content model', () => {
     }
   })
 
-  it('exposes an EN / UK / RU language switcher, distinct from the market overlay', () => {
+  it('exposes an EN / UK / RU language switcher in header copy', () => {
     expect([...localeIds]).toEqual(['en', 'uk', 'ru'])
     expect(localeLabels).toEqual({ en: 'EN', uk: 'UK', ru: 'RU' })
     for (const locale of localeIds) {
       expect(dictionaries[locale].header.languageAria.length).toBeGreaterThan(0)
-      expect(dictionaries[locale].header.marketOverlayAria.length).toBeGreaterThan(0)
-      expect(dictionaries[locale].header.languageAria).not.toBe(
-        dictionaries[locale].header.marketOverlayAria,
-      )
+      expect(dictionaries[locale].header).not.toHaveProperty('marketOverlayAria')
     }
   })
 })

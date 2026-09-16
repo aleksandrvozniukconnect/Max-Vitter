@@ -1,13 +1,12 @@
-import { nav } from '../content/site'
+import { marketFacts, nav } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
-import { useMarketView } from '../context/MarketContext'
 import { localeIds, localeLabels } from '../i18n/locale'
 import { Logo } from './Logo'
 import styles from './Footer.module.css'
 
 export function Footer() {
-  const { market } = useMarketView()
   const { locale, setLocale, copy } = useLocale()
+  const desk = { ...marketFacts.UA, ...copy.markets.UA }
 
   return (
     <footer className={styles.footer}>
@@ -27,13 +26,13 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h2>{market.label}</h2>
+          <h2>{desk.label}</h2>
           <p>
-            {market.city}
+            {desk.city}
             <br />
-            <a href={`tel:${market.phone.replace(/\s/g, '')}`}>{market.phone}</a>
+            <a href={`tel:${desk.phone.replace(/\s/g, '')}`}>{desk.phone}</a>
             <br />
-            <a href={`mailto:${market.email}`}>{market.email}</a>
+            <a href={`mailto:${desk.email}`}>{desk.email}</a>
           </p>
         </div>
         <div>

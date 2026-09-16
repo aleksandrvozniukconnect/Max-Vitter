@@ -10,7 +10,7 @@ Single-page site in the register of [foliot.com/how-we-work](https://www.foliot.
 4. Made in our own plant
 5. Capabilities — four tiles
 6. Projects — three cases (placeholders until the client releases photos)
-7. On the ground — UA / US / ME, one person per market; the header globe and these cards drive the same market overlay
+7. On the ground — UA / US / ME, one person per market (static contact cards)
 8. Closing CTA
 9. Send your project — UI-only intake, files and cloud link
 10. Footer
@@ -19,10 +19,7 @@ Structure lives in `src/content/site.ts`. UI copy lives in `src/i18n/` (`en`, `u
 
 ## Languages
 
-The sticky header has two separate controls:
-
-- **Market overlay** (globe) — UA / US / ME contact context. Does not change UI language.
-- **Language** — EN · UK · RU. UK is Ukrainian (`uk`), not United Kingdom.
+The sticky header has an **EN · UK · RU** switcher. UK is Ukrainian (`uk`), not United Kingdom. Market contacts live in On the ground, not in the header.
 
 Default is English. A chosen language is saved in `localStorage` (`design-choice-lang`) and restored on reload. You can also open the page with `?lang=uk`, `?lang=ru` or `?lang=en` (query wins over the saved choice). Footer language links do the same switch.
 

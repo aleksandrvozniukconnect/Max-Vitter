@@ -1,14 +1,12 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { photos } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
-import { useMarketView } from '../context/MarketContext'
 import styles from './Hero.module.css'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
 export function Hero() {
   const reduce = useReducedMotion()
-  const { market } = useMarketView()
   const { copy } = useLocale()
 
   return (
@@ -55,7 +53,7 @@ export function Hero() {
 
       <div className={styles.media}>
         <img src={photos.hero} alt="" />
-        <p className={styles.marketLine}>{market.heroLine}</p>
+        <p className={styles.marketLine}>{copy.markets.UA.heroLine}</p>
       </div>
     </section>
   )

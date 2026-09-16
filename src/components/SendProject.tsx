@@ -1,7 +1,6 @@
 import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
-import { marketIds } from '../content/site'
+import { marketFacts, marketIds } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
-import { useMarketView } from '../context/MarketContext'
 import { validateProjectForm, type ProjectFormValues } from '../lib/form'
 import { Reveal } from './Reveal'
 import styles from './SendProject.module.css'
@@ -18,10 +17,10 @@ const empty = (country: string): ProjectFormValues => ({
 })
 
 export function SendProject() {
-  const { market } = useMarketView()
   const { copy } = useLocale()
   const form = copy.sendForm
-  const [values, setValues] = useState<ProjectFormValues>(() => empty(market.id))
+  const desk = { ...marketFacts.UA, ...copy.markets.UA }
+  const [values, setValues] = useState<ProjectFormValues>(() => empty('UA'))
   const [attempted, setAttempted] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
@@ -63,7 +62,7 @@ export function SendProject() {
         <h2>{form.title}</h2>
         <p className={styles.lede}>{form.lede}</p>
         <p className={styles.desk}>
-          {market.label} · {market.email} · {market.phone}
+          {desk.label} · {desk.email} · {desk.phone}
         </p>
       </Reveal>
 

@@ -10,7 +10,6 @@ export const uk: SiteCopy = {
     homeAria: 'Design Choice — на початок',
     primaryNavAria: 'Основна навігація',
     sendProject: 'Надіслати',
-    marketOverlayAria: 'Ринок',
     languageAria: 'Мова',
     openMenu: 'Відкрити меню',
     closeMenu: 'Закрити меню',

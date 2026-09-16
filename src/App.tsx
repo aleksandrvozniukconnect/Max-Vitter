@@ -10,26 +10,23 @@ import { ClosingCta } from './components/ClosingCta'
 import { SendProject } from './components/SendProject'
 import { Footer } from './components/Footer'
 import { LocaleProvider } from './context/LocaleContext'
-import { MarketProvider } from './context/MarketContext'
 
 export default function App() {
   return (
     <LocaleProvider>
-      <MarketProvider>
-        <Header />
-        <main>
-          <Hero />
-          <Audiences />
-          <HowWeWork />
-          <Plant />
-          <Capabilities />
-          <Projects />
-          <OnTheGround />
-          <ClosingCta />
-          <SendProject />
-        </main>
-        <Footer />
-      </MarketProvider>
+      <Header />
+      <main>
+        <Hero />
+        <Audiences />
+        <HowWeWork />
+        <Plant />
+        <Capabilities />
+        <Projects />
+        <OnTheGround />
+        <ClosingCta />
+        <SendProject />
+      </main>
+      <Footer />
     </LocaleProvider>
   )
 }

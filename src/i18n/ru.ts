@@ -10,7 +10,6 @@ export const ru: SiteCopy = {
     homeAria: 'Design Choice — на главную',
     primaryNavAria: 'Основная навигация',
     sendProject: 'Отправить',
-    marketOverlayAria: 'Рынок',
     languageAria: 'Язык',
     openMenu: 'Открыть меню',
     closeMenu: 'Закрыть меню',

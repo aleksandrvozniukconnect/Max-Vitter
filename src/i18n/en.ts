@@ -23,7 +23,6 @@ export type SiteCopy = {
     homeAria: string
     primaryNavAria: string
     sendProject: string
-    marketOverlayAria: string
     languageAria: string
     openMenu: string
     closeMenu: string
@@ -121,7 +120,6 @@ export const en: SiteCopy = {
     homeAria: 'Design Choice home',
     primaryNavAria: 'Primary',
     sendProject: 'Send project',
-    marketOverlayAria: 'Market overlay',
     languageAria: 'Language',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
