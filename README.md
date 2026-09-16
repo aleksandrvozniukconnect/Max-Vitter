@@ -15,7 +15,16 @@ Single-page site in the register of [foliot.com/how-we-work](https://www.foliot.
 9. Send your project — UI-only intake, files and cloud link
 10. Footer
 
-Content lives in `src/content/site.ts`. Tests in `src/content/site.test.ts` pin the structure: six steps, three gates in order, four audiences, four capabilities, three projects, no unverified numbers.
+Structure lives in `src/content/site.ts`. UI copy lives in `src/i18n/` (`en`, `uk`, `ru`). Tests in `src/content/site.test.ts` and `src/i18n/locale.test.ts` pin the structure: six steps, three gates in order, four audiences, four capabilities, three projects, no unverified numbers, and a complete EN / UK / RU dictionary.
+
+## Languages
+
+The sticky header has two separate controls:
+
+- **Market overlay** (globe) — UA / US / ME contact context. Does not change UI language.
+- **Language** — EN · UK · RU. UK is Ukrainian (`uk`), not United Kingdom.
+
+Default is English. A chosen language is saved in `localStorage` (`design-choice-lang`) and restored on reload. You can also open the page with `?lang=uk`, `?lang=ru` or `?lang=en` (query wins over the saved choice). Footer language links do the same switch.
 
 ## Brand
 
@@ -32,4 +41,4 @@ npm run build
 
 ## Not in this version
 
-CMS, live upload, UK translation, real photography, the full 15-stage path (kept off the home page on purpose).
+CMS, live upload, real photography, the full 15-stage path (kept off the home page on purpose).

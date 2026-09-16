@@ -1,8 +1,12 @@
-import { howWeWork, photos, steps } from '../content/site'
+import { photos, steps } from '../content/site'
+import { useLocale } from '../context/LocaleContext'
 import { Reveal } from './Reveal'
 import styles from './HowWeWork.module.css'
 
 export function HowWeWork() {
+  const { copy } = useLocale()
+  const { howWeWork } = copy
+
   return (
     <section className={styles.section} id="how">
       <Reveal className={styles.intro}>
@@ -21,34 +25,37 @@ export function HowWeWork() {
             {steps.map((step) => (
               <li key={step.key}>
                 <a href={`#step-${step.key}`}>
-                  <span>{step.n}</span> {step.title}
+                  <span>{step.n}</span> {copy.steps[step.key].title}
                 </a>
               </li>
             ))}
           </ol>
 
           <div className={styles.cards}>
-            {steps.map((step, index) => (
-              <Reveal key={step.key} delay={index * 0.04} className={styles.card}>
-                <div className={styles.cardHead} id={`step-${step.key}`}>
-                  <span className={styles.n}>{step.n}</span>
-                  <h3>{step.title}</h3>
-                </div>
-                <div className={styles.cardBody}>
-                  <p>{step.body}</p>
-                  <p className={styles.deliverable}>
-                    <span>You receive</span>
-                    {step.deliverable}
-                  </p>
-                  {step.gate ? (
-                    <p className={styles.gate}>
-                      <span className={styles.stamp}>{step.gate}</span>
-                      <span className={styles.gateNote}>Signed before the next step moves.</span>
+            {steps.map((step, index) => {
+              const text = copy.steps[step.key]
+              return (
+                <Reveal key={step.key} delay={index * 0.04} className={styles.card}>
+                  <div className={styles.cardHead} id={`step-${step.key}`}>
+                    <span className={styles.n}>{step.n}</span>
+                    <h3>{text.title}</h3>
+                  </div>
+                  <div className={styles.cardBody}>
+                    <p>{text.body}</p>
+                    <p className={styles.deliverable}>
+                      <span>{howWeWork.youReceive}</span>
+                      {text.deliverable}
                     </p>
-                  ) : null}
-                </div>
-              </Reveal>
-            ))}
+                    {step.gate ? (
+                      <p className={styles.gate}>
+                        <span className={styles.stamp}>{text.gate}</span>
+                        <span className={styles.gateNote}>{howWeWork.gateNote}</span>
+                      </p>
+                    ) : null}
+                  </div>
+                </Reveal>
+              )
+            })}
           </div>
         </div>
       </div>

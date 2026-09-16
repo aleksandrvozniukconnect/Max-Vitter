@@ -99,8 +99,41 @@
   background: var(--paper) !important;
 }
 
+.langs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.langs button {
+  min-width: 34px;
+  padding: 6px 7px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.langs button:hover {
+  background: var(--paper);
+}
+
+.langActive {
+  background: var(--ink) !important;
+  color: var(--white) !important;
+}
+
 .cta {
-  display: inline-flex;
+  display: none;
   align-items: center;
   gap: 12px;
   padding: 11px 16px 11px 18px;
@@ -197,12 +230,18 @@
     height: 34px;
   }
 
-  .cta {
-    display: none;
-  }
-
   .actions {
     gap: 4px;
+  }
+
+  .regionBtn {
+    padding: 8px 4px;
+    gap: 4px;
+  }
+
+  .langs button {
+    min-width: 30px;
+    padding: 6px 5px;
   }
 
   .overlay {
@@ -210,12 +249,28 @@
   }
 }
 
-@media (min-width: 960px) {
+@media (min-width: 1120px) {
   .desktopNav {
     display: flex;
+    gap: 22px;
+  }
+
+  .cta {
+    display: inline-flex;
   }
 
   .header {
     padding: 0 40px;
   }
+}
+
+html:lang(uk) .desktopNav,
+html:lang(ru) .desktopNav {
+  letter-spacing: 0.04em;
+  gap: 16px;
+}
+
+html:lang(uk) .cta,
+html:lang(ru) .cta {
+  letter-spacing: 0.04em;
 }

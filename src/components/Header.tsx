@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Logo } from './Logo'
-import { useMarket } from '../context/MarketContext'
-import { marketIds, markets, nav } from '../content/site'
+import { useLocale } from '../context/LocaleContext'
+import { useMarketView } from '../context/MarketContext'
+import { marketIds, nav } from '../content/site'
+import { localeIds, localeLabels } from '../i18n/locale'
 import styles from './Header.module.css'
 
 export function Header() {
-  const { marketId, setMarketId } = useMarket()
+  const { marketId, setMarketId, market } = useMarketView()
+  const { locale, setLocale, copy } = useLocale()
   const [menuOpen, setMenuOpen] = useState(false)
   const [regionOpen, setRegionOpen] = useState(false)
   const regionRef = useRef<HTMLDivElement>(null)
@@ -30,14 +33,14 @@ export function Header() {
 
   return (
     <header className={styles.header}>
-      <a className={styles.brand} href="#top" aria-label="Design Choice home">
+      <a className={styles.brand} href="#top" aria-label={copy.header.homeAria}>
         <Logo />
       </a>
 
-      <nav className={styles.desktopNav} aria-label="Primary">
+      <nav className={styles.desktopNav} aria-label={copy.header.primaryNavAria}>
         {nav.map((item) => (
           <a key={item.href} href={item.href}>
-            {item.label}
+            {copy.nav[item.key]}
           </a>
         ))}
       </nav>
@@ -49,13 +52,14 @@ export function Header() {
             className={styles.regionBtn}
             aria-haspopup="listbox"
             aria-expanded={regionOpen}
+            aria-label={copy.header.marketOverlayAria}
             onClick={() => setRegionOpen((open) => !open)}
           >
             <GlobeIcon />
             <span>{marketId}</span>
           </button>
           {regionOpen ? (
-            <ul className={styles.regionMenu} role="listbox" aria-label="Market overlay">
+            <ul className={styles.regionMenu} role="listbox" aria-label={copy.header.marketOverlayAria}>
               {marketIds.map((id) => (
                 <li key={id}>
                   <button
@@ -69,7 +73,7 @@ export function Header() {
                     }}
                   >
                     <span>{id}</span>
-                    <em>{markets[id].label}</em>
+                    <em>{copy.markets[id].label}</em>
                   </button>
                 </li>
               ))}
@@ -77,15 +81,29 @@ export function Header() {
           ) : null}
         </div>
 
+        <div className={styles.langs} role="group" aria-label={copy.header.languageAria}>
+          {localeIds.map((id) => (
+            <button
+              type="button"
+              key={id}
+              aria-pressed={id === locale}
+              className={id === locale ? styles.langActive : undefined}
+              onClick={() => setLocale(id)}
+            >
+              {localeLabels[id]}
+            </button>
+          ))}
+        </div>
+
         <a className={styles.cta} href="#start">
-          Send project
+          {copy.header.sendProject}
           <span className={styles.ctaDot} aria-hidden="true" />
         </a>
 
         <button
           type="button"
           className={`${styles.burger} ${menuOpen ? styles.burgerOpen : ''}`}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-label={menuOpen ? copy.header.closeMenu : copy.header.openMenu}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
         >
@@ -96,18 +114,18 @@ export function Header() {
 
       {menuOpen
         ? createPortal(
-            <div className={styles.overlay} role="dialog" aria-label="Menu">
+            <div className={styles.overlay} role="dialog" aria-label={copy.header.menuAria}>
               <nav className={styles.overlayNav}>
                 <a href="#top" onClick={closeMenu}>
-                  Home
+                  {copy.header.home}
                 </a>
                 {nav.map((item) => (
                   <a key={item.href} href={item.href} onClick={closeMenu}>
-                    {item.label}
+                    {copy.nav[item.key]}
                   </a>
                 ))}
               </nav>
-              <p className={styles.overlayNote}>{markets[marketId].heroLine}</p>
+              <p className={styles.overlayNote}>{market.heroLine}</p>
             </div>,
             document.body,
           )

@@ -6,14 +6,23 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { markets, type MarketId } from '../content/site'
+import { marketFacts, type MarketFacts, type MarketId } from '../content/site'
+import { useLocale } from './LocaleContext'
 
 const STORAGE_KEY = 'design-choice-market'
+
+export type MarketView = MarketFacts & {
+  label: string
+  city: string
+  role: string
+  person: string
+  heroLine: string
+}
 
 type MarketContextValue = {
   marketId: MarketId
   setMarketId: (id: MarketId) => void
-  market: (typeof markets)[MarketId]
+  facts: MarketFacts
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null)
@@ -37,7 +46,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     () => ({
       marketId,
       setMarketId,
-      market: markets[marketId],
+      facts: marketFacts[marketId],
     }),
     [marketId, setMarketId],
   )
@@ -49,4 +58,18 @@ export function useMarket() {
   const ctx = useContext(MarketContext)
   if (!ctx) throw new Error('useMarket must be used within MarketProvider')
   return ctx
+}
+
+export function useMarketView(): {
+  marketId: MarketId
+  setMarketId: (id: MarketId) => void
+  market: MarketView
+} {
+  const { marketId, setMarketId, facts } = useMarket()
+  const { copy } = useLocale()
+  return {
+    marketId,
+    setMarketId,
+    market: { ...facts, ...copy.markets[marketId] },
+  }
 }

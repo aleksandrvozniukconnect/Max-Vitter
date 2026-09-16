@@ -57,6 +57,32 @@
   color: #fff;
 }
 
+.langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+.langs button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #eee;
+  font: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.langs button:hover {
+  color: #fff;
+}
+
+.langActive {
+  color: #fff !important;
+}
+
 .legal {
   width: min(1180px, 100%);
   margin: 0 auto;

@@ -146,3 +146,15 @@ p {
 .pill--ghost:hover {
   background: var(--paper);
 }
+
+html:lang(uk) .pill,
+html:lang(ru) .pill {
+  letter-spacing: 0.04em;
+}
+
+html:lang(uk) .eyebrow,
+html:lang(ru) .eyebrow,
+html:lang(uk) .section-title,
+html:lang(ru) .section-title {
+  letter-spacing: 0.04em;
+}

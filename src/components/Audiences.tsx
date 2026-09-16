@@ -1,8 +1,12 @@
-import { audiences } from '../content/site'
+import { audienceKeys } from '../content/site'
+import { useLocale } from '../context/LocaleContext'
 import { Reveal } from './Reveal'
 import styles from './Proof.module.css'
 
 export function Audiences() {
+  const { copy } = useLocale()
+  const { audiences } = copy
+
   return (
     <section className={styles.section} aria-labelledby="audiences-title">
       <Reveal className={styles.head}>
@@ -12,12 +16,15 @@ export function Audiences() {
         </h2>
       </Reveal>
       <div className={`${styles.wrap} ${styles.audiences}`}>
-        {audiences.items.map((item, index) => (
-          <Reveal key={item.key} delay={index * 0.05} className={styles.audience}>
-            <h3>{item.title}</h3>
-            <p>{item.body}</p>
-          </Reveal>
-        ))}
+        {audienceKeys.map((key, index) => {
+          const item = audiences.items[key]
+          return (
+            <Reveal key={key} delay={index * 0.05} className={styles.audience}>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </Reveal>
+          )
+        })}
       </div>
     </section>
   )

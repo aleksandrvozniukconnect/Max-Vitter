@@ -135,6 +135,7 @@
 
 .stamp {
   display: inline-block;
+  max-width: 100%;
   padding: 8px 12px;
   border: 1.5px solid var(--brass);
   border-radius: 4px;
@@ -143,8 +144,20 @@
   font-size: 0.85rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  text-wrap: balance;
   color: var(--brass-ink);
   box-shadow: inset 0 0 0 3px var(--white), inset 0 0 0 4px var(--brass);
+}
+
+html:lang(uk) .stamp,
+html:lang(ru) .stamp {
+  letter-spacing: 0.05em;
+  font-size: 0.78rem;
+}
+
+html:lang(uk) .card h3,
+html:lang(ru) .card h3 {
+  letter-spacing: 0;
 }
 
 .gateNote {
@@ -188,5 +201,10 @@
 
   .card h3 {
     font-size: 2.2rem;
+  }
+
+  html:lang(uk) .card h3,
+  html:lang(ru) .card h3 {
+    font-size: 1.85rem;
   }
 }

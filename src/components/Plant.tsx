@@ -1,8 +1,12 @@
-import { photos, plant } from '../content/site'
+import { photos } from '../content/site'
+import { useLocale } from '../context/LocaleContext'
 import { Reveal } from './Reveal'
 import styles from './Proof.module.css'
 
 export function Plant() {
+  const { copy } = useLocale()
+  const { plant } = copy
+
   return (
     <section className={styles.section} aria-labelledby="plant-title">
       <div className={`${styles.wrap} ${styles.plant}`}>

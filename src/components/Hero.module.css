@@ -11,10 +11,15 @@
 
 .title {
   margin: 0 auto 24px;
-  max-width: 16ch;
+  max-width: 18ch;
   font-size: clamp(2.8rem, 7.4vw, 5.6rem);
   line-height: 1;
   text-transform: uppercase;
+}
+
+html:lang(uk) .title,
+html:lang(ru) .title {
+  max-width: 22ch;
 }
 
 .lede {

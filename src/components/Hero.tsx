@@ -1,13 +1,15 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { hero, photos } from '../content/site'
-import { useMarket } from '../context/MarketContext'
+import { photos } from '../content/site'
+import { useLocale } from '../context/LocaleContext'
+import { useMarketView } from '../context/MarketContext'
 import styles from './Hero.module.css'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
 export function Hero() {
   const reduce = useReducedMotion()
-  const { market } = useMarket()
+  const { market } = useMarketView()
+  const { copy } = useLocale()
 
   return (
     <section className={styles.hero} id="top">
@@ -18,7 +20,7 @@ export function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.9, ease }}
         >
-          {hero.eyebrow}
+          {copy.hero.eyebrow}
         </motion.p>
         <motion.h1
           className={styles.title}
@@ -26,7 +28,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.06, ease }}
         >
-          {hero.title}
+          {copy.hero.title}
         </motion.h1>
         <motion.p
           className={styles.lede}
@@ -34,7 +36,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.22, ease }}
         >
-          {hero.lede}
+          {copy.hero.lede}
         </motion.p>
         <motion.div
           className={styles.actions}
@@ -42,11 +44,11 @@ export function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4, ease }}
         >
-          <a className="pill" href={hero.primary.href}>
-            {hero.primary.label}
+          <a className="pill" href="#how">
+            {copy.hero.primary}
           </a>
-          <a className="pill pill--ghost" href={hero.secondary.href}>
-            {hero.secondary.label}
+          <a className="pill pill--ghost" href="#start">
+            {copy.hero.secondary}
           </a>
         </motion.div>
       </div>
