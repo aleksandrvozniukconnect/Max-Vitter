@@ -1,0 +1,273 @@
+/* Shared layout for Audiences, Plant, Capabilities, Projects, OnTheGround */
+
+.section {
+  padding: 88px 20px 72px;
+  background: var(--white);
+}
+
+.sectionPaper {
+  background: var(--paper);
+}
+
+.head {
+  width: min(760px, 100%);
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.wrap {
+  width: min(var(--wrap), 100%);
+  margin: 0 auto;
+}
+
+/* audiences: four quiet columns */
+.audiences {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.audience {
+  padding-top: 18px;
+  border-top: 1px solid var(--ink);
+}
+
+.audience h3 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+}
+
+.audience p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* plant: photo left, copy right */
+.plant {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.plantMedia {
+  overflow: hidden;
+  border-radius: var(--radius);
+  height: min(48vh, 460px);
+}
+
+.plantMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.plantCopy h2 {
+  margin: 0 0 16px;
+  font-size: clamp(1.8rem, 3.6vw, 2.8rem);
+  line-height: 1.04;
+  text-transform: uppercase;
+}
+
+.plantCopy p {
+  margin: 0 0 22px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.facts li {
+  padding: 8px 12px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* capabilities: four image tiles */
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.tile {
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--paper-deep);
+}
+
+.tile img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+.tile figcaption {
+  padding: 14px 16px 18px;
+}
+
+.tile h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+}
+
+.tile p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* projects: three cards */
+.cases {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.case {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.sectionPaper .case {
+  background: var(--white);
+}
+
+.case img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.caseBody {
+  padding: 20px 22px 24px;
+}
+
+.caseMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.caseMeta h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.caseMeta span {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.caseBody p {
+  margin: 0 0 8px;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.caseBody strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* on the ground: three places */
+.places {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.place {
+  padding: 22px 22px 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--rule);
+  background: var(--white);
+  transition: border-color 0.3s ease;
+}
+
+.placeOn {
+  border-color: var(--ink);
+}
+
+.place h3 {
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.placeCity {
+  margin: 0 0 14px;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.placeRole {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+}
+
+.placeContact {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.placeContact a {
+  color: var(--ink);
+}
+
+@media (min-width: 800px) {
+  .section {
+    padding: 112px 40px 96px;
+  }
+
+  .audiences {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+  }
+
+  .plant {
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+  }
+
+  .tiles {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .cases,
+  .places {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

@@ -1,0 +1,213 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 76px;
+  padding: 0 28px;
+  background: var(--white);
+}
+
+.brand {
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.desktopNav {
+  display: none;
+  align-items: center;
+  gap: 28px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.desktopNav a {
+  color: var(--ink);
+}
+
+.desktopNav a:hover {
+  opacity: 0.55;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.langs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.langs button {
+  min-width: 34px;
+  padding: 6px 7px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.langs button:hover {
+  background: var(--paper);
+}
+
+.langActive {
+  background: var(--ink) !important;
+  color: var(--white) !important;
+}
+
+.cta {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px 11px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cta:hover {
+  background: #2a2d34;
+}
+
+.ctaDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--white);
+}
+
+.burger {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--white);
+  cursor: pointer;
+}
+
+.burger span {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--ink);
+}
+
+.burgerOpen span:first-child {
+  transform: translateY(3.25px) rotate(45deg);
+}
+
+.burgerOpen span:last-child {
+  transform: translateY(-3.25px) rotate(-45deg);
+}
+
+.overlay {
+  position: fixed;
+  inset: 76px 0 0;
+  width: 100%;
+  background: var(--white);
+  padding: 48px 28px;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.overlayNav {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.overlayNav a {
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-family: var(--display); font-weight: 500; text-transform: uppercase;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.overlayNote {
+  max-width: 28rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+@media (max-width: 599px) {
+  .header {
+    height: 64px;
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  .brand img {
+    height: 34px;
+  }
+
+  .actions {
+    gap: 4px;
+  }
+
+  .langs button {
+    min-width: 30px;
+    padding: 6px 5px;
+  }
+
+  .overlay {
+    inset: 64px 0 0;
+  }
+}
+
+@media (min-width: 1120px) {
+  .desktopNav {
+    display: flex;
+    gap: 22px;
+  }
+
+  .cta {
+    display: inline-flex;
+  }
+
+  .header {
+    padding: 0 40px;
+  }
+}
+
+html:lang(uk) .desktopNav,
+html:lang(ru) .desktopNav {
+  letter-spacing: 0.04em;
+  gap: 16px;
+}
+
+html:lang(uk) .cta,
+html:lang(ru) .cta {
+  letter-spacing: 0.04em;
+}
