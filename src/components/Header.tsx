@@ -11,19 +11,7 @@ import styles from './Header.module.css'
 export function Header() {
   const { locale, setLocale, copy } = useLocale()
   const [menuOpen, setMenuOpen] = useState(false)
-  const {
-    reduceMotion,
-    ready,
-    navReady,
-    slotRef,
-    trackRef,
-    x,
-    y,
-    scale,
-    chrome,
-    navY,
-    headerBg,
-  } = useLogoIntro(menuOpen)
+  const { ready, navReady, slotRef, scale, chrome, navY, bandHeight } = useLogoIntro(menuOpen)
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -37,7 +25,7 @@ export function Header() {
   return (
     <>
       <span id="top" className={styles.topAnchor} />
-      <motion.header className={styles.header} style={{ backgroundColor: headerBg }}>
+      <motion.header className={styles.header} style={{ height: bandHeight }}>
         <a
           className={styles.brand}
           href="#top"
@@ -47,9 +35,9 @@ export function Header() {
           <motion.span
             className={styles.brandMark}
             style={{
-              x,
-              y,
               scale,
+              originX: 0,
+              originY: 0,
               opacity: ready ? 1 : 0,
             }}
           >
@@ -128,10 +116,6 @@ export function Header() {
             )
           : null}
       </motion.header>
-
-      {reduceMotion ? null : (
-        <div ref={trackRef} className={styles.introTrack} aria-hidden="true" />
-      )}
     </>
   )
 }

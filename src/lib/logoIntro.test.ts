@@ -4,13 +4,16 @@ import {
   chromeOpacity,
   chromeTranslateY,
   clamp01,
-  easeOutCubic,
-  interpolateIntro,
-  introLogoLeft,
-  introMetrics,
+  compactHeaderHeight,
+  interpolateScale,
+  introBandHeight,
+  introEase,
+  introEnabled,
   introProgress,
-  logoIntroFrom,
-  INTRO_METRICS,
+  introScrollDistance,
+  logoIntroScale,
+  startBandHeight,
+  COMPACT_HEADER_DESKTOP,
   INTRO_MOBILE_MAX_WIDTH,
 } from './logoIntro'
 
@@ -20,19 +23,21 @@ describe('introProgress', () => {
     expect(introProgress(-10, 800)).toBe(0)
   })
 
-  it('reaches 1 after the intro track and stays there', () => {
+  it('reaches 1 after the intro distance and stays there', () => {
     expect(introProgress(800, 800)).toBe(1)
     expect(introProgress(1200, 800)).toBe(1)
   })
 
-  it('stays at the oversized start until the track has been measured', () => {
+  it('stays at the oversized start until distance is measured', () => {
     expect(introProgress(40, 0)).toBe(0)
-    expect(introProgress(40, -1)).toBe(0)
   })
 
-  it('skips the morph for reduced motion or a compact override', () => {
+  it('skips the morph for reduced motion, compact override, or mobile', () => {
     expect(introProgress(0, 800, true)).toBe(1)
-    expect(introProgress(0, 0, true)).toBe(1)
+    expect(introEnabled(390)).toBe(false)
+    expect(introEnabled(1440, true)).toBe(false)
+    expect(introEnabled(1440)).toBe(true)
+    expect(INTRO_MOBILE_MAX_WIDTH).toBe(899)
   })
 
   it('maps mid-track scroll linearly before easing', () => {
@@ -41,104 +46,69 @@ describe('introProgress', () => {
 })
 
 describe('chrome fade', () => {
-  it('keeps nav hidden while the mark still dominates', () => {
+  it('keeps nav and utilities hidden until the band is nearly compact', () => {
     expect(chromeOpacity(0)).toBe(0)
-    expect(chromeOpacity(0.5)).toBe(0)
-    expect(chromeInteractive(0.5)).toBe(false)
-    expect(chromeTranslateY(0)).toBe(-12)
+    expect(chromeOpacity(0.7)).toBe(0)
+    expect(chromeInteractive(0.7)).toBe(false)
+    expect(chromeTranslateY(0)).toBe(-8)
   })
 
-  it('fades and slides nav in as the logo settles', () => {
-    expect(chromeOpacity(0.76)).toBeCloseTo(0.5, 5)
+  it('reveals nav as the header settles', () => {
     expect(chromeOpacity(1)).toBe(1)
-    expect(chromeInteractive(0.76)).toBe(true)
+    expect(chromeInteractive(0.9)).toBe(true)
     expect(chromeTranslateY(1)).toBe(0)
   })
 })
 
-describe('logoIntroFrom', () => {
-  const desktopSlot = { left: 40, top: 16, width: 110, height: 44 }
-  const desktopView = { width: 1440, height: 900 }
+describe('top-left scale-in-place intro', () => {
+  const slotWidth = 110
+  const desktop = { width: 1440, height: 900 }
 
-  it('places a large mark in the canvas below the header at progress 0', () => {
-    const from = logoIntroFrom(desktopSlot, desktopView, { headerSafe: 76 })
-    const start = interpolateIntro(from, 0)
-    const end = interpolateIntro(from, 1)
-
-    expect(from.scale).toBeGreaterThan(6)
-    expect(start).toEqual(from)
-    expect(end).toEqual({ x: 0, y: 0, scale: 1 })
-
-    const slotCx = desktopSlot.left + desktopSlot.width / 2
-    const visualCx = slotCx + from.x
-    const visualCy = desktopSlot.top + desktopSlot.height / 2 + from.y
-    expect(visualCx).toBe(desktopView.width / 2)
-    expect(visualCy).toBe(76 + (desktopView.height - 76) / 2)
-
-    const visualW = desktopSlot.width * from.scale
-    expect(visualW).toBeLessThanOrEqual(desktopView.width * INTRO_METRICS.desktop.maxWidthRatio + 0.01)
-
-    const early = interpolateIntro(from, 0.2)
-    expect(early.scale).toBeLessThan(from.scale * 0.75)
-    expect(Math.abs(early.x)).toBeLessThan(Math.abs(from.x))
+  it('starts as an oversized top-left wordmark several hundred px wide', () => {
+    const scale = logoIntroScale(slotWidth, desktop)
+    expect(scale).toBeGreaterThan(6)
+    expect(slotWidth * scale).toBeGreaterThan(500)
+    expect(slotWidth * scale).toBeLessThanOrEqual(880)
+    expect(interpolateScale(scale, 0)).toBe(scale)
+    expect(interpolateScale(scale, 1)).toBe(1)
   })
 
-  it('keeps the morphing mark on-screen on a 1440 desktop and a 390 mobile', () => {
-    const cases = [
-      {
-        slot: desktopSlot,
-        view: desktopView,
-        headerSafe: 76,
-      },
-      {
-        slot: { left: 16, top: 15, width: 85, height: 34 },
-        view: { width: 390, height: 844 },
-        headerSafe: 64,
-      },
-    ]
+  it('shrinks the white band with the same eased progress as the logo', () => {
+    const start = startBandHeight(desktop.height)
+    const end = compactHeaderHeight(desktop.width)
+    expect(start).toBeGreaterThan(desktop.height * 0.6)
+    expect(end).toBe(COMPACT_HEADER_DESKTOP)
+    expect(introBandHeight(0, start, end)).toBe(start)
+    expect(introBandHeight(1, start, end)).toBe(end)
 
-    for (const { slot, view, headerSafe } of cases) {
-      const from = logoIntroFrom(slot, view, { headerSafe })
-      for (let i = 0; i <= 20; i++) {
-        const left = introLogoLeft(slot, from, i / 20)
-        expect(left).toBeGreaterThanOrEqual(-1)
-      }
-    }
+    const midBand = introBandHeight(0.5, start, end)
+    expect(midBand).toBeLessThan(start)
+    expect(midBand).toBeGreaterThan(end)
+    expect(introScrollDistance(desktop)).toBe(start - end)
   })
 
-  it('uses a shorter, narrower mark on ~390px viewports so the morph is not cramped', () => {
-    const slot = { left: 16, top: 15, width: 85, height: 34 }
-    const view = { width: 390, height: 844 }
-    const from = logoIntroFrom(slot, view, { headerSafe: 64 })
-    const desktop = logoIntroFrom(desktopSlot, desktopView, { headerSafe: 76 })
-
-    expect(view.width).toBeLessThanOrEqual(INTRO_MOBILE_MAX_WIDTH)
-    expect(introMetrics(view.width)).toEqual(INTRO_METRICS.mobile)
-    expect(from.scale).toBeGreaterThan(3)
-    expect(from.scale).toBeLessThan(desktop.scale)
-
-    const visualW = slot.width * from.scale
-    const visualH = slot.height * from.scale
-    expect(visualW).toBeLessThanOrEqual(view.width * INTRO_METRICS.mobile.maxWidthRatio + 0.01)
-    expect(visualH).toBeLessThanOrEqual(view.height * INTRO_METRICS.mobile.maxHeightRatio + 0.01)
+  it('starts compact on ~390px viewports', () => {
+    expect(introEnabled(390)).toBe(false)
+    expect(introEnabled(899)).toBe(false)
+    expect(introEnabled(900)).toBe(true)
+    expect(compactHeaderHeight(390)).toBe(64)
+    expect(interpolateScale(1, 0)).toBe(1)
   })
 
-  it('returns identity when the slot cannot be measured', () => {
-    expect(logoIntroFrom({ left: 0, top: 0, width: 0, height: 44 }, desktopView)).toEqual({
-      x: 0,
-      y: 0,
-      scale: 1,
-    })
+  it('returns identity scale when the slot cannot be measured', () => {
+    expect(logoIntroScale(0, desktop)).toBe(1)
   })
 })
 
-describe('easing helpers', () => {
-  it('clamps and eases out without overshoot so the morph starts on the first scroll', () => {
+describe('intro ease', () => {
+  it('is a unit cubic-bezier that eases both ends', () => {
     expect(clamp01(-2)).toBe(0)
     expect(clamp01(2)).toBe(1)
-    expect(easeOutCubic(0)).toBe(0)
-    expect(easeOutCubic(1)).toBe(1)
-    expect(easeOutCubic(0.25)).toBeGreaterThan(0.5)
-    expect(easeOutCubic(0.5)).toBeGreaterThan(0.8)
+    expect(introEase(0)).toBe(0)
+    expect(introEase(1)).toBe(1)
+    expect(introEase(0.25)).toBeLessThan(0.25)
+    expect(introEase(0.75)).toBeGreaterThan(0.75)
+    expect(introEase(0.5)).toBeGreaterThan(0.4)
+    expect(introEase(0.5)).toBeLessThan(0.65)
   })
 })

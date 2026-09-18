@@ -3,24 +3,19 @@
   top: 0;
   z-index: 100;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
   height: 76px;
-  padding: 0 28px;
+  padding: 16px 28px 0;
   background: var(--white);
-  overflow: visible;
+  overflow: hidden;
 }
 
 .topAnchor {
   display: block;
   height: 0;
   overflow: hidden;
-}
-
-.introTrack {
-  height: 100svh;
-  pointer-events: none;
 }
 
 .brand {
@@ -32,7 +27,7 @@
 
 .brandMark {
   display: block;
-  transform-origin: 50% 50%;
+  transform-origin: 0 0;
   will-change: transform;
   pointer-events: none;
 }
@@ -197,12 +192,9 @@
 @media (max-width: 599px) {
   .header {
     height: 64px;
-    padding: 0 16px;
+    padding: 15px 16px 0;
     gap: 12px;
-  }
-
-  .introTrack {
-    height: 72svh;
+    align-items: center;
   }
 
   .brand img {
@@ -234,7 +226,7 @@
   }
 
   .header {
-    padding: 0 40px;
+    padding: 16px 40px 0;
   }
 }
 
@@ -250,14 +242,29 @@ html:lang(ru) .cta {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .introTrack {
-    display: none;
-    height: 0;
+  .header {
+    height: 76px;
+    align-items: center;
+    padding: 0 28px;
+    overflow: hidden;
   }
 
   .brandMark {
     transform: none;
     will-change: auto;
     opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (max-width: 599px) {
+  .header {
+    height: 64px;
+    padding: 0 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (min-width: 1120px) {
+  .header {
+    padding: 0 40px;
   }
 }
