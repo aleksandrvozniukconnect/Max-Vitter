@@ -5,6 +5,7 @@ import {
   chromeTranslateY,
   clamp01,
   compactHeaderHeight,
+  compactLogoSecondLinePx,
   interpolateScale,
   introBandHeight,
   introEase,
@@ -12,8 +13,14 @@ import {
   introProgress,
   introScrollDistance,
   logoIntroScale,
+  oversizedLogoHeight,
   startBandHeight,
   COMPACT_HEADER_DESKTOP,
+  COMPACT_HEADER_MOBILE,
+  COMPACT_LOGO_DESKTOP,
+  COMPACT_LOGO_MOBILE,
+  HEADER_PAD_Y_DESKTOP,
+  HEADER_PAD_Y_MOBILE,
   INTRO_MOBILE_MAX_WIDTH,
 } from './logoIntro'
 
@@ -91,12 +98,24 @@ describe('top-left scale-in-place intro', () => {
     expect(introEnabled(390)).toBe(false)
     expect(introEnabled(899)).toBe(false)
     expect(introEnabled(900)).toBe(true)
-    expect(compactHeaderHeight(390)).toBe(64)
+    expect(compactHeaderHeight(390)).toBe(COMPACT_HEADER_MOBILE)
     expect(interpolateScale(1, 0)).toBe(1)
   })
 
   it('returns identity scale when the slot cannot be measured', () => {
     expect(logoIntroScale(0, desktop)).toBe(1)
+  })
+
+  it('keeps both wordmark lines readable in the compact header', () => {
+    expect(compactLogoSecondLinePx()).toBeGreaterThanOrEqual(7)
+    expect(COMPACT_HEADER_DESKTOP).toBe(COMPACT_LOGO_DESKTOP + HEADER_PAD_Y_DESKTOP * 2)
+    expect(COMPACT_HEADER_MOBILE).toBe(COMPACT_LOGO_MOBILE + HEADER_PAD_Y_MOBILE * 2)
+  })
+
+  it('fits the oversized wordmark inside the intro band with padding', () => {
+    const logoH = oversizedLogoHeight(desktop)
+    expect(logoH).toBeGreaterThan(250)
+    expect(startBandHeight(desktop.height)).toBeGreaterThanOrEqual(logoH + HEADER_PAD_Y_DESKTOP * 2)
   })
 })
 

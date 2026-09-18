@@ -11,7 +11,7 @@ import styles from './Header.module.css'
 export function Header() {
   const { locale, setLocale, copy } = useLocale()
   const [menuOpen, setMenuOpen] = useState(false)
-  const { ready, navReady, showIntro, slotRef, scale, chrome, navY, bandHeight, spacerHeight } =
+  const { ready, navReady, settled, showIntro, slotRef, scale, chrome, navY, bandHeight, spacerHeight } =
     useLogoIntro(menuOpen)
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function Header() {
       <span id="top" className={styles.topAnchor} />
       {showIntro ? <motion.div className={styles.introSpacer} style={{ height: spacerHeight }} aria-hidden="true" /> : null}
       <motion.header
-        className={`${styles.header} ${showIntro ? styles.fixed : ''}`}
+        className={`${styles.header} ${showIntro ? styles.fixed : ''} ${settled ? styles.settled : ''}`}
         style={{ height: bandHeight }}
       >
         <a

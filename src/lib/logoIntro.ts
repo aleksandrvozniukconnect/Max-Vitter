@@ -12,8 +12,22 @@ export type IntroViewport = {
 
 export const INTRO_MOBILE_MAX_WIDTH = 899
 
-export const COMPACT_HEADER_DESKTOP = 76
-export const COMPACT_HEADER_MOBILE = 64
+/**
+ * Cropped wordmark artboard (Logo-02 / Logo-04). Tight around DC + DSGN + CHOICE
+ * so the second line is not lost in Illustrator padding at header size.
+ */
+export const WORDMARK_VIEWBOX_WIDTH = 1120
+export const WORDMARK_VIEWBOX_HEIGHT = 370
+/** CHOICE cap-height inside the cropped viewBox. */
+export const WORDMARK_SECOND_LINE = 45
+
+export const COMPACT_LOGO_DESKTOP = 64
+export const COMPACT_LOGO_MOBILE = 42
+export const HEADER_PAD_Y_DESKTOP = 14
+export const HEADER_PAD_Y_MOBILE = 13
+
+export const COMPACT_HEADER_DESKTOP = COMPACT_LOGO_DESKTOP + HEADER_PAD_Y_DESKTOP * 2
+export const COMPACT_HEADER_MOBILE = COMPACT_LOGO_MOBILE + HEADER_PAD_Y_MOBILE * 2
 
 /** Kettal-like scroll ease: cubic-bezier(.785, .135, .15, .86) */
 export const INTRO_BEZIER = { x1: 0.785, y1: 0.135, x2: 0.15, y2: 0.86 } as const
@@ -66,6 +80,15 @@ export function introEnabled(viewportWidth: number, reducedMotion = false): bool
 
 export function startBandHeight(viewportHeight: number): number {
   return Math.round(viewportHeight * START_BAND_VH)
+}
+
+export function oversizedLogoHeight(viewport: IntroViewport): number {
+  const width = Math.min(viewport.width * DESKTOP_LOGO_WIDTH_RATIO, DESKTOP_LOGO_MAX_WIDTH)
+  return width * (WORDMARK_VIEWBOX_HEIGHT / WORDMARK_VIEWBOX_WIDTH)
+}
+
+export function compactLogoSecondLinePx(logoHeight = COMPACT_LOGO_DESKTOP): number {
+  return (WORDMARK_SECOND_LINE / WORDMARK_VIEWBOX_HEIGHT) * logoHeight
 }
 
 export function introScrollDistance(viewport: IntroViewport): number {

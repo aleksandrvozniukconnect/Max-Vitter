@@ -12,8 +12,8 @@ export function Logo({ tone = 'dark', compact = false }: LogoProps) {
       className={`${styles.logo} ${compact ? styles.compact : ''}`}
       src={tone === 'dark' ? brand.logoDark : brand.logoLight}
       alt="DSGN Choice"
-      width={150}
-      height={60}
+      width={194}
+      height={64}
     />
   )
 }
