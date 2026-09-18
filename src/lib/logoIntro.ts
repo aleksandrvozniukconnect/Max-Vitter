@@ -29,9 +29,9 @@ export function clamp01(value: number): number {
   return value
 }
 
-export function easeInOutCubic(t: number): number {
+export function easeOutCubic(t: number): number {
   const p = clamp01(t)
-  return p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2
+  return 1 - (1 - p) ** 3
 }
 
 export function introMetrics(viewportWidth: number) {
@@ -94,7 +94,7 @@ export function logoIntroFrom(
 }
 
 export function interpolateIntro(from: IntroFrom, progress: number): IntroFrom {
-  const p = easeInOutCubic(progress)
+  const p = easeOutCubic(progress)
   return {
     x: from.x * (1 - p),
     y: from.y * (1 - p),

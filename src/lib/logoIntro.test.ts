@@ -4,7 +4,7 @@ import {
   chromeOpacity,
   chromeTranslateY,
   clamp01,
-  easeInOutCubic,
+  easeOutCubic,
   interpolateIntro,
   introMetrics,
   introProgress,
@@ -76,6 +76,10 @@ describe('logoIntroFrom', () => {
 
     const visualW = desktopSlot.width * from.scale
     expect(visualW).toBeLessThanOrEqual(desktopView.width * INTRO_METRICS.desktop.maxWidthRatio + 0.01)
+
+    const early = interpolateIntro(from, 0.2)
+    expect(early.scale).toBeLessThan(from.scale * 0.9)
+    expect(Math.abs(early.x)).toBeLessThan(Math.abs(from.x) * 0.9)
   })
 
   it('uses a shorter, narrower mark on ~390px viewports so the morph is not cramped', () => {
@@ -105,12 +109,12 @@ describe('logoIntroFrom', () => {
 })
 
 describe('easing helpers', () => {
-  it('clamps and eases without overshoot', () => {
+  it('clamps and eases out without overshoot so the morph starts on the first scroll', () => {
     expect(clamp01(-2)).toBe(0)
     expect(clamp01(2)).toBe(1)
-    expect(easeInOutCubic(0)).toBe(0)
-    expect(easeInOutCubic(1)).toBe(1)
-    expect(easeInOutCubic(0.5)).toBe(0.5)
-    expect(easeInOutCubic(0.25)).toBeLessThan(0.25)
+    expect(easeOutCubic(0)).toBe(0)
+    expect(easeOutCubic(1)).toBe(1)
+    expect(easeOutCubic(0.25)).toBeGreaterThan(0.5)
+    expect(easeOutCubic(0.5)).toBeGreaterThan(0.8)
   })
 })
