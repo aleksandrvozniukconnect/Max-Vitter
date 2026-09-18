@@ -15,6 +15,7 @@ import {
   logoIntroScale,
   oversizedLogoHeight,
   startBandHeight,
+  CHROME_FADE_START,
   COMPACT_HEADER_DESKTOP,
   COMPACT_HEADER_MOBILE,
   COMPACT_LOGO_DESKTOP,
@@ -53,17 +54,27 @@ describe('introProgress', () => {
 })
 
 describe('chrome fade', () => {
-  it('keeps nav and utilities hidden until the band is nearly compact', () => {
+  it('keeps nav, language switcher, hamburger and Send project hidden until the band is nearly compact', () => {
+    expect(CHROME_FADE_START).toBe(0.72)
     expect(chromeOpacity(0)).toBe(0)
+    expect(chromeOpacity(0.5)).toBe(0)
+    expect(chromeOpacity(CHROME_FADE_START)).toBe(0)
     expect(chromeOpacity(0.7)).toBe(0)
     expect(chromeInteractive(0.7)).toBe(false)
+    expect(chromeInteractive(CHROME_FADE_START)).toBe(false)
     expect(chromeTranslateY(0)).toBe(-8)
   })
 
-  it('reveals nav as the header settles', () => {
+  it('reveals that chrome together as the header settles', () => {
     expect(chromeOpacity(1)).toBe(1)
     expect(chromeInteractive(0.9)).toBe(true)
+    expect(chromeInteractive(1)).toBe(true)
     expect(chromeTranslateY(1)).toBe(0)
+  })
+
+  it('skips the hide when the morph is skipped (reduced motion, mobile, compact override)', () => {
+    expect(chromeOpacity(introProgress(0, 800, true))).toBe(1)
+    expect(chromeInteractive(introProgress(0, 800, true))).toBe(true)
   })
 })
 

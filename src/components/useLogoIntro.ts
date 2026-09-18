@@ -30,6 +30,7 @@ export type LogoIntro = {
   reduceMotion: boolean
   showIntro: boolean
   ready: boolean
+  /** Nav, language switcher, hamburger and Send project share this threshold. */
   navReady: boolean
   settled: boolean
   slotRef: RefObject<HTMLAnchorElement | null>
