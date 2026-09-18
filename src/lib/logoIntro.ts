@@ -101,8 +101,13 @@ export function introProgress(scrollY: number, distance: number, skip = false): 
   return clamp01(scrollY / distance)
 }
 
+/** Header chrome (nav, Send project, language switcher, hamburger) stays hidden until this progress. */
+export const CHROME_FADE_START = 0.72
+const CHROME_FADE_SPAN = 1 - CHROME_FADE_START
+const CHROME_INTERACTIVE_OPACITY = 0.45
+
 export function chromeOpacity(progress: number): number {
-  return clamp01((progress - 0.72) / 0.28)
+  return clamp01((progress - CHROME_FADE_START) / CHROME_FADE_SPAN)
 }
 
 export function chromeTranslateY(progress: number): number {
@@ -112,7 +117,7 @@ export function chromeTranslateY(progress: number): number {
 }
 
 export function chromeInteractive(progress: number): boolean {
-  return chromeOpacity(progress) >= 0.45
+  return chromeOpacity(progress) >= CHROME_INTERACTIVE_OPACITY
 }
 
 export function introBandHeight(progress: number, startHeight: number, endHeight: number): number {

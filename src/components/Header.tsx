@@ -64,7 +64,12 @@ export function Header() {
           ))}
         </motion.nav>
 
-        <div className={styles.actions}>
+        <motion.div
+          className={styles.actions}
+          aria-hidden={!navReady}
+          inert={!navReady}
+          style={{ opacity: chrome, y: navY }}
+        >
           <div className={styles.langs} role="group" aria-label={copy.header.languageAria}>
             {localeIds.map((id) => (
               <button
@@ -79,16 +84,10 @@ export function Header() {
             ))}
           </div>
 
-          <motion.a
-            className={styles.cta}
-            href="#start"
-            aria-hidden={!navReady}
-            inert={!navReady}
-            style={{ opacity: chrome, y: navY }}
-          >
+          <a className={styles.cta} href="#start">
             {copy.header.sendProject}
             <span className={styles.ctaDot} aria-hidden="true" />
-          </motion.a>
+          </a>
 
           <button
             type="button"
@@ -100,7 +99,7 @@ export function Header() {
             <span />
             <span />
           </button>
-        </div>
+        </motion.div>
 
         {menuOpen
           ? createPortal(

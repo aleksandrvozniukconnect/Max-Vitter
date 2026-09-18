@@ -91,6 +91,11 @@
   z-index: 2;
 }
 
+.desktopNav[aria-hidden='true'],
+.actions[aria-hidden='true'] {
+  pointer-events: none;
+}
+
 .langs {
   display: flex;
   align-items: center;
