@@ -6,6 +6,7 @@ import {
   clamp01,
   easeOutCubic,
   interpolateIntro,
+  introLogoLeft,
   introMetrics,
   introProgress,
   logoIntroFrom,
@@ -78,8 +79,31 @@ describe('logoIntroFrom', () => {
     expect(visualW).toBeLessThanOrEqual(desktopView.width * INTRO_METRICS.desktop.maxWidthRatio + 0.01)
 
     const early = interpolateIntro(from, 0.2)
-    expect(early.scale).toBeLessThan(from.scale * 0.9)
-    expect(Math.abs(early.x)).toBeLessThan(Math.abs(from.x) * 0.9)
+    expect(early.scale).toBeLessThan(from.scale * 0.75)
+    expect(Math.abs(early.x)).toBeLessThan(Math.abs(from.x))
+  })
+
+  it('keeps the morphing mark on-screen on a 1440 desktop and a 390 mobile', () => {
+    const cases = [
+      {
+        slot: desktopSlot,
+        view: desktopView,
+        headerSafe: 76,
+      },
+      {
+        slot: { left: 16, top: 15, width: 85, height: 34 },
+        view: { width: 390, height: 844 },
+        headerSafe: 64,
+      },
+    ]
+
+    for (const { slot, view, headerSafe } of cases) {
+      const from = logoIntroFrom(slot, view, { headerSafe })
+      for (let i = 0; i <= 20; i++) {
+        const left = introLogoLeft(slot, from, i / 20)
+        expect(left).toBeGreaterThanOrEqual(-1)
+      }
+    }
   })
 
   it('uses a shorter, narrower mark on ~390px viewports so the morph is not cramped', () => {

@@ -94,10 +94,21 @@ export function logoIntroFrom(
 }
 
 export function interpolateIntro(from: IntroFrom, progress: number): IntroFrom {
-  const p = easeOutCubic(progress)
+  const p = clamp01(progress)
+  const move = easeOutCubic(p)
+  // Shrink ahead of the slide so the oversized mark does not clip the viewport
+  // while it travels into the top-left slot.
+  const shrink = easeOutCubic(Math.min(1, p * 1.4))
   return {
-    x: from.x * (1 - p),
-    y: from.y * (1 - p),
-    scale: from.scale + (1 - from.scale) * p,
+    x: from.x * (1 - move),
+    y: from.y * (1 - move),
+    scale: from.scale + (1 - from.scale) * shrink,
   }
+}
+
+/** Left edge of the transformed logo in viewport coordinates. */
+export function introLogoLeft(slot: IntroRect, from: IntroFrom, progress: number): number {
+  const pose = interpolateIntro(from, progress)
+  const centerX = slot.left + slot.width / 2 + pose.x
+  return centerX - (slot.width * pose.scale) / 2
 }
