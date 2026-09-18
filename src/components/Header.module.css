@@ -1,3 +1,4 @@
+/* Compact sizes must match src/lib/logoIntro.ts: 64px wordmark + 14px pad = 92px. */
 .header {
   position: sticky;
   top: 0;
@@ -6,10 +7,14 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-  height: 76px;
-  padding: 16px 28px 0;
+  height: 92px;
+  padding: 14px 28px;
   background: var(--white);
   overflow: hidden;
+}
+
+.settled {
+  overflow: visible;
 }
 
 .fixed {
@@ -34,6 +39,8 @@
   flex-shrink: 0;
   position: relative;
   z-index: 1;
+  overflow: visible;
+  line-height: 0;
 }
 
 .brandMark {
@@ -41,15 +48,22 @@
   transform-origin: 0 0;
   will-change: transform;
   pointer-events: none;
+  overflow: visible;
+  line-height: 0;
 }
 
 .brandMark img {
   max-width: none;
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .desktopNav {
   display: none;
   align-items: center;
+  align-self: center;
   gap: 28px;
   font-size: 12px;
   font-weight: 500;
@@ -70,6 +84,7 @@
 .actions {
   display: flex;
   align-items: center;
+  align-self: center;
   gap: 10px;
   margin-left: auto;
   position: relative;
@@ -170,7 +185,7 @@
 
 .overlay {
   position: fixed;
-  inset: 76px 0 0;
+  inset: 92px 0 0;
   width: 100%;
   background: var(--white);
   padding: 48px 28px;
@@ -202,14 +217,14 @@
 
 @media (max-width: 599px) {
   .header {
-    height: 64px;
-    padding: 15px 16px 0;
+    height: 68px;
+    padding: 13px 16px;
     gap: 12px;
     align-items: center;
   }
 
   .brand img {
-    height: 34px;
+    height: 42px;
   }
 
   .actions {
@@ -222,7 +237,7 @@
   }
 
   .overlay {
-    inset: 64px 0 0;
+    inset: 68px 0 0;
   }
 }
 
@@ -237,7 +252,7 @@
   }
 
   .header {
-    padding: 16px 40px 0;
+    padding: 14px 40px;
   }
 }
 
@@ -254,10 +269,10 @@ html:lang(ru) .cta {
 
 @media (prefers-reduced-motion: reduce) {
   .header {
-    height: 76px;
+    height: 92px;
     align-items: center;
     padding: 0 28px;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .brandMark {
@@ -269,7 +284,7 @@ html:lang(ru) .cta {
 
 @media (prefers-reduced-motion: reduce) and (max-width: 599px) {
   .header {
-    height: 64px;
+    height: 68px;
     padding: 0 16px;
   }
 }

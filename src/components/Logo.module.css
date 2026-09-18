@@ -1,9 +1,11 @@
 .logo {
   display: block;
-  height: 44px;
+  height: 64px;
   width: auto;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .compact {
-  height: 36px;
+  height: 48px;
 }

@@ -31,6 +31,7 @@ export type LogoIntro = {
   showIntro: boolean
   ready: boolean
   navReady: boolean
+  settled: boolean
   slotRef: RefObject<HTMLAnchorElement | null>
   scale: MotionValue<number>
   chrome: MotionValue<number>
@@ -54,6 +55,7 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
 
   const [ready, setReady] = useState(reduceMotion)
   const [navReady, setNavReady] = useState(reduceMotion)
+  const [settled, setSettled] = useState(reduceMotion)
   const [showIntro, setShowIntro] = useState(
     () => typeof window !== 'undefined' && introEnabled(window.innerWidth, reduceMotion),
   )
@@ -80,8 +82,10 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
         fromS.set(1)
       }
 
+      const progressNow = introProgress(window.scrollY, distance, skip)
       setReady(true)
-      setNavReady(chromeInteractive(introProgress(window.scrollY, distance, skip)))
+      setNavReady(chromeInteractive(progressNow))
+      setSettled(progressNow >= 1)
     }
 
     measure()
@@ -109,6 +113,8 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
   useMotionValueEvent(progress, 'change', (p) => {
     const next = chromeInteractive(p)
     setNavReady((prev) => (prev === next ? prev : next))
+    const nextSettled = p >= 1
+    setSettled((prev) => (prev === nextSettled ? prev : nextSettled))
   })
 
   return {
@@ -116,6 +122,7 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
     showIntro,
     ready,
     navReady,
+    settled,
     slotRef,
     scale,
     chrome,
