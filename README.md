@@ -1,6 +1,5 @@
-# Design Choice — B2B millwork production partner
-
-**[Live preview](https://max-vitter-git-cursor-i18n-f27e02-aleksandrvozniukconnect-9664.vercel.app)**
+# Max-Vitter
+**Design Choice** — [Live preview](https://max-vitter-aleksandrvozniukconnect-9664.vercel.app)
 
 Single-page site in the register of [foliot.com/how-we-work](https://www.foliot.com/how-we-work): one partner, six steps, stacked cards on paper, a black CTA panel. Copy, logo and structure are Design Choice.
 
