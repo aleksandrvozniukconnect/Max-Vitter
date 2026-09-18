@@ -9,11 +9,30 @@
   height: 76px;
   padding: 0 28px;
   background: var(--white);
+  overflow: visible;
+}
+
+.introTrack {
+  height: 100svh;
+  pointer-events: none;
 }
 
 .brand {
   color: inherit;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.brandMark {
+  display: block;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.brandMark img {
+  max-width: none;
 }
 
 .desktopNav {
@@ -24,6 +43,8 @@
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  position: relative;
+  z-index: 2;
 }
 
 .desktopNav a {
@@ -39,6 +60,8 @@
   align-items: center;
   gap: 10px;
   margin-left: auto;
+  position: relative;
+  z-index: 2;
 }
 
 .langs {
@@ -129,6 +152,10 @@
   transform: translateY(-3.25px) rotate(-45deg);
 }
 
+.header:has(.burgerOpen) {
+  overflow: hidden;
+}
+
 .overlay {
   position: fixed;
   inset: 76px 0 0;
@@ -166,6 +193,10 @@
     height: 64px;
     padding: 0 16px;
     gap: 12px;
+  }
+
+  .introTrack {
+    height: 72svh;
   }
 
   .brand img {
@@ -210,4 +241,17 @@ html:lang(ru) .desktopNav {
 html:lang(uk) .cta,
 html:lang(ru) .cta {
   letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .introTrack {
+    display: none;
+    height: 0;
+  }
+
+  .brandMark {
+    transform: none;
+    will-change: auto;
+    opacity: 1;
+  }
 }
