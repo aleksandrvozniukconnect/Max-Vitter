@@ -9,6 +9,7 @@ import {
   marketIds,
   nav,
   photos,
+  projectCases,
   projectKeys,
   stepKeys,
   steps,
@@ -34,11 +35,12 @@ describe('Design Choice content model', () => {
   })
 
   it('keeps nav to the four owner pages, no Journey duplicate', () => {
-    expect(nav.map((item) => item.href)).toEqual(['#how', '#capabilities', '#projects', '#start'])
+    expect(nav.map((item) => item.href)).toEqual(['/#how', '/#capabilities', '/projects', '/#start'])
     for (const locale of localeIds) {
       const labels = nav.map((item) => dictionaries[locale].nav[item.key])
       expect(labels).not.toContain('Journey')
       expect(labels).toHaveLength(4)
+      expect(dictionaries[locale].nav.projects.length).toBeGreaterThan(0)
     }
   })
 
@@ -92,6 +94,7 @@ describe('Design Choice content model', () => {
     expect(capabilityKeys).toHaveLength(4)
     expect(photos.capabilities).toHaveLength(4)
     expect(projectKeys).toHaveLength(3)
+    expect(projectCases.map((item) => item.key)).toEqual([...projectKeys])
     expect(photos.projects).toHaveLength(3)
   })
 

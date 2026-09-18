@@ -78,4 +78,17 @@ describe('locale dictionaries', () => {
       expect(dictionaries[locale].hero.lede).toContain('Design Choice')
     }
   })
+
+  it('ships Projects page chrome in EN, UK and RU', () => {
+    expect(en.projectsPage.eyebrow).toBe('Dossier')
+    expect(en.projects.seeAll).toBe('See all projects')
+    for (const locale of localeIds) {
+      const page = dictionaries[locale].projectsPage
+      expect(page.title.length).toBeGreaterThan(8)
+      expect(page.lede.length).toBeGreaterThan(20)
+      expect(page.indexLabel.length).toBeGreaterThan(0)
+      expect(page.cta.length).toBeGreaterThan(0)
+      expect(page.empty.length).toBeGreaterThan(0)
+    }
+  })
 })

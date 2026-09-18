@@ -17,7 +17,9 @@ import {
   introEnabled,
   introProgress,
   introScrollDistance,
+  isSessionCompact,
   logoIntroScale,
+  markSessionCompact,
   startBandHeight,
   COMPACT_HEADER_DESKTOP,
 } from '../lib/logoIntro'
@@ -41,9 +43,10 @@ export type LogoIntro = {
   spacerHeight: MotionValue<string>
 }
 
-export function useLogoIntro(forceCompact: boolean): LogoIntro {
+export function useLogoIntro(forceCompact: boolean, skipIntro = false): LogoIntro {
   const reduceHook = useReducedMotion()
   const reduceMotion = reduceHook ?? readReducedMotion()
+  const suppressIntro = skipIntro || isSessionCompact()
 
   const slotRef = useRef<HTMLAnchorElement>(null)
   const { scrollY } = useScroll()
@@ -54,29 +57,38 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
   const endHMV = useMotionValue(COMPACT_HEADER_DESKTOP)
   const skipMV = useMotionValue(1)
 
-  const [ready, setReady] = useState(reduceMotion)
-  const [navReady, setNavReady] = useState(reduceMotion)
-  const [settled, setSettled] = useState(reduceMotion)
+  const [ready, setReady] = useState(reduceMotion || suppressIntro)
+  const [navReady, setNavReady] = useState(reduceMotion || suppressIntro)
+  const [settled, setSettled] = useState(reduceMotion || suppressIntro)
   const [showIntro, setShowIntro] = useState(
-    () => typeof window !== 'undefined' && introEnabled(window.innerWidth, reduceMotion),
+    () =>
+      typeof window !== 'undefined' &&
+      introEnabled(window.innerWidth, reduceMotion) &&
+      !suppressIntro,
   )
 
   useLayoutEffect(() => {
+    if (skipIntro) markSessionCompact()
+
     const measure = () => {
       const enabled = introEnabled(window.innerWidth, reduceMotion)
+      const hideIntro = skipIntro || isSessionCompact()
       const endH = compactHeaderHeight(window.innerWidth)
-      const startH = enabled ? startBandHeight(window.innerHeight) : endH
-      const distance = enabled ? introScrollDistance({ width: window.innerWidth, height: window.innerHeight }) : 1
-      const skip = !enabled || forceCompact
+      const startH = enabled && !hideIntro ? startBandHeight(window.innerHeight) : endH
+      const distance =
+        enabled && !hideIntro
+          ? introScrollDistance({ width: window.innerWidth, height: window.innerHeight })
+          : 1
+      const skip = !enabled || forceCompact || hideIntro
 
       endHMV.set(endH)
       startHMV.set(startH)
       distanceMV.set(distance)
       skipMV.set(skip ? 1 : 0)
-      setShowIntro(enabled)
+      setShowIntro(enabled && !hideIntro)
 
       const slot = slotRef.current
-      if (enabled && slot) {
+      if (enabled && !hideIntro && slot) {
         const rect = slot.getBoundingClientRect()
         fromS.set(logoIntroScale(rect.width, { width: window.innerWidth, height: window.innerHeight }))
       } else {
@@ -92,7 +104,7 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
     measure()
     window.addEventListener('resize', measure)
     return () => window.removeEventListener('resize', measure)
-  }, [reduceMotion, forceCompact, fromS, distanceMV, startHMV, endHMV, skipMV])
+  }, [reduceMotion, forceCompact, skipIntro, fromS, distanceMV, startHMV, endHMV, skipMV])
 
   const progress = useTransform([scrollY, distanceMV, skipMV], (values) => {
     const y = Number(values[0])

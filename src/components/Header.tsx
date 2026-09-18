@@ -2,17 +2,22 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { Logo } from './Logo'
+import { AppLink } from './AppLink'
 import { useLocale } from '../context/LocaleContext'
 import { nav } from '../content/site'
+import { usePathname } from '../hooks/usePathname'
 import { localeIds, localeLabels } from '../i18n/locale'
+import { isProjectsPath, PROJECTS_PATH, skipLogoIntro } from '../lib/routes'
 import { useLogoIntro } from './useLogoIntro'
 import styles from './Header.module.css'
 
 export function Header() {
   const { locale, setLocale, copy } = useLocale()
+  const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
+  const skipIntro = skipLogoIntro(pathname)
   const { ready, navReady, settled, showIntro, slotRef, scale, chrome, navY, bandHeight, spacerHeight } =
-    useLogoIntro(menuOpen)
+    useLogoIntro(menuOpen, skipIntro)
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -31,9 +36,9 @@ export function Header() {
         className={`${styles.header} ${showIntro ? styles.fixed : ''} ${settled ? styles.settled : ''}`}
         style={{ height: bandHeight }}
       >
-        <a
+        <AppLink
           className={styles.brand}
-          href="#top"
+          href="/"
           aria-label={copy.header.homeAria}
           ref={slotRef}
         >
@@ -48,7 +53,7 @@ export function Header() {
           >
             <Logo />
           </motion.span>
-        </a>
+        </AppLink>
 
         <motion.nav
           className={styles.desktopNav}
@@ -58,9 +63,16 @@ export function Header() {
           style={{ opacity: chrome, y: navY }}
         >
           {nav.map((item) => (
-            <a key={item.href} href={item.href}>
+            <AppLink
+              key={item.href}
+              href={item.href}
+              aria-current={item.href === PROJECTS_PATH && isProjectsPath(pathname) ? 'page' : undefined}
+              className={
+                item.href === PROJECTS_PATH && isProjectsPath(pathname) ? styles.navCurrent : undefined
+              }
+            >
               {copy.nav[item.key]}
-            </a>
+            </AppLink>
           ))}
         </motion.nav>
 
@@ -84,10 +96,10 @@ export function Header() {
             ))}
           </div>
 
-          <a className={styles.cta} href="#start">
+          <AppLink className={styles.cta} href="/#start">
             {copy.header.sendProject}
             <span className={styles.ctaDot} aria-hidden="true" />
-          </a>
+          </AppLink>
 
           <button
             type="button"
@@ -105,13 +117,13 @@ export function Header() {
           ? createPortal(
               <div className={styles.overlay} role="dialog" aria-label={copy.header.menuAria}>
                 <nav className={styles.overlayNav}>
-                  <a href="#top" onClick={closeMenu}>
+                  <AppLink href="/" onClick={closeMenu}>
                     {copy.header.home}
-                  </a>
+                  </AppLink>
                   {nav.map((item) => (
-                    <a key={item.href} href={item.href} onClick={closeMenu}>
+                    <AppLink key={item.href} href={item.href} onClick={closeMenu}>
                       {copy.nav[item.key]}
-                    </a>
+                    </AppLink>
                   ))}
                 </nav>
                 <p className={styles.overlayNote}>{copy.markets.UA.heroLine}</p>

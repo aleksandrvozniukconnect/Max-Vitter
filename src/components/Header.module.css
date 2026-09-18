@@ -81,6 +81,10 @@
   opacity: 0.55;
 }
 
+.navCurrent {
+  box-shadow: 0 1px 0 var(--ink);
+}
+
 .actions {
   display: flex;
   align-items: center;
