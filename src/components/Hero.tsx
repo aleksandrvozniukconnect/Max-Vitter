@@ -10,7 +10,7 @@ export function Hero() {
   const { copy } = useLocale()
 
   return (
-    <section className={styles.hero} id="top">
+    <section className={styles.hero}>
       <div className={styles.copy}>
         <motion.p
           className="eyebrow"

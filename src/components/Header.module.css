@@ -3,17 +3,48 @@
   top: 0;
   z-index: 100;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
   height: 76px;
-  padding: 0 28px;
+  padding: 16px 28px 0;
   background: var(--white);
+  overflow: hidden;
+}
+
+.fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+.introSpacer {
+  pointer-events: none;
+}
+
+.topAnchor {
+  display: block;
+  height: 0;
+  overflow: hidden;
 }
 
 .brand {
   color: inherit;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.brandMark {
+  display: block;
+  transform-origin: 0 0;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.brandMark img {
+  max-width: none;
 }
 
 .desktopNav {
@@ -24,6 +55,8 @@
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  position: relative;
+  z-index: 2;
 }
 
 .desktopNav a {
@@ -39,6 +72,8 @@
   align-items: center;
   gap: 10px;
   margin-left: auto;
+  position: relative;
+  z-index: 2;
 }
 
 .langs {
@@ -129,6 +164,10 @@
   transform: translateY(-3.25px) rotate(-45deg);
 }
 
+.header:has(.burgerOpen) {
+  overflow: hidden;
+}
+
 .overlay {
   position: fixed;
   inset: 76px 0 0;
@@ -164,8 +203,9 @@
 @media (max-width: 599px) {
   .header {
     height: 64px;
-    padding: 0 16px;
+    padding: 15px 16px 0;
     gap: 12px;
+    align-items: center;
   }
 
   .brand img {
@@ -197,7 +237,7 @@
   }
 
   .header {
-    padding: 0 40px;
+    padding: 16px 40px 0;
   }
 }
 
@@ -210,4 +250,32 @@ html:lang(ru) .desktopNav {
 html:lang(uk) .cta,
 html:lang(ru) .cta {
   letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header {
+    height: 76px;
+    align-items: center;
+    padding: 0 28px;
+    overflow: hidden;
+  }
+
+  .brandMark {
+    transform: none;
+    will-change: auto;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (max-width: 599px) {
+  .header {
+    height: 64px;
+    padding: 0 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (min-width: 1120px) {
+  .header {
+    padding: 0 40px;
+  }
 }
