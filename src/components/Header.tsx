@@ -36,11 +36,8 @@ export function Header() {
 
   return (
     <>
-      <motion.header
-        className={styles.header}
-        id="top"
-        style={{ backgroundColor: headerBg }}
-      >
+      <span id="top" className={styles.topAnchor} />
+      <motion.header className={styles.header} style={{ backgroundColor: headerBg }}>
         <a
           className={styles.brand}
           href="#top"

@@ -12,6 +12,12 @@
   overflow: visible;
 }
 
+.topAnchor {
+  display: block;
+  height: 0;
+  overflow: hidden;
+}
+
 .introTrack {
   height: 100svh;
   pointer-events: none;
