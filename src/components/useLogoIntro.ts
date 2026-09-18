@@ -28,6 +28,7 @@ function readReducedMotion(): boolean {
 
 export type LogoIntro = {
   reduceMotion: boolean
+  showIntro: boolean
   ready: boolean
   navReady: boolean
   slotRef: RefObject<HTMLAnchorElement | null>
@@ -35,6 +36,7 @@ export type LogoIntro = {
   chrome: MotionValue<number>
   navY: MotionValue<number>
   bandHeight: MotionValue<string>
+  spacerHeight: MotionValue<string>
 }
 
 export function useLogoIntro(forceCompact: boolean): LogoIntro {
@@ -52,6 +54,9 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
 
   const [ready, setReady] = useState(reduceMotion)
   const [navReady, setNavReady] = useState(reduceMotion)
+  const [showIntro, setShowIntro] = useState(
+    () => typeof window !== 'undefined' && introEnabled(window.innerWidth, reduceMotion),
+  )
 
   useLayoutEffect(() => {
     const measure = () => {
@@ -65,6 +70,7 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
       startHMV.set(startH)
       distanceMV.set(distance)
       skipMV.set(skip ? 1 : 0)
+      setShowIntro(enabled)
 
       const slot = slotRef.current
       if (enabled && slot) {
@@ -98,6 +104,8 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
     return `${Math.round(height)}px`
   })
 
+  const spacerHeight = useTransform(startHMV, (height) => `${Math.round(height)}px`)
+
   useMotionValueEvent(progress, 'change', (p) => {
     const next = chromeInteractive(p)
     setNavReady((prev) => (prev === next ? prev : next))
@@ -105,6 +113,7 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
 
   return {
     reduceMotion,
+    showIntro,
     ready,
     navReady,
     slotRef,
@@ -112,5 +121,6 @@ export function useLogoIntro(forceCompact: boolean): LogoIntro {
     chrome,
     navY,
     bandHeight,
+    spacerHeight,
   }
 }

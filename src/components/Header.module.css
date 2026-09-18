@@ -12,6 +12,17 @@
   overflow: hidden;
 }
 
+.fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+.introSpacer {
+  pointer-events: none;
+}
+
 .topAnchor {
   display: block;
   height: 0;

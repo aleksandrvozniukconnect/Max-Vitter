@@ -11,7 +11,8 @@ import styles from './Header.module.css'
 export function Header() {
   const { locale, setLocale, copy } = useLocale()
   const [menuOpen, setMenuOpen] = useState(false)
-  const { ready, navReady, slotRef, scale, chrome, navY, bandHeight } = useLogoIntro(menuOpen)
+  const { ready, navReady, showIntro, slotRef, scale, chrome, navY, bandHeight, spacerHeight } =
+    useLogoIntro(menuOpen)
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -25,7 +26,11 @@ export function Header() {
   return (
     <>
       <span id="top" className={styles.topAnchor} />
-      <motion.header className={styles.header} style={{ height: bandHeight }}>
+      {showIntro ? <motion.div className={styles.introSpacer} style={{ height: spacerHeight }} aria-hidden="true" /> : null}
+      <motion.header
+        className={`${styles.header} ${showIntro ? styles.fixed : ''}`}
+        style={{ height: bandHeight }}
+      >
         <a
           className={styles.brand}
           href="#top"
