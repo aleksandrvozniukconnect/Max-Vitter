@@ -30,10 +30,10 @@ export const marketFacts: Record<MarketId, MarketFacts> = {
 }
 
 export const nav = [
-  { key: 'how', href: '#how' },
-  { key: 'capabilities', href: '#capabilities' },
-  { key: 'projects', href: '#projects' },
-  { key: 'start', href: '#start' },
+  { key: 'how', href: '/#how' },
+  { key: 'capabilities', href: '/#capabilities' },
+  { key: 'projects', href: '/projects' },
+  { key: 'start', href: '/#start' },
 ] as const
 
 export type NavKey = (typeof nav)[number]['key']
@@ -46,6 +46,12 @@ export type CapabilityKey = (typeof capabilityKeys)[number]
 
 export const projectKeys = ['hospitality', 'residential', 'villa'] as const
 export type ProjectKey = (typeof projectKeys)[number]
+
+export const projectCases = [
+  { key: 'hospitality', n: '01', market: 'UA' },
+  { key: 'residential', n: '02', market: 'US' },
+  { key: 'villa', n: '03', market: 'ME' },
+] as const satisfies readonly { key: ProjectKey; n: string; market: MarketId }[]
 
 export const stepKeys = ['consult', 'design', 'confirm', 'manufacture', 'deliver', 'support'] as const
 export type StepKey = (typeof stepKeys)[number]

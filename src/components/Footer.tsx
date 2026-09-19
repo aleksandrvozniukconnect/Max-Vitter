@@ -2,6 +2,7 @@ import { marketFacts, nav } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
 import { localeIds, localeLabels } from '../i18n/locale'
 import { Logo } from './Logo'
+import { AppLink } from './AppLink'
 import styles from './Footer.module.css'
 
 export function Footer() {
@@ -20,7 +21,7 @@ export function Footer() {
           <ul>
             {nav.map((item) => (
               <li key={item.href}>
-                <a href={item.href}>{copy.nav[item.key]}</a>
+                <AppLink href={item.href}>{copy.nav[item.key]}</AppLink>
               </li>
             ))}
           </ul>

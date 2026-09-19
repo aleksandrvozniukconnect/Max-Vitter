@@ -139,3 +139,17 @@ export function interpolateScale(fromScale: number, progress: number): number {
   const p = introEase(progress)
   return fromScale + (1 - fromScale) * p
 }
+
+let sessionCompact = false
+
+export function isSessionCompact(): boolean {
+  return sessionCompact
+}
+
+export function markSessionCompact() {
+  sessionCompact = true
+}
+
+export function resetSessionCompact() {
+  sessionCompact = false
+}

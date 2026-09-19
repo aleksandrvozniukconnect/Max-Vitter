@@ -68,7 +68,31 @@ export type SiteCopy = {
     lede: string
     challenge: string
     result: string
-    items: Record<ProjectKey, { title: string; sector: string; challenge: string; result: string }>
+    seeAll: string
+    items: Record<
+      ProjectKey,
+      {
+        title: string
+        shortTitle: string
+        sector: string
+        challenge: string
+        result: string
+        tags: [string, string, string]
+        placeholder: string
+      }
+    >
+  }
+  projectsPage: {
+    meta: { title: string; description: string }
+    eyebrow: string
+    title: string
+    lede: string
+    indexLabel: string
+    indexAria: string
+    next: string
+    empty: string
+    ctaTitle: string
+    cta: string
   }
   ground: {
     eyebrow: string
@@ -238,26 +262,52 @@ export const en: SiteCopy = {
     lede: 'Challenge, engineering, delivery, result. Photography and names are placeholders until the client releases the cases.',
     challenge: 'Challenge.',
     result: 'Result.',
+    seeAll: 'See all projects',
     items: {
       hospitality: {
         title: 'Hotel, 64 keys',
+        shortTitle: 'Hotel',
         sector: 'Hospitality',
         challenge: 'One architect set repeated across rooms, with a fixed install window.',
         result: 'One approved assembly. Install ran to the window. The handover pack was the set that was built.',
+        tags: ['Repeating set', 'Guest rooms', 'Veneer'],
+        placeholder: 'Photography pending — plant stand-in',
       },
       residential: {
         title: 'Residential tower kitchens',
+        shortTitle: 'Tower kitchens',
         sector: 'Residential',
         challenge: 'Developer drawings arrived as layouts and finish notes, not a buildable set.',
         result: 'Engineering closed the set before production. Units were packed and delivered by floor.',
+        tags: ['Kitchens', 'By floor', 'Developer set'],
+        placeholder: 'Photography pending — plant stand-in',
       },
       villa: {
         title: 'Villa, Boka Bay',
+        shortTitle: 'Boka Bay',
         sector: 'Private residence',
         challenge: 'Full interior package for an Adriatic site with seasonal access.',
         result: 'Shipped by road and sea in two phases. Installed by our crew inside the agreed window.',
+        tags: ['Full interior', 'Road + sea', 'Seasonal access'],
+        placeholder: 'Photography pending — plant stand-in',
       },
     },
+  },
+  projectsPage: {
+    meta: {
+      title: 'Projects — Design Choice',
+      description:
+        'Production cases from Design Choice: hospitality, residential kitchens and a private Adriatic villa. Challenge, engineering, delivery, result.',
+    },
+    eyebrow: 'Dossier',
+    title: 'Cases, as built.',
+    lede: 'Three production files. Names and photography are placeholders until the client releases the jobs. The plant, the sequence and the stamps are the same as on the floor.',
+    indexLabel: 'The file',
+    indexAria: 'Case index',
+    next: 'Next case',
+    empty: 'No cases in this dossier yet.',
+    ctaTitle: 'Have a set that needs a plant.',
+    cta: 'Send your project',
   },
   ground: {
     eyebrow: 'On the ground',

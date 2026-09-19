@@ -12,8 +12,11 @@ import {
   introEnabled,
   introProgress,
   introScrollDistance,
+  isSessionCompact,
   logoIntroScale,
+  markSessionCompact,
   oversizedLogoHeight,
+  resetSessionCompact,
   startBandHeight,
   CHROME_FADE_START,
   COMPACT_HEADER_DESKTOP,
@@ -140,5 +143,16 @@ describe('intro ease', () => {
     expect(introEase(0.75)).toBeGreaterThan(0.75)
     expect(introEase(0.5)).toBeGreaterThan(0.4)
     expect(introEase(0.5)).toBeLessThan(0.65)
+  })
+})
+
+describe('session compact header', () => {
+  it('remembers a compact visit so the intro does not replay', () => {
+    resetSessionCompact()
+    expect(isSessionCompact()).toBe(false)
+    markSessionCompact()
+    expect(isSessionCompact()).toBe(true)
+    resetSessionCompact()
+    expect(isSessionCompact()).toBe(false)
   })
 })
