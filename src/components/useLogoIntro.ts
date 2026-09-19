@@ -14,18 +14,29 @@ import {
   compactHeaderHeight,
   interpolateScale,
   introBandHeight,
-  introEnabled,
   introProgress,
   introScrollDistance,
   isSessionCompact,
   logoIntroScale,
   markSessionCompact,
+  readIntroMedia,
+  shouldPlayIntro,
   startBandHeight,
   COMPACT_HEADER_DESKTOP,
+  INTRO_COMPACT_QUERY,
 } from '../lib/logoIntro'
 
 function readReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+function readPlayIntro(reduceMotion: boolean, hideIntro: boolean): boolean {
+  if (typeof window === 'undefined') return false
+  return shouldPlayIntro({
+    ...readIntroMedia(window),
+    reducedMotion: reduceMotion,
+    skipIntro: hideIntro,
+  })
 }
 
 export type LogoIntro = {
@@ -57,40 +68,39 @@ export function useLogoIntro(forceCompact: boolean, skipIntro = false): LogoIntr
   const endHMV = useMotionValue(COMPACT_HEADER_DESKTOP)
   const skipMV = useMotionValue(1)
 
-  const [ready, setReady] = useState(reduceMotion || suppressIntro)
-  const [navReady, setNavReady] = useState(reduceMotion || suppressIntro)
-  const [settled, setSettled] = useState(reduceMotion || suppressIntro)
-  const [showIntro, setShowIntro] = useState(
-    () =>
-      typeof window !== 'undefined' &&
-      introEnabled(window.innerWidth, reduceMotion) &&
-      !suppressIntro,
-  )
+  const [showIntro, setShowIntro] = useState(() => readPlayIntro(reduceMotion, suppressIntro))
+  const [ready, setReady] = useState(!showIntro)
+  const [navReady, setNavReady] = useState(!showIntro)
+  const [settled, setSettled] = useState(!showIntro)
 
   useLayoutEffect(() => {
     if (skipIntro) markSessionCompact()
 
     const measure = () => {
-      const enabled = introEnabled(window.innerWidth, reduceMotion)
       const hideIntro = skipIntro || isSessionCompact()
-      const endH = compactHeaderHeight(window.innerWidth)
-      const startH = enabled && !hideIntro ? startBandHeight(window.innerHeight) : endH
-      const distance =
-        enabled && !hideIntro
-          ? introScrollDistance({ width: window.innerWidth, height: window.innerHeight })
-          : 1
-      const skip = !enabled || forceCompact || hideIntro
+      const media = readIntroMedia(window)
+      const enabled = shouldPlayIntro({
+        ...media,
+        reducedMotion: reduceMotion,
+        skipIntro: hideIntro,
+      })
+      const endH = compactHeaderHeight(media.viewportWidth)
+      const startH = enabled ? startBandHeight(window.innerHeight) : endH
+      const distance = enabled
+        ? introScrollDistance({ width: media.viewportWidth, height: window.innerHeight })
+        : 1
+      const skip = !enabled || forceCompact
 
       endHMV.set(endH)
       startHMV.set(startH)
       distanceMV.set(distance)
       skipMV.set(skip ? 1 : 0)
-      setShowIntro(enabled && !hideIntro)
+      setShowIntro(enabled)
 
       const slot = slotRef.current
-      if (enabled && !hideIntro && slot) {
+      if (enabled && slot) {
         const rect = slot.getBoundingClientRect()
-        fromS.set(logoIntroScale(rect.width, { width: window.innerWidth, height: window.innerHeight }))
+        fromS.set(logoIntroScale(rect.width, { width: media.viewportWidth, height: window.innerHeight }))
       } else {
         fromS.set(1)
       }
@@ -102,8 +112,13 @@ export function useLogoIntro(forceCompact: boolean, skipIntro = false): LogoIntr
     }
 
     measure()
+    const mq = window.matchMedia(INTRO_COMPACT_QUERY)
     window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
+    mq.addEventListener('change', measure)
+    return () => {
+      window.removeEventListener('resize', measure)
+      mq.removeEventListener('change', measure)
+    }
   }, [reduceMotion, forceCompact, skipIntro, fromS, distanceMV, startHMV, endHMV, skipMV])
 
   const progress = useTransform([scrollY, distanceMV, skipMV], (values) => {

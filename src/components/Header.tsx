@@ -18,6 +18,7 @@ export function Header() {
   const skipIntro = skipLogoIntro(pathname)
   const { ready, navReady, settled, showIntro, slotRef, scale, chrome, navY, bandHeight, spacerHeight } =
     useLogoIntro(menuOpen, skipIntro)
+  const compactFromStart = !showIntro
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -33,8 +34,8 @@ export function Header() {
       <span id="top" className={styles.topAnchor} />
       {showIntro ? <motion.div className={styles.introSpacer} style={{ height: spacerHeight }} aria-hidden="true" /> : null}
       <motion.header
-        className={`${styles.header} ${showIntro ? styles.fixed : ''} ${settled ? styles.settled : ''}`}
-        style={{ height: bandHeight }}
+        className={`${styles.header} ${showIntro ? styles.fixed : ''} ${settled ? styles.settled : ''} ${compactFromStart ? styles.compactFromStart : ''}`}
+        style={showIntro ? { height: bandHeight } : undefined}
       >
         <AppLink
           className={styles.brand}
@@ -44,12 +45,16 @@ export function Header() {
         >
           <motion.span
             className={styles.brandMark}
-            style={{
-              scale,
-              originX: 0,
-              originY: 0,
-              opacity: ready ? 1 : 0,
-            }}
+            style={
+              showIntro
+                ? {
+                    scale,
+                    originX: 0,
+                    originY: 0,
+                    opacity: ready ? 1 : 0,
+                  }
+                : undefined
+            }
           >
             <Logo />
           </motion.span>
@@ -60,7 +65,7 @@ export function Header() {
           aria-label={copy.header.primaryNavAria}
           aria-hidden={!navReady}
           inert={!navReady}
-          style={{ opacity: chrome, y: navY }}
+          style={showIntro ? { opacity: chrome, y: navY } : undefined}
         >
           {nav.map((item) => (
             <AppLink
@@ -80,7 +85,7 @@ export function Header() {
           className={styles.actions}
           aria-hidden={!navReady}
           inert={!navReady}
-          style={{ opacity: chrome, y: navY }}
+          style={showIntro ? { opacity: chrome, y: navY } : undefined}
         >
           <div className={styles.langs} role="group" aria-label={copy.header.languageAria}>
             {localeIds.map((id) => (
