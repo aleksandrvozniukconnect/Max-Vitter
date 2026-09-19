@@ -16,7 +16,9 @@ import {
   logoIntroScale,
   markSessionCompact,
   oversizedLogoHeight,
+  readIntroMedia,
   resetSessionCompact,
+  shouldPlayIntro,
   startBandHeight,
   CHROME_FADE_START,
   COMPACT_HEADER_DESKTOP,
@@ -25,6 +27,7 @@ import {
   COMPACT_LOGO_MOBILE,
   HEADER_PAD_Y_DESKTOP,
   HEADER_PAD_Y_MOBILE,
+  INTRO_COMPACT_QUERY,
   INTRO_MOBILE_MAX_WIDTH,
 } from './logoIntro'
 
@@ -114,6 +117,44 @@ describe('top-left scale-in-place intro', () => {
     expect(introEnabled(900)).toBe(true)
     expect(compactHeaderHeight(390)).toBe(COMPACT_HEADER_MOBILE)
     expect(interpolateScale(1, 0)).toBe(1)
+  })
+
+  it('skips the morph on the compact-from-start path (mobile media or inflated innerWidth)', () => {
+    expect(INTRO_COMPACT_QUERY).toBe('(max-width: 899px)')
+    expect(shouldPlayIntro({ viewportWidth: 390, compactMedia: true })).toBe(false)
+    expect(shouldPlayIntro({ viewportWidth: 899, compactMedia: true })).toBe(false)
+    expect(shouldPlayIntro({ viewportWidth: 900, compactMedia: false })).toBe(true)
+    expect(shouldPlayIntro({ viewportWidth: 1440, compactMedia: false })).toBe(true)
+
+    // CSS viewport is phone-sized even if JS innerWidth looks desktop.
+    expect(shouldPlayIntro({ viewportWidth: 1024, compactMedia: true })).toBe(false)
+    expect(shouldPlayIntro({ viewportWidth: 390, compactMedia: false })).toBe(false)
+
+    const mobileSkip = !shouldPlayIntro({ viewportWidth: 390, compactMedia: true })
+    expect(mobileSkip).toBe(true)
+    expect(introProgress(0, 800, mobileSkip)).toBe(1)
+    expect(chromeOpacity(introProgress(0, 800, mobileSkip))).toBe(1)
+    expect(chromeInteractive(introProgress(0, 800, mobileSkip))).toBe(true)
+    expect(interpolateScale(1, introProgress(0, 800, mobileSkip))).toBe(1)
+
+    expect(shouldPlayIntro({ viewportWidth: 1440, reducedMotion: true })).toBe(false)
+    expect(shouldPlayIntro({ viewportWidth: 1440, skipIntro: true })).toBe(false)
+  })
+
+  it('reads compact media from matchMedia, not a stale innerWidth', () => {
+    const phone = {
+      innerWidth: 1024,
+      matchMedia: (query: string) => ({ matches: query === INTRO_COMPACT_QUERY }),
+    }
+    expect(readIntroMedia(phone)).toEqual({ viewportWidth: 1024, compactMedia: true })
+    expect(shouldPlayIntro({ ...readIntroMedia(phone) })).toBe(false)
+
+    const desktop = {
+      innerWidth: 1440,
+      matchMedia: () => ({ matches: false }),
+    }
+    expect(readIntroMedia(desktop)).toEqual({ viewportWidth: 1440, compactMedia: false })
+    expect(shouldPlayIntro({ ...readIntroMedia(desktop) })).toBe(true)
   })
 
   it('returns identity scale when the slot cannot be measured', () => {

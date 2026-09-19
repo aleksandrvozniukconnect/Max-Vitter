@@ -11,6 +11,16 @@ export type IntroViewport = {
 }
 
 export const INTRO_MOBILE_MAX_WIDTH = 899
+/** CSS viewport gate — more reliable than innerWidth on phones (zoom, overflow, iframe). */
+export const INTRO_COMPACT_QUERY = `(max-width: ${INTRO_MOBILE_MAX_WIDTH}px)`
+
+export type IntroPlayInput = {
+  viewportWidth: number
+  /** `matchMedia(INTRO_COMPACT_QUERY).matches` — wins when it disagrees with innerWidth. */
+  compactMedia?: boolean
+  reducedMotion?: boolean
+  skipIntro?: boolean
+}
 
 /**
  * Cropped wordmark artboard (Logo-02 / Logo-04). Tight around DC + DSGN + CHOICE
@@ -73,9 +83,36 @@ export function compactHeaderHeight(viewportWidth: number): number {
   return viewportWidth <= 599 ? COMPACT_HEADER_MOBILE : COMPACT_HEADER_DESKTOP
 }
 
-/** Oversized top-left morph is desktop-first; compact on small screens. */
+/**
+ * Oversized top-left morph is desktop-first; compact on small screens.
+ * `compactMedia` (CSS max-width: 899px) wins over a inflated `innerWidth`.
+ */
+export function shouldPlayIntro({
+  viewportWidth,
+  compactMedia,
+  reducedMotion = false,
+  skipIntro = false,
+}: IntroPlayInput): boolean {
+  if (reducedMotion || skipIntro || compactMedia === true) return false
+  return viewportWidth > INTRO_MOBILE_MAX_WIDTH
+}
+
+/** Width-only helper. Runtime gating uses `shouldPlayIntro` + matchMedia. */
 export function introEnabled(viewportWidth: number, reducedMotion = false): boolean {
-  return !reducedMotion && viewportWidth > INTRO_MOBILE_MAX_WIDTH
+  return shouldPlayIntro({ viewportWidth, reducedMotion })
+}
+
+export function readIntroMedia(win: {
+  innerWidth: number
+  matchMedia: (query: string) => { matches: boolean }
+}): {
+  viewportWidth: number
+  compactMedia: boolean
+} {
+  return {
+    viewportWidth: win.innerWidth,
+    compactMedia: win.matchMedia(INTRO_COMPACT_QUERY).matches,
+  }
 }
 
 export function startBandHeight(viewportHeight: number): number {
