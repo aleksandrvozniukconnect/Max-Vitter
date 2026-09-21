@@ -6,6 +6,8 @@ import {
   clamp01,
   compactHeaderHeight,
   compactLogoSecondLinePx,
+  compactSlotWidth,
+  headerPadX,
   interpolateScale,
   introBandHeight,
   introEase,
@@ -16,7 +18,7 @@ import {
   logoIntroScale,
   markSessionCompact,
   oversizedLogoHeight,
-  readIntroMedia,
+  oversizedLogoWidth,
   resetSessionCompact,
   shouldPlayIntro,
   startBandHeight,
@@ -27,8 +29,6 @@ import {
   COMPACT_LOGO_MOBILE,
   HEADER_PAD_Y_DESKTOP,
   HEADER_PAD_Y_MOBILE,
-  INTRO_COMPACT_QUERY,
-  INTRO_MOBILE_MAX_WIDTH,
 } from './logoIntro'
 
 describe('introProgress', () => {
@@ -46,12 +46,13 @@ describe('introProgress', () => {
     expect(introProgress(40, 0)).toBe(0)
   })
 
-  it('skips the morph for reduced motion, compact override, or mobile', () => {
+  it('skips the morph for reduced motion or skipIntro, not for width', () => {
     expect(introProgress(0, 800, true)).toBe(1)
-    expect(introEnabled(390)).toBe(false)
-    expect(introEnabled(1440, true)).toBe(false)
-    expect(introEnabled(1440)).toBe(true)
-    expect(INTRO_MOBILE_MAX_WIDTH).toBe(899)
+    expect(introEnabled()).toBe(true)
+    expect(introEnabled(true)).toBe(false)
+    expect(shouldPlayIntro({ reducedMotion: true })).toBe(false)
+    expect(shouldPlayIntro({ skipIntro: true })).toBe(false)
+    expect(shouldPlayIntro({})).toBe(true)
   })
 
   it('maps mid-track scroll linearly before easing', () => {
@@ -78,7 +79,7 @@ describe('chrome fade', () => {
     expect(chromeTranslateY(1)).toBe(0)
   })
 
-  it('skips the hide when the morph is skipped (reduced motion, mobile, compact override)', () => {
+  it('skips the hide when the morph is skipped (reduced motion or skipIntro)', () => {
     expect(chromeOpacity(introProgress(0, 800, true))).toBe(1)
     expect(chromeInteractive(introProgress(0, 800, true))).toBe(true)
   })
@@ -87,6 +88,7 @@ describe('chrome fade', () => {
 describe('top-left scale-in-place intro', () => {
   const slotWidth = 110
   const desktop = { width: 1440, height: 900 }
+  const phone = { width: 390, height: 844 }
 
   it('starts as an oversized top-left wordmark several hundred px wide', () => {
     const scale = logoIntroScale(slotWidth, desktop)
@@ -98,7 +100,7 @@ describe('top-left scale-in-place intro', () => {
   })
 
   it('shrinks the white band with the same eased progress as the logo', () => {
-    const start = startBandHeight(desktop.height)
+    const start = startBandHeight(desktop.height, desktop.width)
     const end = compactHeaderHeight(desktop.width)
     expect(start).toBeGreaterThan(desktop.height * 0.6)
     expect(end).toBe(COMPACT_HEADER_DESKTOP)
@@ -111,50 +113,43 @@ describe('top-left scale-in-place intro', () => {
     expect(introScrollDistance(desktop)).toBe(start - end)
   })
 
-  it('starts compact on ~390px viewports', () => {
-    expect(introEnabled(390)).toBe(false)
-    expect(introEnabled(899)).toBe(false)
-    expect(introEnabled(900)).toBe(true)
+  it('plays the morph on ~390px viewports and hides chrome until settled', () => {
+    expect(shouldPlayIntro({})).toBe(true)
+    expect(introEnabled()).toBe(true)
     expect(compactHeaderHeight(390)).toBe(COMPACT_HEADER_MOBILE)
-    expect(interpolateScale(1, 0)).toBe(1)
+
+    const slot = compactSlotWidth(390)
+    const scale = logoIntroScale(slot, phone)
+    const target = oversizedLogoWidth(phone)
+    expect(target).toBeGreaterThan(300)
+    expect(target).toBeLessThanOrEqual(phone.width - headerPadX(phone.width) * 2)
+    expect(scale).toBeGreaterThan(2)
+    expect(interpolateScale(scale, 0)).toBe(scale)
+    expect(interpolateScale(scale, 1)).toBe(1)
+
+    const distance = introScrollDistance(phone)
+    expect(introProgress(0, distance)).toBe(0)
+    expect(chromeOpacity(introProgress(0, distance))).toBe(0)
+    expect(chromeInteractive(introProgress(0, distance))).toBe(false)
+    expect(chromeOpacity(introProgress(distance, distance))).toBe(1)
   })
 
-  it('skips the morph on the compact-from-start path (mobile media or inflated innerWidth)', () => {
-    expect(INTRO_COMPACT_QUERY).toBe('(max-width: 899px)')
-    expect(shouldPlayIntro({ viewportWidth: 390, compactMedia: true })).toBe(false)
-    expect(shouldPlayIntro({ viewportWidth: 899, compactMedia: true })).toBe(false)
-    expect(shouldPlayIntro({ viewportWidth: 900, compactMedia: false })).toBe(true)
-    expect(shouldPlayIntro({ viewportWidth: 1440, compactMedia: false })).toBe(true)
-
-    // CSS viewport is phone-sized even if JS innerWidth looks desktop.
-    expect(shouldPlayIntro({ viewportWidth: 1024, compactMedia: true })).toBe(false)
-    expect(shouldPlayIntro({ viewportWidth: 390, compactMedia: false })).toBe(false)
-
-    const mobileSkip = !shouldPlayIntro({ viewportWidth: 390, compactMedia: true })
-    expect(mobileSkip).toBe(true)
-    expect(introProgress(0, 800, mobileSkip)).toBe(1)
-    expect(chromeOpacity(introProgress(0, 800, mobileSkip))).toBe(1)
-    expect(chromeInteractive(introProgress(0, 800, mobileSkip))).toBe(true)
-    expect(interpolateScale(1, introProgress(0, 800, mobileSkip))).toBe(1)
-
-    expect(shouldPlayIntro({ viewportWidth: 1440, reducedMotion: true })).toBe(false)
-    expect(shouldPlayIntro({ viewportWidth: 1440, skipIntro: true })).toBe(false)
+  it('fits the mobile wordmark inside the intro band without clipping', () => {
+    const logoH = oversizedLogoHeight(phone)
+    const band = startBandHeight(phone.height, phone.width)
+    expect(band).toBeGreaterThanOrEqual(logoH + HEADER_PAD_Y_MOBILE * 2)
+    expect(band).toBeLessThan(phone.height)
+    expect(oversizedLogoWidth(phone) + headerPadX(phone.width) * 2).toBeLessThanOrEqual(phone.width)
   })
 
-  it('reads compact media from matchMedia, not a stale innerWidth', () => {
-    const phone = {
-      innerWidth: 1024,
-      matchMedia: (query: string) => ({ matches: query === INTRO_COMPACT_QUERY }),
-    }
-    expect(readIntroMedia(phone)).toEqual({ viewportWidth: 1024, compactMedia: true })
-    expect(shouldPlayIntro({ ...readIntroMedia(phone) })).toBe(false)
+  it('does not change desktop ≥900px feel', () => {
+    expect(startBandHeight(desktop.height, desktop.width)).toBe(Math.round(desktop.height * 0.72))
+    expect(oversizedLogoWidth(desktop)).toBe(880)
+    expect(logoIntroScale(slotWidth, desktop) * slotWidth).toBe(880)
 
-    const desktop = {
-      innerWidth: 1440,
-      matchMedia: () => ({ matches: false }),
-    }
-    expect(readIntroMedia(desktop)).toEqual({ viewportWidth: 1440, compactMedia: false })
-    expect(shouldPlayIntro({ ...readIntroMedia(desktop) })).toBe(true)
+    const at900 = { width: 900, height: 900 }
+    expect(oversizedLogoWidth(at900)).toBe(Math.min(900 * 0.72, 880))
+    expect(startBandHeight(at900.height, at900.width)).toBe(Math.round(900 * 0.72))
   })
 
   it('returns identity scale when the slot cannot be measured', () => {
@@ -170,7 +165,7 @@ describe('top-left scale-in-place intro', () => {
   it('fits the oversized wordmark inside the intro band with padding', () => {
     const logoH = oversizedLogoHeight(desktop)
     expect(logoH).toBeGreaterThan(250)
-    expect(startBandHeight(desktop.height)).toBeGreaterThanOrEqual(logoH + HEADER_PAD_Y_DESKTOP * 2)
+    expect(startBandHeight(desktop.height, desktop.width)).toBeGreaterThanOrEqual(logoH + HEADER_PAD_Y_DESKTOP * 2)
   })
 })
 
