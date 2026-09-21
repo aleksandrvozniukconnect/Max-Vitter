@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import {
   chromeInteractive,
@@ -46,12 +47,13 @@ describe('introProgress', () => {
     expect(introProgress(40, 0)).toBe(0)
   })
 
-  it('skips the morph for reduced motion or skipIntro, not for width', () => {
+  it('skips the morph for skipIntro, not for width or reduced motion', () => {
     expect(introProgress(0, 800, true)).toBe(1)
     expect(introEnabled()).toBe(true)
-    expect(introEnabled(true)).toBe(false)
-    expect(shouldPlayIntro({ reducedMotion: true })).toBe(false)
+    expect(introEnabled(true)).toBe(true)
+    expect(shouldPlayIntro({ reducedMotion: true })).toBe(true)
     expect(shouldPlayIntro({ skipIntro: true })).toBe(false)
+    expect(shouldPlayIntro({ reducedMotion: true, skipIntro: true })).toBe(false)
     expect(shouldPlayIntro({})).toBe(true)
   })
 
@@ -79,7 +81,7 @@ describe('chrome fade', () => {
     expect(chromeTranslateY(1)).toBe(0)
   })
 
-  it('skips the hide when the morph is skipped (reduced motion or skipIntro)', () => {
+  it('skips the hide when the morph is skipped (skipIntro / session compact)', () => {
     expect(chromeOpacity(introProgress(0, 800, true))).toBe(1)
     expect(chromeInteractive(introProgress(0, 800, true))).toBe(true)
   })
@@ -115,7 +117,9 @@ describe('top-left scale-in-place intro', () => {
 
   it('plays the morph on ~390px viewports and hides chrome until settled', () => {
     expect(shouldPlayIntro({})).toBe(true)
+    expect(shouldPlayIntro({ reducedMotion: true })).toBe(true)
     expect(introEnabled()).toBe(true)
+    expect(introEnabled(true)).toBe(true)
     expect(compactHeaderHeight(390)).toBe(COMPACT_HEADER_MOBILE)
 
     const slot = compactSlotWidth(390)
@@ -132,6 +136,23 @@ describe('top-left scale-in-place intro', () => {
     expect(chromeOpacity(introProgress(0, distance))).toBe(0)
     expect(chromeInteractive(introProgress(0, distance))).toBe(false)
     expect(chromeOpacity(introProgress(distance, distance))).toBe(1)
+  })
+
+  it('still plays the oversized morph when prefers-reduced-motion is reduce', () => {
+    expect(shouldPlayIntro({ reducedMotion: true })).toBe(true)
+    expect(introEnabled(true)).toBe(true)
+
+    const distance = introScrollDistance(phone)
+    expect(introProgress(0, distance)).toBe(0)
+    expect(chromeOpacity(introProgress(0, distance))).toBe(0)
+    expect(chromeInteractive(introProgress(0, distance))).toBe(false)
+
+    const slot = compactSlotWidth(390)
+    const scale = logoIntroScale(slot, phone)
+    expect(slot * scale).toBeGreaterThan(300)
+    expect(interpolateScale(scale, 0)).toBe(scale)
+    expect(interpolateScale(scale, 1)).toBe(1)
+    expect(startBandHeight(phone.height, phone.width)).toBeGreaterThan(compactHeaderHeight(phone.width))
   })
 
   it('fits the mobile wordmark inside the intro band without clipping', () => {
@@ -190,5 +211,12 @@ describe('session compact header', () => {
     expect(isSessionCompact()).toBe(true)
     resetSessionCompact()
     expect(isSessionCompact()).toBe(false)
+  })
+})
+
+describe('header reduced-motion CSS', () => {
+  it('does not force a compact header when prefers-reduced-motion is reduce', () => {
+    const css = readFileSync(new URL('../components/Header.module.css', import.meta.url), 'utf8')
+    expect(css).not.toMatch(/prefers-reduced-motion/)
   })
 })
