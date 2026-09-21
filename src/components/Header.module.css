@@ -15,6 +15,7 @@
 
 .settled {
   overflow: visible;
+  align-items: center;
 }
 
 .fixed {
@@ -22,6 +23,10 @@
   left: 0;
   right: 0;
   width: 100%;
+}
+
+.fixed:not(.settled) {
+  align-items: flex-start;
 }
 
 .introSpacer {
@@ -224,8 +229,7 @@
   line-height: 1.6;
 }
 
-/* Compact-from-start: mobile, reduced-motion, and non-home pages. CSS owns layout
-   so inline motion styles never flash an oversized band at ≤899px. */
+/* Compact-from-start: reduced-motion and non-home pages. */
 .compactFromStart {
   align-items: center;
   overflow: visible;
@@ -237,37 +241,14 @@
   opacity: 1;
 }
 
-@media (max-width: 899px) {
-  .introSpacer {
-    display: none !important;
-    height: 0 !important;
-  }
-
-  .header {
-    position: sticky !important;
-    height: 92px !important;
-    align-items: center;
-    overflow: visible;
-  }
-
-  .brandMark {
-    transform: none !important;
-    will-change: auto;
-    opacity: 1 !important;
-  }
-
-  .desktopNav,
-  .actions {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}
-
 @media (max-width: 599px) {
   .header {
-    height: 68px !important;
+    height: 68px;
     padding: 13px 16px;
     gap: 12px;
+  }
+
+  .header:not(.fixed) {
     align-items: center;
   }
 

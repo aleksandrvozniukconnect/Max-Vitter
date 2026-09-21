@@ -10,14 +10,10 @@ export type IntroViewport = {
   height: number
 }
 
+/** Geometry split only — intro plays on every width unless reduced-motion / skipIntro. */
 export const INTRO_MOBILE_MAX_WIDTH = 899
-/** CSS viewport gate — more reliable than innerWidth on phones (zoom, overflow, iframe). */
-export const INTRO_COMPACT_QUERY = `(max-width: ${INTRO_MOBILE_MAX_WIDTH}px)`
 
 export type IntroPlayInput = {
-  viewportWidth: number
-  /** `matchMedia(INTRO_COMPACT_QUERY).matches` — wins when it disagrees with innerWidth. */
-  compactMedia?: boolean
   reducedMotion?: boolean
   skipIntro?: boolean
 }
@@ -35,6 +31,9 @@ export const COMPACT_LOGO_DESKTOP = 64
 export const COMPACT_LOGO_MOBILE = 42
 export const HEADER_PAD_Y_DESKTOP = 14
 export const HEADER_PAD_Y_MOBILE = 13
+export const HEADER_PAD_X_MOBILE = 16
+export const HEADER_PAD_X_DESKTOP = 28
+export const HEADER_PAD_X_WIDE = 40
 
 export const COMPACT_HEADER_DESKTOP = COMPACT_LOGO_DESKTOP + HEADER_PAD_Y_DESKTOP * 2
 export const COMPACT_HEADER_MOBILE = COMPACT_LOGO_MOBILE + HEADER_PAD_Y_MOBILE * 2
@@ -43,8 +42,11 @@ export const COMPACT_HEADER_MOBILE = COMPACT_LOGO_MOBILE + HEADER_PAD_Y_MOBILE *
 export const INTRO_BEZIER = { x1: 0.785, y1: 0.135, x2: 0.15, y2: 0.86 } as const
 
 const START_BAND_VH = 0.72
+const MOBILE_START_BAND_VH = 0.52
 const DESKTOP_LOGO_MAX_WIDTH = 880
 const DESKTOP_LOGO_WIDTH_RATIO = 0.72
+const MOBILE_LOGO_WIDTH_RATIO = 0.84
+const BAND_FIT_EXTRA = 8
 
 export function clamp01(value: number): number {
   if (value <= 0) return 0
@@ -83,45 +85,57 @@ export function compactHeaderHeight(viewportWidth: number): number {
   return viewportWidth <= 599 ? COMPACT_HEADER_MOBILE : COMPACT_HEADER_DESKTOP
 }
 
+export function headerPadX(viewportWidth: number): number {
+  if (viewportWidth <= 599) return HEADER_PAD_X_MOBILE
+  if (viewportWidth >= 1120) return HEADER_PAD_X_WIDE
+  return HEADER_PAD_X_DESKTOP
+}
+
+export function headerPadY(viewportWidth: number): number {
+  return viewportWidth <= 599 ? HEADER_PAD_Y_MOBILE : HEADER_PAD_Y_DESKTOP
+}
+
+export function compactLogoHeight(viewportWidth: number): number {
+  return viewportWidth <= 599 ? COMPACT_LOGO_MOBILE : COMPACT_LOGO_DESKTOP
+}
+
+export function compactSlotWidth(viewportWidth: number): number {
+  return compactLogoHeight(viewportWidth) * (WORDMARK_VIEWBOX_WIDTH / WORDMARK_VIEWBOX_HEIGHT)
+}
+
 /**
- * Oversized top-left morph is desktop-first; compact on small screens.
- * `compactMedia` (CSS max-width: 899px) wins over a inflated `innerWidth`.
+ * Oversized morph plays on every viewport. Only reduced-motion and skipIntro
+ * (non-home routes / session compact) skip it.
  */
 export function shouldPlayIntro({
-  viewportWidth,
-  compactMedia,
   reducedMotion = false,
   skipIntro = false,
 }: IntroPlayInput): boolean {
-  if (reducedMotion || skipIntro || compactMedia === true) return false
-  return viewportWidth > INTRO_MOBILE_MAX_WIDTH
+  return !reducedMotion && !skipIntro
 }
 
-/** Width-only helper. Runtime gating uses `shouldPlayIntro` + matchMedia. */
-export function introEnabled(viewportWidth: number, reducedMotion = false): boolean {
-  return shouldPlayIntro({ viewportWidth, reducedMotion })
+export function introEnabled(reducedMotion = false, skipIntro = false): boolean {
+  return shouldPlayIntro({ reducedMotion, skipIntro })
 }
 
-export function readIntroMedia(win: {
-  innerWidth: number
-  matchMedia: (query: string) => { matches: boolean }
-}): {
-  viewportWidth: number
-  compactMedia: boolean
-} {
-  return {
-    viewportWidth: win.innerWidth,
-    compactMedia: win.matchMedia(INTRO_COMPACT_QUERY).matches,
+export function oversizedLogoWidth(viewport: IntroViewport): number {
+  const maxFit = Math.max(viewport.width - headerPadX(viewport.width) * 2, 1)
+  if (viewport.width <= INTRO_MOBILE_MAX_WIDTH) {
+    return Math.min(viewport.width * MOBILE_LOGO_WIDTH_RATIO, maxFit)
   }
+  return Math.min(viewport.width * DESKTOP_LOGO_WIDTH_RATIO, DESKTOP_LOGO_MAX_WIDTH, maxFit)
 }
 
-export function startBandHeight(viewportHeight: number): number {
-  return Math.round(viewportHeight * START_BAND_VH)
+export function startBandHeight(viewportHeight: number, viewportWidth = 1440): number {
+  const ratio = viewportWidth <= INTRO_MOBILE_MAX_WIDTH ? MOBILE_START_BAND_VH : START_BAND_VH
+  const fromVh = Math.round(viewportHeight * ratio)
+  const logoH = oversizedLogoHeight({ width: viewportWidth, height: viewportHeight })
+  const minBand = Math.ceil(logoH + headerPadY(viewportWidth) * 2 + BAND_FIT_EXTRA)
+  return Math.max(fromVh, minBand)
 }
 
 export function oversizedLogoHeight(viewport: IntroViewport): number {
-  const width = Math.min(viewport.width * DESKTOP_LOGO_WIDTH_RATIO, DESKTOP_LOGO_MAX_WIDTH)
-  return width * (WORDMARK_VIEWBOX_HEIGHT / WORDMARK_VIEWBOX_WIDTH)
+  return oversizedLogoWidth(viewport) * (WORDMARK_VIEWBOX_HEIGHT / WORDMARK_VIEWBOX_WIDTH)
 }
 
 export function compactLogoSecondLinePx(logoHeight = COMPACT_LOGO_DESKTOP): number {
@@ -129,7 +143,7 @@ export function compactLogoSecondLinePx(logoHeight = COMPACT_LOGO_DESKTOP): numb
 }
 
 export function introScrollDistance(viewport: IntroViewport): number {
-  return Math.max(startBandHeight(viewport.height) - compactHeaderHeight(viewport.width), 1)
+  return Math.max(startBandHeight(viewport.height, viewport.width) - compactHeaderHeight(viewport.width), 1)
 }
 
 export function introProgress(scrollY: number, distance: number, skip = false): number {
@@ -168,8 +182,7 @@ export function introBandHeight(progress: number, startHeight: number, endHeight
  */
 export function logoIntroScale(slotWidth: number, viewport: IntroViewport): number {
   if (slotWidth <= 0 || viewport.width <= 0) return 1
-  const targetWidth = Math.min(viewport.width * DESKTOP_LOGO_WIDTH_RATIO, DESKTOP_LOGO_MAX_WIDTH)
-  return Math.max(targetWidth / slotWidth, 1)
+  return Math.max(oversizedLogoWidth(viewport) / slotWidth, 1)
 }
 
 export function interpolateScale(fromScale: number, progress: number): number {
