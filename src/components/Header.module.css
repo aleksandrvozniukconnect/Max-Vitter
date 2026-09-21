@@ -229,7 +229,7 @@
   line-height: 1.6;
 }
 
-/* Compact-from-start: reduced-motion and non-home pages. */
+/* Compact-from-start: non-home pages and session compact. Not reduced-motion. */
 .compactFromStart {
   align-items: center;
   overflow: visible;
@@ -294,32 +294,4 @@ html:lang(ru) .desktopNav {
 html:lang(uk) .cta,
 html:lang(ru) .cta {
   letter-spacing: 0.04em;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .header {
-    height: 92px;
-    align-items: center;
-    padding: 0 28px;
-    overflow: visible;
-  }
-
-  .brandMark {
-    transform: none;
-    will-change: auto;
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) and (max-width: 599px) {
-  .header {
-    height: 68px;
-    padding: 0 16px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) and (min-width: 1120px) {
-  .header {
-    padding: 0 40px;
-  }
 }

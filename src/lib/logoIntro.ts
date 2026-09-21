@@ -10,10 +10,15 @@ export type IntroViewport = {
   height: number
 }
 
-/** Geometry split only — intro plays on every width unless reduced-motion / skipIntro. */
+/** Geometry split only — intro plays on every width unless skipIntro. */
 export const INTRO_MOBILE_MAX_WIDTH = 899
 
 export type IntroPlayInput = {
+  /**
+   * Ignored. The Kettal morph is user-scroll-driven, not autoplay.
+   * Android/Brave often report prefers-reduced-motion as true (a11y
+   * setting or fingerprinting), which used to skip the whole intro.
+   */
   reducedMotion?: boolean
   skipIntro?: boolean
 }
@@ -104,18 +109,16 @@ export function compactSlotWidth(viewportWidth: number): number {
 }
 
 /**
- * Oversized morph plays on every viewport. Only reduced-motion and skipIntro
- * (non-home routes / session compact) skip it.
+ * Oversized morph plays on every viewport, including when the device
+ * reports prefers-reduced-motion. Only skipIntro (non-home routes /
+ * session compact) skips it.
  */
-export function shouldPlayIntro({
-  reducedMotion = false,
-  skipIntro = false,
-}: IntroPlayInput): boolean {
-  return !reducedMotion && !skipIntro
+export function shouldPlayIntro({ skipIntro = false }: IntroPlayInput): boolean {
+  return !skipIntro
 }
 
-export function introEnabled(reducedMotion = false, skipIntro = false): boolean {
-  return shouldPlayIntro({ reducedMotion, skipIntro })
+export function introEnabled(_reducedMotion = false, skipIntro = false): boolean {
+  return shouldPlayIntro({ skipIntro })
 }
 
 export function oversizedLogoWidth(viewport: IntroViewport): number {

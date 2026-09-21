@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { motion } from 'framer-motion'
+import { motion, MotionConfig } from 'framer-motion'
 import { Logo } from './Logo'
 import { AppLink } from './AppLink'
 import { useLocale } from '../context/LocaleContext'
@@ -30,7 +30,8 @@ export function Header() {
   const closeMenu = () => setMenuOpen(false)
 
   return (
-    <>
+    // Scroll morph is user-controlled; keep it even when OS reports reduce.
+    <MotionConfig reducedMotion="never">
       <span id="top" className={styles.topAnchor} />
       {showIntro ? <motion.div className={styles.introSpacer} style={{ height: spacerHeight }} aria-hidden="true" /> : null}
       <motion.header
@@ -137,6 +138,6 @@ export function Header() {
             )
           : null}
       </motion.header>
-    </>
+    </MotionConfig>
   )
 }

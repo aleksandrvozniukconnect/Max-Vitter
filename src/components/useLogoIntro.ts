@@ -2,7 +2,6 @@ import { useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import {
   useMotionValue,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
   useTransform,
   type MotionValue,
@@ -24,20 +23,12 @@ import {
   COMPACT_HEADER_DESKTOP,
 } from '../lib/logoIntro'
 
-function readReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
-function readPlayIntro(reduceMotion: boolean, hideIntro: boolean): boolean {
+function readPlayIntro(hideIntro: boolean): boolean {
   if (typeof window === 'undefined') return false
-  return shouldPlayIntro({
-    reducedMotion: reduceMotion,
-    skipIntro: hideIntro,
-  })
+  return shouldPlayIntro({ skipIntro: hideIntro })
 }
 
 export type LogoIntro = {
-  reduceMotion: boolean
   showIntro: boolean
   ready: boolean
   /** Nav, language switcher, hamburger and Send project share this threshold. */
@@ -52,8 +43,6 @@ export type LogoIntro = {
 }
 
 export function useLogoIntro(forceCompact: boolean, skipIntro = false): LogoIntro {
-  const reduceHook = useReducedMotion()
-  const reduceMotion = reduceHook ?? readReducedMotion()
   const suppressIntro = skipIntro || isSessionCompact()
 
   const slotRef = useRef<HTMLAnchorElement>(null)
@@ -65,7 +54,7 @@ export function useLogoIntro(forceCompact: boolean, skipIntro = false): LogoIntr
   const endHMV = useMotionValue(COMPACT_HEADER_DESKTOP)
   const skipMV = useMotionValue(1)
 
-  const [showIntro, setShowIntro] = useState(() => readPlayIntro(reduceMotion, suppressIntro))
+  const [showIntro, setShowIntro] = useState(() => readPlayIntro(suppressIntro))
   const [ready, setReady] = useState(!showIntro)
   const [navReady, setNavReady] = useState(!showIntro)
   const [settled, setSettled] = useState(!showIntro)
@@ -76,10 +65,7 @@ export function useLogoIntro(forceCompact: boolean, skipIntro = false): LogoIntr
     const measure = () => {
       const hideIntro = skipIntro || isSessionCompact()
       const viewport = { width: window.innerWidth, height: window.innerHeight }
-      const enabled = shouldPlayIntro({
-        reducedMotion: reduceMotion,
-        skipIntro: hideIntro,
-      })
+      const enabled = shouldPlayIntro({ skipIntro: hideIntro })
       const endH = compactHeaderHeight(viewport.width)
       const startH = enabled ? startBandHeight(viewport.height, viewport.width) : endH
       const distance = enabled ? introScrollDistance(viewport) : 1
@@ -110,7 +96,7 @@ export function useLogoIntro(forceCompact: boolean, skipIntro = false): LogoIntr
     return () => {
       window.removeEventListener('resize', measure)
     }
-  }, [reduceMotion, forceCompact, skipIntro, fromS, distanceMV, startHMV, endHMV, skipMV])
+  }, [forceCompact, skipIntro, fromS, distanceMV, startHMV, endHMV, skipMV])
 
   const progress = useTransform([scrollY, distanceMV, skipMV], (values) => {
     const y = Number(values[0])
@@ -137,7 +123,6 @@ export function useLogoIntro(forceCompact: boolean, skipIntro = false): LogoIntr
   })
 
   return {
-    reduceMotion,
     showIntro,
     ready,
     navReady,
