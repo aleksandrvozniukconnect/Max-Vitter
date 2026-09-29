@@ -68,6 +68,87 @@ def draw_tracked(
         x += font.getlength(char) + tracking
 
 
+def _letter(pixel: tuple[int, int, int]) -> bool:
+    red, green, blue = pixel
+    return red < 95 and green < 80 and blue < 70
+
+
+def _nearest_fill(px, x: int, y: int, width: int, height: int) -> tuple[int, int, int]:
+    for radius in range(1, 30):
+        for yy in range(y - radius, y + radius + 1):
+            if not 0 <= yy < height:
+                continue
+            for xx in (x - radius, x + radius):
+                if 0 <= xx < width and not _letter(px[xx, yy]):
+                    return px[xx, yy]
+        for xx in range(x - radius, x + radius + 1):
+            if not 0 <= xx < width:
+                continue
+            for yy in (y - radius, y + radius):
+                if 0 <= yy < height and not _letter(px[xx, yy]):
+                    return px[xx, yy]
+    return (140, 118, 96)
+
+
+def _erase_letters(px, box: tuple[int, int, int, int], width: int, height: int) -> None:
+    x0, y0, x1, y1 = box
+    fills: dict[tuple[int, int], tuple[int, int, int]] = {}
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if _letter(px[x, y]):
+                fills[(x, y)] = _nearest_fill(px, x, y, width, height)
+    for (x, y), color in fills.items():
+        px[x, y] = color
+
+
+def repair_deliver_labels(image: Image.Image) -> bool:
+    """Correct crate marks on the delivery drawing: ROORF → ROOF, AXPORT → EXPORT.
+
+    Idempotent: a second pass leaves the corrected labels alone.
+    """
+    image_rgb = image if image.mode == "RGB" else image.convert("RGB")
+    px = image_rgb.load()
+    width, height = image_rgb.size
+    changed = False
+
+    # The extra R in ROORF still sits just left of F. After the fix, that slot is the F
+    # and the old F position is bare wood.
+    old_f = sum(1 for y in range(406, 419) for x in range(53, 57) if _letter(px[x, y]))
+    if old_f > 8:
+        stolen = [
+            (x, y, px[x, y])
+            for y in range(403, 422)
+            for x in range(52, 58)
+            if _letter(px[x, y])
+        ]
+        _erase_letters(px, (44, 403, 59, 422), width, height)
+        for x, y, color in stolen:
+            px[x - 7, y] = color
+        changed = True
+
+    # AXPORT's A still has a right leg beside the following X. An E does not.
+    if _letter(px[880, 572]):
+        _erase_letters(px, (872, 564, 885, 598), width, height)
+        ink = (16, 6, 0)
+        for y in range(566, 596):
+            for x in range(874, 877):
+                px[x, y] = ink
+        for y in range(566, 570):
+            for x in range(874, 884):
+                px[x, y] = ink
+        for y in range(578, 582):
+            for x in range(874, 882):
+                px[x, y] = ink
+        for y in range(591, 596):
+            for x in range(874, 884):
+                px[x, y] = ink
+        changed = True
+
+    if image.mode != "RGB":
+        image.paste(image_rgb)
+    return changed
+
+
 def paint(source: Image.Image, key: str, title: str, body: str) -> Image.Image:
     image = source.convert("RGB")
     x0, y0, x1, y1 = CLEAR[key]
@@ -108,6 +189,11 @@ def main() -> None:
     if len(sys.argv) != 2:
         raise SystemExit("usage: localize-pit-stop.py captions.json")
     captions = json.loads(Path(sys.argv[1]).read_text())
+    deliver_path = SOURCE_DIR / "deliver.png"
+    deliver = Image.open(deliver_path).convert("RGB")
+    if repair_deliver_labels(deliver):
+        deliver.save(deliver_path)
+        print("repaired deliver crate labels in source")
     for locale, stations in captions.items():
         dest_dir = OUT_DIR / locale
         dest_dir.mkdir(parents=True, exist_ok=True)
