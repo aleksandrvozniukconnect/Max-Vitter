@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion, useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion'
-import { steps } from '../content/site'
+import { stepArt, steps } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
 import { CabinetIcon, CarIcon, MetronomeIcon, StationIcon, TrafficLight } from './PitIcons'
 import { Reveal } from './Reveal'
@@ -49,15 +49,41 @@ export function HowWeWork() {
             {steps.map((step, index) => {
               const text = copy.steps[step.key]
               const done = passed > index
+              const active = passed === index + 1
               return (
                 <li
                   key={step.key}
                   id={`step-${step.key}`}
-                  className={`${styles.station} ${done ? styles.stationDone : ''}`}
+                  className={`${styles.station} ${done ? styles.stationDone : ''} ${
+                    active ? styles.stationActive : ''
+                  }`}
                 >
                   <span className={styles.gear}>
                     {howWeWork.gear} {index + 1}
                   </span>
+                  <figure className={styles.artWrap}>
+                    <motion.img
+                      className={styles.art}
+                      src={stepArt[step.key]}
+                      alt={text.title}
+                      loading="lazy"
+                      draggable={false}
+                      initial={false}
+                      animate={
+                        reduce
+                          ? { opacity: 1, filter: 'blur(0px)', scale: 1 }
+                          : {
+                              opacity: done ? 1 : 0.1,
+                              filter: done ? 'blur(0px)' : 'blur(14px)',
+                              scale: done ? 1 : 1.08,
+                            }
+                      }
+                      transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                    <span className={styles.artGear} aria-hidden="true">
+                      {index + 1}
+                    </span>
+                  </figure>
                   <span className={styles.icon}>
                     <StationIcon step={step.key} />
                   </span>

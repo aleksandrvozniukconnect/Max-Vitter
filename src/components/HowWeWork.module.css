@@ -125,6 +125,72 @@
   margin: 14px 0 10px;
 }
 
+/* scroll-revealed storyboard illustration ("saga" panel) */
+.artWrap {
+  position: relative;
+  margin: 14px 0 4px;
+  overflow: hidden;
+  border-radius: 8px;
+  aspect-ratio: 4 / 3;
+  background: var(--paper-deep);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  transition: box-shadow 0.4s ease;
+}
+
+.art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  will-change: opacity, filter, transform;
+}
+
+.artGear {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--white);
+  font-family: var(--display);
+  font-size: 0.85rem;
+  line-height: 1;
+  opacity: 0.5;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.stationDone .artGear {
+  opacity: 1;
+}
+
+.stationActive {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.stationActive .artWrap {
+  box-shadow:
+    inset 0 0 0 1px var(--ink),
+    0 14px 34px -20px rgba(0, 0, 0, 0.6);
+}
+
+.stationActive .artGear {
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}
+
 .station h3 {
   margin: 0 0 8px;
   font-size: 1.45rem;

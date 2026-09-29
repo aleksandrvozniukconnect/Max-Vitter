@@ -11,6 +11,7 @@ import {
   photos,
   projectCases,
   projectKeys,
+  stepArt,
   stepKeys,
   steps,
 } from './site'
@@ -55,6 +56,14 @@ describe('Design Choice content model', () => {
         expect(text.title.length).toBeGreaterThan(0)
       }
     }
+  })
+
+  it('has one pit-stop storyboard illustration per station', () => {
+    expect(Object.keys(stepArt).sort()).toEqual([...stepKeys].sort())
+    for (const key of stepKeys) {
+      expect(stepArt[key]).toMatch(/^\/images\/pit-stop\/.+\.png$/)
+    }
+    expect(new Set(Object.values(stepArt)).size).toBe(stepKeys.length)
   })
 
   it('folds the three gates into steps 3, 4 and 5 in production order', () => {
