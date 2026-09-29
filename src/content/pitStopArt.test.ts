@@ -115,25 +115,21 @@ describe('pit-stop storyboard art', () => {
       const ink = (pixel: readonly [number, number, number]) =>
         pixel[0] < 40 && pixel[1] < 30 && pixel[2] < 25
 
-      // Side face of the ROOM-1 floor crate: bare wood, no letter ink,
-      // and no pinched dark corners. Brightness stays with the calm boards.
-      let floorInk = 0
-      let darkCorners = 0
+      // Side face of the ROOM-1 floor crate is drawn wood: pencil contrast,
+      // wood-colored, and not a flat pasted patch. Plank ink is allowed.
       let sum = 0
       let sumSquares = 0
       let count = 0
       let sideSum = 0
       let sideCount = 0
-      for (let y = 700; y < 743; y += 1) {
-        for (let x = 798; x < 854; x += 1) {
+      for (let y = 690; y < 740; y += 1) {
+        for (let x = 790; x < 850; x += 1) {
           const pixel = at(x, y)
-          if (ink(pixel)) floorInk += 1
-          if (pixel[0] < 90) darkCorners += 1
           sum += pixel[0]
           sumSquares += pixel[0] * pixel[0]
           count += 1
         }
-        for (let x = 780; x < 792; x += 1) {
+        for (let x = 660; x < 700; x += 1) {
           sideSum += at(x, y)[0]
           sideCount += 1
         }
@@ -141,10 +137,10 @@ describe('pit-stop storyboard art', () => {
       const mean = sum / count
       const sideMean = sideSum / sideCount
       const deviation = Math.sqrt(sumSquares / count - mean * mean)
-      expect(floorInk).toBe(0)
-      expect(darkCorners).toBe(0)
-      expect(deviation).toBeGreaterThan(8)
-      expect(Math.abs(mean - sideMean)).toBeLessThan(16)
+      expect(deviation).toBeGreaterThan(22)
+      expect(mean).toBeGreaterThan(120)
+      expect(mean).toBeLessThan(190)
+      expect(Math.abs(mean - sideMean)).toBeLessThan(40)
       // Large crate still reads EXPORT, and the small ROOF mark is untouched.
       expect(ink(at(880, 572))).toBe(false)
       expect(ink(at(875, 580))).toBe(true)
