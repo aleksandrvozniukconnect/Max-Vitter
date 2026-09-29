@@ -105,7 +105,7 @@ def _erase_letters(px, box: tuple[int, int, int, int], width: int, height: int) 
 # Side face of the small foreground crate. The stencil sat inside this
 # rectangle. Rows above it are the same boards, with no lettering.
 _FLOOR_FACE = (798, 700, 862, 743)
-_FLOOR_GRAIN = (676, 700)
+_FLOOR_GRAIN = (678, 700)
 
 
 def _wood_tone(block: np.ndarray) -> np.ndarray:
@@ -119,47 +119,39 @@ def _wood_tone(block: np.ndarray) -> np.ndarray:
 def _redraw_floor_crate_face(image: Image.Image) -> bool:
     """Redraw the floor crate's viewer-facing boards.
 
-    Sampling letters out of the face left a pale flat patch and broke the
-    pencil lines. The unlabeled wood directly above that face is copied
-    down the same columns and folded so it covers the old lettering, while
-    each row keeps the brightness of the boards beside it. A second pass
-    changes nothing.
+    Folding the wood above this face pinched dark corners into a mirrored V.
+    The face is painted again from that same wood with the dark spikes taken
+    out, and each row is set to the brightness of the calm boards beside it.
+    A second pass changes nothing.
     """
-    arr = np.array(image if image.mode == "RGB" else image.convert("RGB")).astype(np.int16)
+    arr = np.array(image if image.mode == "RGB" else image.convert("RGB")).astype(np.float32)
     x0, y0, x1, y1 = _FLOOR_FACE
     src_y0, src_y1 = _FLOOR_GRAIN
-    span = src_y1 - src_y0
+    grain = arr[src_y0:src_y1, x0:x1].copy()
+    for index in range(len(grain)):
+        lum = grain[index].mean(axis=1)
+        calm = grain[index][lum >= 115]
+        tone = np.median(calm if len(calm) > 4 else grain[index], axis=0)
+        grain[index][lum < 115] = tone
+        grain[index] -= np.median(grain[index], axis=0)
+    scale = 18.0 / (float(grain.mean(axis=2).std()) + 1e-6)
     work = arr.copy()
+    width = x1 - x0
     for y in range(y0, y1):
-        left = _wood_tone(arr[y, 778:796])
+        left = np.median(arr[y, 780:792], axis=0)
         right_block = arr[y, 862:866]
-        right_lum = right_block.mean(axis=1)
-        right_keep = right_block[right_lum >= 90]
-        right = _wood_tone(right_keep) if len(right_keep) else left
-        fold = (y - src_y0) % (2 * span)
-        if fold >= span:
-            fold = 2 * span - 1 - fold
-        grain = np.clip(arr[src_y0 + fold, x0:x1], 70, 230)
-        grain_mean = np.median(grain, axis=0)
-        blend = np.linspace(0, 1, x1 - x0)[:, None]
+        right_keep = right_block[right_block.mean(axis=1) >= 115]
+        right = np.median(right_keep, axis=0) if len(right_keep) else left
+        deviation = np.clip(grain[(y - y0) % len(grain)] * scale, -34, 38)
+        blend = np.linspace(0, 1, width)[:, None]
         base = (1 - blend) * left + blend * right
-        work[y, x0:x1] = np.clip(base + (grain - grain_mean), 48, 230)
+        work[y, x0:x1] = np.clip(base + deviation, 102, 200)
 
-    # Carry the darker pencil marks from the boards above down those columns.
-    above = arr[692:y0, x0:x1].mean(axis=2).min(axis=0) < 115
-    region = work[y0:y1, x0:x1]
-    lum = region.mean(axis=2)
-    darker = lum < np.median(lum, axis=1, keepdims=True)
-    tone = np.array([96, 74, 52], dtype=np.int16)
-    blended = np.clip((region + tone) // 2, 48, 200)
-    mask = darker & above[None, :]
-    region[mask] = blended[mask]
-    work[y0:y1, x0:x1] = region
-
-    if np.array_equal(work, arr):
+    before = arr.astype(np.uint8)
+    painted = work.astype(np.uint8)
+    if np.array_equal(painted, before):
         return False
-    painted = Image.fromarray(work.astype(np.uint8))
-    image.paste(painted)
+    image.paste(Image.fromarray(painted))
     return True
 
 
