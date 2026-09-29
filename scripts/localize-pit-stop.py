@@ -101,6 +101,66 @@ def _erase_letters(px, box: tuple[int, int, int, int], width: int, height: int) 
         px[x, y] = color
 
 
+def _strict_letter(pixel: tuple[int, int, int]) -> bool:
+    red, green, blue = pixel
+    return red < 55 and green < 45 and blue < 35
+
+
+def _repair_floor_axport(px, width: int, height: int) -> bool:
+    """The foreground floor crate still reads AXPORT beside ROOM-1.
+
+    Its A keeps a right leg at (805, 731). An E leaves that gap as wood.
+    The following XPORT is not touched. A second pass is a no-op.
+    """
+    if not _strict_letter(px[805, 731]):
+        return False
+
+    x0, y0, x1, y1 = 798, 723, 809, 745
+    glyph: set[tuple[int, int]] = set()
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if _strict_letter(px[x, y]):
+                glyph.add((x, y))
+    fringe: set[tuple[int, int]] = set()
+    for x, y in glyph:
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                nx, ny = x + dx, y + dy
+                if not (x0 <= nx < x1 and y0 <= ny < y1) or (nx, ny) in glyph:
+                    continue
+                red, green, blue = px[nx, ny]
+                if red < 100 and green < 85 and blue < 70:
+                    fringe.add((nx, ny))
+    glyph |= fringe
+
+    fills: dict[tuple[int, int], tuple[int, int, int]] = {}
+    for x, y in glyph:
+        fills[(x, y)] = _nearest_fill(px, x, y, width, height)
+    for (x, y), color in fills.items():
+        px[x, y] = color
+
+    ink = (14, 6, 0)
+    for local_y in range(20):
+        offset = int(round(2 - (2 * local_y) / 19))
+        screen_y = 724 + local_y
+
+        def plot(local_x: int, sy: int = screen_y, shift: int = offset) -> None:
+            px[799 + local_x + shift, sy] = ink
+
+        plot(0)
+        plot(1)
+        if local_y <= 2:
+            for local_x in range(8):
+                plot(local_x)
+        if 8 <= local_y <= 10:
+            for local_x in range(7):
+                plot(local_x)
+        if local_y >= 17:
+            for local_x in range(8):
+                plot(local_x)
+    return True
+
+
 def repair_deliver_labels(image: Image.Image) -> bool:
     """Correct crate marks on the delivery drawing: ROORF → ROOF, AXPORT → EXPORT.
 
@@ -126,7 +186,7 @@ def repair_deliver_labels(image: Image.Image) -> bool:
             px[x - 7, y] = color
         changed = True
 
-    # AXPORT's A still has a right leg beside the following X. An E does not.
+    # Large right crate: AXPORT's A still has a right leg beside the following X.
     if _letter(px[880, 572]):
         _erase_letters(px, (872, 564, 885, 598), width, height)
         ink = (16, 6, 0)
@@ -142,6 +202,10 @@ def repair_deliver_labels(image: Image.Image) -> bool:
         for y in range(591, 596):
             for x in range(874, 884):
                 px[x, y] = ink
+        changed = True
+
+    # Small foreground crate (ROOM-1 on the top face): the side face still says AXPORT.
+    if _repair_floor_axport(px, width, height):
         changed = True
 
     if image.mode != "RGB":

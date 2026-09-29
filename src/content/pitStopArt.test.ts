@@ -100,4 +100,95 @@ describe('pit-stop storyboard art', () => {
     expect(en.equals(ru)).toBe(false)
     expect(uk.equals(ru)).toBe(false)
   })
+
+  it('paints EXPORT on every deliver crate, including the floor crate that said AXPORT', () => {
+    const files = [
+      resolve('scripts/pit-stop-source/deliver.png'),
+      ...localeIds.map((locale) => resolve('public', stepArtFor(locale, 'deliver').slice(1))),
+    ]
+    for (const file of files) {
+      const { width, rgb } = readPngRgb(readFileSync(file))
+      const at = (x: number, y: number) => {
+        const index = (y * width + x) * 3
+        return [rgb[index], rgb[index + 1], rgb[index + 2]] as const
+      }
+      const ink = (pixel: readonly [number, number, number]) =>
+        pixel[0] < 40 && pixel[1] < 30 && pixel[2] < 25
+
+      // Floor crate beside ROOM-1. The old A kept a right leg here; the E leaves it wood.
+      expect(ink(at(805, 731))).toBe(false)
+      expect(ink(at(801, 726))).toBe(true)
+      expect(ink(at(800, 734))).toBe(true)
+      expect(ink(at(801, 742))).toBe(true)
+      // The X of XPORT stays put.
+      expect(ink(at(810, 724))).toBe(true)
+      // Large crate: the earlier AXPORT is still an E, not an A.
+      expect(ink(at(880, 572))).toBe(false)
+      expect(ink(at(875, 580))).toBe(true)
+    }
+  })
 })
+
+function paeth(left: number, up: number, upLeft: number): number {
+  const estimate = left + up - upLeft
+  const leftDelta = Math.abs(estimate - left)
+  const upDelta = Math.abs(estimate - up)
+  const upLeftDelta = Math.abs(estimate - upLeft)
+  if (leftDelta <= upDelta && leftDelta <= upLeftDelta) return left
+  if (upDelta <= upLeftDelta) return up
+  return upLeft
+}
+
+function readPngRgb(bytes: Uint8Array): { width: number; height: number; rgb: Uint8Array } {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+  let offset = 8
+  let width = 0
+  let height = 0
+  const idat: Uint8Array[] = []
+  while (offset + 8 <= bytes.length) {
+    const length = view.getUint32(offset)
+    const type = latin1(bytes.subarray(offset + 4, offset + 8))
+    const data = bytes.subarray(offset + 8, offset + 8 + length)
+    if (type === 'IHDR') {
+      width = view.getUint32(offset + 8)
+      height = view.getUint32(offset + 12)
+      if (data[8] !== 8 || data[9] !== 2 || data[12] !== 0) {
+        throw new Error(`unsupported png bit=${data[8]} color=${data[9]} interlace=${data[12]}`)
+      }
+    } else if (type === 'IDAT') {
+      idat.push(data)
+    } else if (type === 'IEND') {
+      break
+    }
+    offset += 12 + length
+  }
+  const compressed = new Uint8Array(idat.reduce((sum, chunk) => sum + chunk.length, 0))
+  let cursor = 0
+  for (const chunk of idat) {
+    compressed.set(chunk, cursor)
+    cursor += chunk.length
+  }
+  const raw = inflateSync(compressed)
+  const stride = width * 3
+  const rgb = new Uint8Array(height * stride)
+  let src = 0
+  for (let y = 0; y < height; y += 1) {
+    const filter = raw[src]
+    src += 1
+    const row = y * stride
+    for (let x = 0; x < stride; x += 1) {
+      const value = raw[src]
+      src += 1
+      const left = x >= 3 ? rgb[row + x - 3] : 0
+      const up = y > 0 ? rgb[row - stride + x] : 0
+      const upLeft = y > 0 && x >= 3 ? rgb[row - stride + x - 3] : 0
+      if (filter === 0) rgb[row + x] = value
+      else if (filter === 1) rgb[row + x] = (value + left) & 255
+      else if (filter === 2) rgb[row + x] = (value + up) & 255
+      else if (filter === 3) rgb[row + x] = (value + Math.floor((left + up) / 2)) & 255
+      else if (filter === 4) rgb[row + x] = (value + paeth(left, up, upLeft)) & 255
+      else throw new Error(`png filter ${filter}`)
+    }
+  }
+  return { width, height, rgb }
+}
