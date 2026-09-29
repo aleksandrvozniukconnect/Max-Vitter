@@ -6,9 +6,11 @@ import {
   useReducedMotion,
   useScroll,
 } from 'framer-motion'
-import { stepArt, steps, type Step, type StepKey } from '../content/site'
+import { stepArtFor } from '../content/pitStopArt'
+import { steps, type Step, type StepKey } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
-import { CabinetIcon, CarIcon, MetronomeIcon, StationIcon, TrafficLight } from './PitIcons'
+import type { LocaleId } from '../i18n/locale'
+import { CabinetIcon, MetronomeIcon, StationIcon, TrafficLight } from './PitIcons'
 import { Reveal } from './Reveal'
 import styles from './HowWeWork.module.css'
 
@@ -21,11 +23,13 @@ function chapterLayout(index: number): 'left' | 'right' | 'wide' {
 }
 
 function ChapterArt({
+  locale,
   stepKey,
   title,
   layout,
   reduce,
 }: {
+  locale: LocaleId
   stepKey: StepKey
   title: string
   layout: 'left' | 'right' | 'wide'
@@ -43,7 +47,7 @@ function ChapterArt({
     >
       <img
         className={styles.art}
-        src={stepArt[stepKey]}
+        src={stepArtFor(locale, stepKey)}
         alt={title}
         loading="lazy"
         draggable={false}
@@ -53,6 +57,7 @@ function ChapterArt({
 }
 
 function Chapter({
+  locale,
   step,
   index,
   copy,
@@ -60,6 +65,7 @@ function Chapter({
   reduce,
   current,
 }: {
+  locale: LocaleId
   step: Step
   index: number
   copy: Copy
@@ -82,7 +88,7 @@ function Chapter({
         active ? styles.chapterActive : ''
       }`}
     >
-      <ChapterArt stepKey={step.key} title={text.title} layout={layout} reduce={reduce} />
+      <ChapterArt locale={locale} stepKey={step.key} title={text.title} layout={layout} reduce={reduce} />
       <div className={styles.copy}>
         <p className={styles.gear}>
           {howWeWork.gear} {index + 1}
@@ -112,7 +118,7 @@ function Chapter({
 }
 
 export function HowWeWork() {
-  const { copy } = useLocale()
+  const { copy, locale } = useLocale()
   const { howWeWork } = copy
   const reduce = useReducedMotion()
   const laneRef = useRef<HTMLOListElement>(null)
@@ -137,7 +143,6 @@ export function HowWeWork() {
         <div className={styles.bandInner}>
           <div className={styles.lead}>
             <p className={styles.pitIn}>
-              <CarIcon />
               <span>{howWeWork.pitIn}</span>
             </p>
             <p className={styles.pace}>
@@ -161,6 +166,7 @@ export function HowWeWork() {
               {steps.map((step, index) => (
                 <Chapter
                   key={step.key}
+                  locale={locale}
                   step={step}
                   index={index}
                   copy={copy}

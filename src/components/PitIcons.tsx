@@ -19,18 +19,6 @@ function Icon({ children }: { children: ReactNode }) {
   )
 }
 
-export function CarIcon() {
-  return (
-    <Icon>
-      <path d="M3 25h6l4-5h11l5 5h8" />
-      <path d="M13 20l2-5h6" />
-      <circle cx="10" cy="27" r="3" />
-      <circle cx="30" cy="27" r="3" />
-      <path d="M3 21v6M37 22v5" />
-    </Icon>
-  )
-}
-
 export function CabinetIcon() {
   return (
     <Icon>

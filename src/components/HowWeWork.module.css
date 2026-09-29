@@ -321,6 +321,10 @@ html:lang(ru) .chapter h3 {
     max-height: 420px;
   }
 
+  .wide .art {
+    object-fit: contain;
+  }
+
   .wide .copy {
     order: 1;
     max-width: 640px;

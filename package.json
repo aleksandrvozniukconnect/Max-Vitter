@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "pit-stop:art": "node scripts/localize-pit-stop.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.23.12",
