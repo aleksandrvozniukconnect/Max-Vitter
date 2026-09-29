@@ -102,80 +102,80 @@ def _erase_letters(px, box: tuple[int, int, int, int], width: int, height: int) 
         px[x, y] = color
 
 
-# Interior of the small crate's viewer-facing side. The corner ink at
-# x<=773 and x>=863, and the bottom edge at y>=747, stay as drawn.
+# Side panel interior. The black outline sits just outside this box.
 _FLOOR_FACE = (775, 678, 863, 746)
+# Top face of the same crate: unlabeled boards, still the original drawing.
+_FLOOR_TOP = ((668.0, 634.0), (852.0, 632.0), (858.0, 668.0), (664.0, 670.0))
+
+
+def _perspective_from_dest(dest, source) -> np.ndarray:
+    rows = []
+    values = []
+    for (x, y), (u, v) in zip(dest, source):
+        rows.append([x, y, 1, 0, 0, 0, -u * x, -u * y])
+        rows.append([0, 0, 0, x, y, 1, -v * x, -v * y])
+        values.extend((u, v))
+    return np.linalg.solve(np.asarray(rows, dtype=np.float64), np.asarray(values, dtype=np.float64))
+
+
+def _sample_bilinear(image: np.ndarray, u: float, v: float) -> np.ndarray:
+    height, width = image.shape[:2]
+    u = min(max(u, 0.0), width - 1.001)
+    v = min(max(v, 0.0), height - 1.001)
+    x0, y0 = int(u), int(v)
+    fx, fy = u - x0, v - y0
+    top = image[y0, x0] * (1 - fx) + image[y0, x0 + 1] * fx
+    bottom = image[y0 + 1, x0] * (1 - fx) + image[y0 + 1, x0 + 1] * fx
+    return top * (1 - fy) + bottom * fy
 
 
 def _redraw_floor_crate_face(image: Image.Image) -> bool:
-    """Draw the floor crate's side face in pen and ink.
+    """Cover the floor crate's side with wood from its own top face.
 
-    The old stencil sat on this face. Filling or folding those pixels left
-    a smear. The boards are drawn again: wood tone, steep pencil strokes,
-    and two sketchy plank seams. Nothing is copied from the letter area.
-    A second pass changes nothing.
+    The side panel is the top face of this same crate, perspective-mapped
+    into the outline. The top is lit brighter, so the mapped wood is shifted
+    to the tone of the ROOM-1 face. The outer two pixels blend into the
+    existing outline. A second pass changes nothing.
     """
     arr = np.array(image if image.mode == "RGB" else image.convert("RGB")).astype(np.float32)
     x0, y0, x1, y1 = _FLOOR_FACE
-    rng = np.random.default_rng(19)
-    paper = np.array([178.0, 152.0, 126.0])
-    ink = np.array([36.0, 22.0, 12.0])
-    hatch_a = np.array([72.0, 52.0, 34.0])
-    hatch_b = np.array([108.0, 86.0, 64.0])
-    work = arr.copy()
-    height = y1 - y0
-    seams = (y0 + height // 3, y0 + (2 * height) // 3)
-
+    dest = np.array([[x0, y0], [x1 - 1, y0 + 2], [x1 - 1, y1 - 1], [x0, y1 - 1]], dtype=np.float64)
+    homography = _perspective_from_dest(dest, np.asarray(_FLOOR_TOP, dtype=np.float64))
+    a, b, c, d, e, f, g, h = homography
+    sampled = np.empty((y1 - y0, x1 - x0, 3), dtype=np.float32)
     for y in range(y0, y1):
-        plank = 0 if y < seams[0] else 1 if y < seams[1] else 2
-        top = y0 if plank == 0 else seams[plank - 1]
-        bottom = seams[plank] if plank < 2 else y1
-        local = (y - top) / max(1, bottom - top)
-        tone = paper * (1.0 - 0.08 * local) * (1.0 - 0.035 * plank)
-        speckle = rng.normal(0, 3.2, size=(x1 - x0, 3))
-        work[y, x0:x1] = np.clip(tone + speckle, 0, 255)
-
-    def inside(x: int, y: int) -> bool:
-        return x0 <= x < x1 and y0 <= y < y1
-
-    x = x0 + int(rng.integers(0, 4))
-    while x < x1:
-        shift = int(rng.integers(-1, 2))
-        y = y0 + int(rng.integers(0, 6))
-        while y < y1 - 2:
-            if rng.random() < 0.18:
-                y += int(rng.integers(4, 9))
-                continue
-            length = int(rng.integers(6, 14))
-            color = hatch_a if rng.random() < 0.62 else hatch_b
-            slant = 1 if rng.random() < 0.7 else 0
-            for step in range(length):
-                xx = x + shift + slant * (step // 3)
-                yy = y + step
-                if inside(xx, yy):
-                    work[yy, xx] = color
-            y += length + int(rng.integers(3, 8))
-        x += int(rng.integers(4, 7))
-
-    for _ in range(70):
-        y = int(rng.integers(y0 + 1, y1 - 1))
-        x = int(rng.integers(x0, x1 - 10))
-        length = int(rng.integers(5, 14))
-        for step in range(length):
-            yy = y + (1 if step % 5 == 0 else 0)
-            xx = x + step
-            if inside(xx, yy) and work[yy, xx, 0] > 96:
-                work[yy, xx] = work[yy, xx] * 0.35 + hatch_b * 0.65
-
-    for seam in seams:
         for x in range(x0, x1):
-            if rng.random() < 0.06:
+            denom = g * x + h * y + 1.0
+            sampled[y - y0, x - x0] = _sample_bilinear(
+                arr, (a * x + b * y + c) / denom, (d * x + e * y + f) / denom
+            )
+
+    reference = arr[700:740, 690:740].reshape(-1, 3)
+    shift = np.median(reference, axis=0) - np.median(sampled.reshape(-1, 3), axis=0)
+    # The top face is the lit plane. Pull it down to the side-face wood.
+    shift = shift - np.array([16.0, 14.0, 12.0])
+    sampled = np.clip(sampled + shift, 0, 255)
+
+    work = arr.copy()
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            dist = min(x - x0, (x1 - 1) - x, y - y0, (y1 - 1) - y)
+            color = sampled[y - y0, x - x0]
+            if dist >= 2:
+                work[y, x] = color
                 continue
-            yy = seam - int(4 * (x - x0) / (x1 - x0)) + int(rng.integers(-1, 2))
-            if inside(x, yy):
-                work[yy, x] = ink
-            if rng.random() < 0.3 and inside(x, yy + 1):
-                work[yy + 1, x] = (ink + hatch_a) / 2
+            # Blend into the outline, which sits just outside this box.
+            if x - x0 <= (x1 - 1) - x:
+                ox = x0 - 1
+            else:
+                ox = x1
+            if y - y0 <= (y1 - 1) - y:
+                oy = y0 - 1
+            else:
+                oy = y1
+            edge = arr[min(max(oy, 0), arr.shape[0] - 1), min(max(ox, 0), arr.shape[1] - 1)]
+            mix = max(dist, 0) / 2
+            work[y, x] = color * mix + edge * (1 - mix)
 
     before = arr.astype(np.uint8)
     painted = np.clip(work, 0, 255).astype(np.uint8)
