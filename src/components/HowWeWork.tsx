@@ -1,22 +1,138 @@
 import { useRef, useState } from 'react'
-import { motion, useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion'
-import { stepArt, steps } from '../content/site'
+import {
+  motion,
+  useInView,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from 'framer-motion'
+import { stepArt, steps, type Step, type StepKey } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
 import { CabinetIcon, CarIcon, MetronomeIcon, StationIcon, TrafficLight } from './PitIcons'
 import { Reveal } from './Reveal'
 import styles from './HowWeWork.module.css'
+
+type Copy = ReturnType<typeof useLocale>['copy']
+
+function chapterLayout(index: number): 'left' | 'right' | 'wide' {
+  if (index === 5) return 'wide'
+  if (index % 2 === 1) return 'right'
+  return 'left'
+}
+
+function ChapterArt({
+  stepKey,
+  title,
+  layout,
+  reduce,
+}: {
+  stepKey: StepKey
+  title: string
+  layout: 'left' | 'right' | 'wide'
+  reduce: boolean | null
+}) {
+  const ref = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start 92%', 'start 38%'],
+  })
+  const fromX = layout === 'right' ? 56 : layout === 'left' ? -56 : 0
+  const x = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [fromX, 0])
+  const opacity = useTransform(scrollYProgress, [0, 0.55], reduce ? [1, 1] : [0.06, 1])
+  const blur = useTransform(scrollYProgress, (v) =>
+    reduce ? 'blur(0px)' : `blur(${Math.max(0, 16 * (1 - v))}px)`,
+  )
+  const scale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1.06, 1])
+
+  return (
+    <motion.figure
+      ref={ref}
+      className={styles.artWrap}
+      style={{ x, opacity, filter: blur, scale }}
+    >
+      <img
+        className={styles.art}
+        src={stepArt[stepKey]}
+        alt={title}
+        loading="lazy"
+        draggable={false}
+      />
+    </motion.figure>
+  )
+}
+
+function Chapter({
+  step,
+  index,
+  copy,
+  howWeWork,
+  reduce,
+  current,
+}: {
+  step: Step
+  index: number
+  copy: Copy
+  howWeWork: Copy['howWeWork']
+  reduce: boolean | null
+  current: number
+}) {
+  const ref = useRef<HTMLLIElement>(null)
+  const inView = useInView(ref, { amount: 0.4, margin: '-8% 0px' })
+  const text = copy.steps[step.key]
+  const layout = chapterLayout(index)
+  const done = Boolean(reduce) || inView || current > index
+  const active = current === index
+
+  return (
+    <li
+      ref={ref}
+      id={`step-${step.key}`}
+      className={`${styles.chapter} ${styles[layout]} ${done ? styles.chapterOn : ''} ${
+        active ? styles.chapterActive : ''
+      }`}
+    >
+      <ChapterArt stepKey={step.key} title={text.title} layout={layout} reduce={reduce} />
+      <div className={styles.copy}>
+        <p className={styles.gear}>
+          {howWeWork.gear} {index + 1}
+        </p>
+        <div className={styles.cardHead}>
+          <span className={styles.n}>{step.n}</span>
+          <span className={styles.icon}>
+            <StationIcon step={step.key} />
+          </span>
+          <h3>{text.title}</h3>
+        </div>
+        <p className={styles.body}>{text.body}</p>
+        <p className={styles.deliverable}>
+          <span>{howWeWork.youReceive}</span>
+          {text.deliverable}
+        </p>
+        {step.gate ? (
+          <p className={`${styles.gate} ${done ? styles.gateGo : ''}`}>
+            <TrafficLight go={done} />
+            <span className={styles.stamp}>{text.gate}</span>
+            {done ? null : <span className={styles.gateNote}>{howWeWork.gateNote}</span>}
+          </p>
+        ) : null}
+      </div>
+    </li>
+  )
+}
 
 export function HowWeWork() {
   const { copy } = useLocale()
   const { howWeWork } = copy
   const reduce = useReducedMotion()
   const laneRef = useRef<HTMLOListElement>(null)
-  const { scrollYProgress } = useScroll({ target: laneRef, offset: ['start 80%', 'end 55%'] })
-  const [passed, setPassed] = useState(reduce ? steps.length : 0)
+  const { scrollYProgress } = useScroll({ target: laneRef, offset: ['start 75%', 'end 45%'] })
+  const [current, setCurrent] = useState(reduce ? steps.length - 1 : -1)
 
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
     if (reduce) return
-    setPassed(Math.min(steps.length, Math.floor(value * steps.length + 0.15)))
+    const i = Math.min(steps.length - 1, Math.max(-1, Math.floor(value * steps.length - 0.02)))
+    setCurrent(i)
   })
 
   return (
@@ -40,72 +156,33 @@ export function HowWeWork() {
             </p>
           </div>
 
-          <ol className={styles.lane} ref={laneRef} aria-label={howWeWork.rail}>
-            <motion.span
-              className={styles.progress}
-              style={{ '--p': reduce ? 1 : scrollYProgress } as never}
-              aria-hidden="true"
-            />
-            {steps.map((step, index) => {
-              const text = copy.steps[step.key]
-              const done = passed > index
-              const active = passed === index + 1
-              return (
-                <li
-                  key={step.key}
-                  id={`step-${step.key}`}
-                  className={`${styles.station} ${done ? styles.stationDone : ''} ${
-                    active ? styles.stationActive : ''
-                  }`}
-                >
-                  <span className={styles.gear}>
-                    {howWeWork.gear} {index + 1}
-                  </span>
-                  <figure className={styles.artWrap}>
-                    <motion.img
-                      className={styles.art}
-                      src={stepArt[step.key]}
-                      alt={text.title}
-                      loading="lazy"
-                      draggable={false}
-                      initial={false}
-                      animate={
-                        reduce
-                          ? { opacity: 1, filter: 'blur(0px)', scale: 1 }
-                          : {
-                              opacity: done ? 1 : 0.1,
-                              filter: done ? 'blur(0px)' : 'blur(14px)',
-                              scale: done ? 1 : 1.08,
-                            }
-                      }
-                      transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-                    />
-                    <span className={styles.artGear} aria-hidden="true">
-                      {index + 1}
-                    </span>
-                  </figure>
-                  <span className={styles.icon}>
-                    <StationIcon step={step.key} />
-                  </span>
-                  <h3>{text.title}</h3>
-                  <p className={styles.body}>{text.body}</p>
-                  <p className={styles.deliverable}>
-                    <span>{howWeWork.youReceive}</span>
-                    {text.deliverable}
-                  </p>
-                  {step.gate ? (
-                    <p className={`${styles.gate} ${done ? styles.gateGo : ''}`}>
-                      <TrafficLight go={done} />
-                      <span className={styles.stamp}>{text.gate}</span>
-                      {done ? null : <span className={styles.gateNote}>{howWeWork.gateNote}</span>}
-                    </p>
-                  ) : null}
+          <div className={styles.stage}>
+            <ol className={styles.rail} aria-label={howWeWork.rail}>
+              {steps.map((step, index) => (
+                <li key={step.key} className={current >= index ? styles.railOn : ''}>
+                  <a href={`#step-${step.key}`}>
+                    <span>{step.n}</span> {copy.steps[step.key].title}
+                  </a>
                 </li>
-              )
-            })}
-          </ol>
+              ))}
+            </ol>
 
-          <p className={`${styles.pitOut} ${passed >= steps.length ? styles.pitOutOn : ''}`}>
+            <ol className={styles.chapters} ref={laneRef} aria-label={howWeWork.rail}>
+              {steps.map((step, index) => (
+                <Chapter
+                  key={step.key}
+                  step={step}
+                  index={index}
+                  copy={copy}
+                  howWeWork={howWeWork}
+                  reduce={reduce}
+                  current={current}
+                />
+              ))}
+            </ol>
+          </div>
+
+          <p className={`${styles.pitOut} ${current >= steps.length - 1 ? styles.pitOutOn : ''}`}>
             <CabinetIcon />
             <span>{howWeWork.pitOut}</span>
           </p>
