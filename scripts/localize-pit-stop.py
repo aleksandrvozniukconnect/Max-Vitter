@@ -102,80 +102,67 @@ def _erase_letters(px, box: tuple[int, int, int, int], width: int, height: int) 
         px[x, y] = color
 
 
-def _blank_floor_crate_label(image: Image.Image) -> bool:
-    """Wipe the floor-crate stencil, including the faint letter contour.
+# Letter strokes on the floor-crate side face, packed against x=796, y=702, 58×43.
+_FLOOR_LETTER_MASK = (
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAHwAAAAAAAB/AAAAAAAAH8AAAAAAAefgAAAAAAH98AAAAAAAf44AAAAABh/"
+    "jgAAAAAfGOOAAAAAB+Y44AAAAAP5jjgAAADwzmOMAAAA/nHZwwAAAX/cd/DAAADP9h34MAAAcx2HfgwAAxzHYd+DAAHHMdh2cMAIe4x2HZwwDg7j"
+    "G4dnDgPDuM7hmeeA8Hw3uGY5wDwfD84ZjgAfB8PjjmEAB8Dg8HMYAAHwODAfxgAAbg8MB+AAABuDwwD4AAAO4PjAGAAAA7h+MAAAAADGG4wAAAAAO"
+    "85zAAAAAA/znMAAAAAH/McgAAAAAf8wwAAAAABw3AAAAAAAGD4AAAAAAAYOAAAAAAADgAAAAAAAAOAAAAAAAAA"
+)
 
-    The first pass removed only the black ink, which left a mid-tone outline
-    of EXPORT. Every pixel of that outline on the side face is replaced with
-    nearby wood. Crate edges, ROOM-1, ROOF, and the large EXPORT stay.
-    A second pass finds no contour and changes nothing.
+
+def _floor_letter_mask(height: int, width: int) -> np.ndarray:
+    import base64
+
+    raw = base64.b64decode(_FLOOR_LETTER_MASK)
+    bits = []
+    for byte in raw:
+        for shift in range(7, -1, -1):
+            bits.append((byte >> shift) & 1)
+    mask = np.zeros((height, width), dtype=bool)
+    x0, y0, span = 796, 702, 58
+    for index, bit in enumerate(bits[: 58 * 43]):
+        if bit:
+            mask[y0 + index // span, x0 + index % span] = True
+    return mask
+
+
+def _blank_floor_crate_label(image: Image.Image) -> bool:
+    """Keep the floor-crate side face drawn, with the crate's own grain.
+
+    A flat fill there read as a pasted patch. Black letter ink, if it is
+    still present, is replaced by continuing the diagonal grain from the
+    boards around it. A face that is already bare wood is left alone.
     """
     arr = np.array(image)
-    height, width = arr.shape[:2]
-    red = arr[:, :, 0].astype(int)
-    green = arr[:, :, 1].astype(int)
-    blue = arr[:, :, 2].astype(int)
-    zone = np.zeros((height, width), dtype=bool)
-    zone[700:745, 798:854] = True
-    mask = zone & (red < 155) & (green < 140) & (blue < 125)
-    for x in range(798, 854):
-        if int(mask[700:745, x].sum()) > 30:
-            mask[700:745, x] = False
-    fringe = mask.copy()
-    ys, xs = np.where(mask)
-    for y, x in zip(ys.tolist(), xs.tolist()):
-        for dy in (-1, 0, 1):
-            for dx in (-1, 0, 1):
-                ny, nx = y + dy, x + dx
-                if zone[ny, nx] and red[ny, nx] < 175 and green[ny, nx] < 160:
-                    fringe[ny, nx] = True
-    mask = fringe
-    if not mask.any():
+    panel = arr[702:745, 796:854]
+    letters = int(((panel[:, :, 0] < 50) & (panel[:, :, 1] < 40) & (panel[:, :, 2] < 32)).sum())
+    if letters < 12:
         return False
 
+    height, width = arr.shape[:2]
+    mask = _floor_letter_mask(height, width)
     work = arr.copy()
-    for _ in range(3):
-        hole = (
-            (work[:, :, 0].astype(int) < 155)
-            & (work[:, :, 1].astype(int) < 140)
-            & (work[:, :, 2].astype(int) < 125)
-            & zone
-        )
-        for x in range(798, 854):
-            if int(hole[700:745, x].sum()) > 30:
-                hole[700:745, x] = False
-        grown = hole.copy()
-        ys, xs = np.where(hole)
-        for y, x in zip(ys.tolist(), xs.tolist()):
-            for dy in (-1, 0, 1):
-                for dx in (-1, 0, 1):
-                    ny, nx = y + dy, x + dx
-                    if zone[ny, nx] and int(work[ny, nx, 0]) < 175 and int(work[ny, nx, 1]) < 160:
-                        grown[ny, nx] = True
-        hole = grown
-        if not hole.any():
-            break
-        hy, hx = np.where(hole)
-        for y, x in zip(hy.tolist(), hx.tolist()):
-            found = None
-            for span in range(1, 25):
-                for oy in range(-span, span + 1):
-                    for ox in (-span, span):
-                        qy, qx = y + oy, x + ox
-                        if (
-                            0 <= qy < height
-                            and 0 <= qx < width
-                            and not hole[qy, qx]
-                            and int(work[qy, qx, 0]) > 150
-                        ):
-                            found = (qy, qx)
-                            break
-                    if found:
-                        break
-                if found:
+    directions = ((2, -1), (-2, 1), (4, -2), (-4, 2))
+    ys, xs = np.where(mask)
+    for y, x in zip(ys.tolist(), xs.tolist()):
+        best = None
+        best_distance = 999
+        for dx, dy in directions:
+            for step in range(1, 18):
+                qy, qx = y + dy * step, x + dx * step
+                if not (0 <= qy < height and 0 <= qx < width):
                     break
-            if found:
-                work[y, x] = work[found]
+                if mask[qy, qx]:
+                    continue
+                if int(work[qy, qx, 0]) < 40:
+                    break
+                if step < best_distance:
+                    best_distance = step
+                    best = (qy, qx)
+                break
+        if best is not None:
+            work[y, x] = work[best]
     if np.array_equal(work, arr):
         return False
     image.paste(Image.fromarray(work))
@@ -185,8 +172,8 @@ def _blank_floor_crate_label(image: Image.Image) -> bool:
 def repair_deliver_labels(image: Image.Image) -> bool:
     """Correct crate marks on the delivery drawing.
 
-    ROORF becomes ROOF, the large crate's AXPORT becomes EXPORT, and the
-    small floor crate's stencil is removed. A second pass changes nothing.
+    ROORF becomes ROOF and the large crate's AXPORT becomes EXPORT. The
+    small floor crate stays bare wood with its grain. A second pass changes nothing.
     """
     image_rgb = image if image.mode == "RGB" else image.convert("RGB")
     px = image_rgb.load()
