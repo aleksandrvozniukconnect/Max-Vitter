@@ -11,6 +11,7 @@ import {
   photos,
   projectCases,
   projectKeys,
+  stepArt,
   stepKeys,
   steps,
 } from './site'
@@ -57,6 +58,14 @@ describe('Design Choice content model', () => {
     }
   })
 
+  it('has one pit-stop storyboard illustration per station', () => {
+    expect(Object.keys(stepArt).sort()).toEqual([...stepKeys].sort())
+    for (const key of stepKeys) {
+      expect(stepArt[key]).toMatch(/^\/images\/pit-stop\/.+\.png$/)
+    }
+    expect(new Set(Object.values(stepArt)).size).toBe(stepKeys.length)
+  })
+
   it('folds the three gates into steps 3, 4 and 5 in production order', () => {
     expect(gatesOf(steps)).toEqual(['production', 'qc', 'shipment'])
     expect(steps[2].gate).toBe('production')
@@ -84,9 +93,36 @@ describe('Design Choice content model', () => {
     }
   })
 
-  it('states positioning once in the hero, not in section ledes', () => {
-    expect(en.hero.title).toBe('One partner. Every stage. One accountable result.')
-    expect(en.audiences.title).not.toContain('One partner')
+  it('uses the brief headline in the hero in every language', () => {
+    expect(en.hero.title).toBe('Complex intent. Precise result.')
+    expect(dictionaries.uk.hero.title).toBe('Складний задум. Точний результат.')
+    expect(dictionaries.ru.hero.title).toBe('Сложный замысел. Точный результат.')
+  })
+
+  it('keeps every pit-stop station to one short line', () => {
+    for (const locale of localeIds) {
+      for (const key of stepKeys) {
+        const text = dictionaries[locale].steps[key]
+        expect(text.body.length, `${locale}.${key}.body`).toBeLessThanOrEqual(110)
+        expect(text.deliverable.length, `${locale}.${key}.deliverable`).toBeLessThanOrEqual(60)
+      }
+    }
+  })
+
+  it('does not ship internal notes or em dashes in public copy', () => {
+    const values = (value: unknown): string[] =>
+      typeof value === 'string'
+        ? [value]
+        : value && typeof value === 'object'
+          ? Object.values(value).flatMap(values)
+          : []
+    for (const locale of localeIds) {
+      const { meta: _meta, projectsPage, ...rest } = dictionaries[locale]
+      const { meta: _pageMeta, ...page } = projectsPage
+      const text = values({ ...rest, page }).join(' | ')
+      expect(text, locale).not.toMatch(/placeholder|заглушк|stand-in|preview|предпросмотр|попередній перегляд/i)
+      expect(text, locale).not.toContain('—')
+    }
   })
 
   it('has four audiences, four capabilities and three projects with photos', () => {

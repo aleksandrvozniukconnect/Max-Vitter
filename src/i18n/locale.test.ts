@@ -80,7 +80,7 @@ describe('locale dictionaries', () => {
   })
 
   it('ships Projects page chrome in EN, UK and RU', () => {
-    expect(en.projectsPage.eyebrow).toBe('Dossier')
+    expect(en.projectsPage.eyebrow).toBe('Portfolio')
     expect(en.projects.seeAll).toBe('See all projects')
     for (const locale of localeIds) {
       const page = dictionaries[locale].projectsPage

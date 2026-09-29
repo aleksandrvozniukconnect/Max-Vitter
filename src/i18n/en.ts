@@ -47,8 +47,12 @@ export type SiteCopy = {
     title: string
     lede: string
     rail: string
+    gear: string
     youReceive: string
     gateNote: string
+    pace: string
+    pitIn: string
+    pitOut: string
   }
   steps: Record<StepKey, StepCopy>
   plant: {
@@ -136,9 +140,9 @@ export type SiteCopy = {
 
 export const en: SiteCopy = {
   meta: {
-    title: 'Design Choice — B2B millwork production partner',
+    title: 'Design Choice — B2B furniture and millwork production',
     description:
-      'Design Choice — Ukrainian B2B production partner for custom millwork and joinery. Six steps, three signatures, one accountable team from drawing to handover.',
+      'Design Choice makes custom furniture and architectural millwork in Ukraine for designers, architects, developers and general contractors, from engineering to installation.',
   },
   header: {
     homeAria: 'Design Choice home',
@@ -157,90 +161,94 @@ export const en: SiteCopy = {
     start: 'Send your project',
   },
   hero: {
-    eyebrow: 'B2B millwork and custom joinery · Ukraine',
-    title: 'One partner. Every stage. One accountable result.',
-    lede: 'Design Choice is the plant that designers, architects, developers and general contractors hand their complex interiors to. Hand us a project — this is what happens next.',
+    eyebrow: 'B2B furniture and architectural millwork · Made in Ukraine',
+    title: 'Complex intent. Precise result.',
+    lede: 'Design Choice builds furniture and millwork for designers, architects, developers and general contractors, from engineering drawings to handover on site.',
     primary: 'How we work',
     secondary: 'Send your project',
   },
   audiences: {
     eyebrow: 'Who we work with',
-    title: 'Built for the professional who owns the drawing.',
+    title: 'We work for the people who draw and deliver the interior.',
     items: {
       designers: {
         title: 'Interior designers',
-        body: 'We do not simplify your intent. We find the engineering that lets it be built.',
+        body: 'We keep your design and work out the engineering to build it.',
       },
       architects: {
         title: 'Architects',
-        body: 'Shop drawings, details and tolerances you can approve, then hold us to.',
+        body: 'You approve shop drawings, joints and tolerances before anything is cut.',
       },
       developers: {
         title: 'Developers and general contractors',
-        body: 'One contract, one schedule, one team responsible for the gaps between trades.',
+        body: 'One contract and one schedule for all the furniture and millwork on site.',
       },
       partners: {
         title: 'Millwork partners',
-        body: 'A production backend for your projects: your drawings, our plant, your name on the job.',
+        body: 'We produce to your drawings in our plant. The project stays under your name.',
       },
     },
   },
   howWeWork: {
     eyebrow: 'How we work',
-    title: 'Six steps. Three signatures.',
-    lede: 'A project moves through six steps you can follow. Three of them end with a stamp — nothing moves past it without your signature or ours.',
-    rail: 'The sequence',
+    title: 'A pit stop for your project',
+    lede: 'Your project pulls into our pit lane. Each function works its own zone, the project manager keeps the pace, and the next stage gets a green light only after a signature.',
+    rail: 'Pit lane',
+    gear: 'Gear',
     youReceive: 'You receive',
-    gateNote: 'Signed before the next step moves.',
+    gateNote: 'Red light until signed',
+    pace: 'The project manager sets the pace for every team',
+    pitIn: 'Your project comes in',
+    pitOut: 'It leaves as a finished interior: installed, adjusted and handed over',
   },
   steps: {
     consult: {
-      title: 'Consult',
-      body: 'Every project starts with the package, not a sales script. Send the drawings, the constraints, the calendar and the questions you cannot leave open. We read the brief as a production team: what is buildable, what is missing, which samples must be real before anyone talks about a date.',
-      deliverable: 'A scoped estimate with the open questions listed, not hidden.',
+      title: 'Analysis',
+      body: 'We study the drawings, specifications and measurements, then estimate.',
+      deliverable: 'Estimate and a list of open questions',
     },
     design: {
-      title: 'Design',
-      body: 'Engineering turns the concept into a set that can be cut. Joinery, materials, tolerances, hardware and edge conditions are resolved in drawings you can approve. You see the buildable version, not a mood and not a promise the floor cannot keep.',
-      deliverable: 'Shop drawings, material and hardware schedule, physical samples.',
+      title: 'Engineering',
+      body: 'Engineers turn the design into production drawings and samples.',
+      deliverable: 'Shop drawings, samples, hardware list',
     },
     confirm: {
-      title: 'Confirm',
-      body: 'Contract, specification, finishes and timeline lock in writing. Production does not start on a verbal maybe. If something in the set will not hold for the window or the budget, we say so here, before a machine moves.',
-      deliverable: 'Signed contract and the approved drawing set as the single source of truth.',
+      title: 'Contract',
+      body: 'Scope, price, schedule, logistics and installation go into the contract.',
+      deliverable: 'Signed contract and approved drawings',
       gate: 'Approved for Production',
     },
     manufacture: {
-      title: 'Manufacture',
-      body: 'Procurement and manufacturing follow the approved set. The plant executes; it does not interpret. A control assembly proves the joinery before packing, and an inspector who did not build the piece reads it against the drawing.',
-      deliverable: 'Batch photos as work progresses and a signed QC sheet per unit.',
+      title: 'Production',
+      body: 'Cutting, CNC, veneer, assembly and finishing, then a test assembly in the plant.',
+      deliverable: 'A signed QC sheet for every item',
       gate: 'QC Approved',
     },
     deliver: {
-      title: 'Deliver',
-      body: 'Packing is part of the product. Crates are labelled to the install plan, so the site team knows what is in a box, which floor it belongs to and when it may move. Sea, road or air: the paperwork follows the same marks.',
-      deliverable: 'Packing list keyed to drawing marks, loading photos, export documents.',
+      title: 'Delivery',
+      body: 'Every crate is labelled with its item and room. Sea, road or air.',
+      deliverable: 'Packing list and export documents',
       gate: 'Approved for Shipment',
     },
     support: {
-      title: 'Support',
-      body: 'Our crew installs, or your local team installs with our marks, drawings and remote support. Handover is documented by zone. Warranty terms are explicit. After the job we write down what held and what did not, so the next project inherits a tighter standard.',
-      deliverable: 'Signed handover, warranty terms, one named contact after the job.',
+      title: 'Installation',
+      body: 'Our crew installs, or we guide your local team remotely. The warranty starts at handover.',
+      deliverable: 'Handover by zone and warranty terms',
     },
   },
   plant: {
     eyebrow: 'Made in our own plant',
-    title: 'Engineering, production and inspection under one roof.',
-    body: 'The drawing does not travel far from the people who cut it. Machining, veneer, finishing, assembly, quality control and packing are in one building in Kyiv region. Visit it, or walk it with us on a call.',
+    title: 'Engineering, production and QC in one building.',
+    body: 'Machining, veneer, finishing, assembly, quality control and packing all happen in one plant in Kyiv region. Come and see it, or we can walk you through it on a video call.',
     facts: ['Own engineering office', 'Own production floor', 'Independent QC'],
   },
   capabilities: {
     eyebrow: 'Capabilities',
-    title: 'If the interior is complex, the whole interior is our scope.',
+    title: 'What we take on as a production partner.',
     items: {
       kitchens: {
         title: 'Kitchens and built-ins',
-        body: 'Carcass systems, fronts, worktops, integrated appliances.',
+        body: 'Carcasses, fronts, worktops, integrated appliances.',
       },
       wardrobes: {
         title: 'Wardrobes and dressing rooms',
@@ -252,15 +260,15 @@ export const en: SiteCopy = {
       },
       millwork: {
         title: 'Furniture and millwork',
-        body: 'Loose pieces and the joinery that ties a room together.',
+        body: 'Loose furniture and custom joinery for the whole room.',
       },
     },
   },
   projects: {
     eyebrow: 'Projects',
-    title: 'Told the way they were built.',
-    lede: 'Challenge, engineering, delivery, result. Photography and names are placeholders until the client releases the cases.',
-    challenge: 'Challenge.',
+    title: 'Selected projects',
+    lede: 'Each case covers the task, the engineering, the delivery and the result.',
+    challenge: 'Task.',
     result: 'Result.',
     seeAll: 'See all projects',
     items: {
@@ -269,27 +277,27 @@ export const en: SiteCopy = {
         shortTitle: 'Hotel',
         sector: 'Hospitality',
         challenge: 'One architect set repeated across rooms, with a fixed install window.',
-        result: 'One approved assembly. Install ran to the window. The handover pack was the set that was built.',
+        result: 'We approved one assembly for every room and installed inside the window.',
         tags: ['Repeating set', 'Guest rooms', 'Veneer'],
-        placeholder: 'Photography pending — plant stand-in',
+        placeholder: 'Project photos coming soon',
       },
       residential: {
         title: 'Residential tower kitchens',
         shortTitle: 'Tower kitchens',
         sector: 'Residential',
-        challenge: 'Developer drawings arrived as layouts and finish notes, not a buildable set.',
-        result: 'Engineering closed the set before production. Units were packed and delivered by floor.',
+        challenge: 'The developer sent layouts and finish notes, not production drawings.',
+        result: 'We completed the drawings before production and delivered the kitchens floor by floor.',
         tags: ['Kitchens', 'By floor', 'Developer set'],
-        placeholder: 'Photography pending — plant stand-in',
+        placeholder: 'Project photos coming soon',
       },
       villa: {
         title: 'Villa, Boka Bay',
         shortTitle: 'Boka Bay',
         sector: 'Private residence',
-        challenge: 'Full interior package for an Adriatic site with seasonal access.',
-        result: 'Shipped by road and sea in two phases. Installed by our crew inside the agreed window.',
+        challenge: 'A full interior for an Adriatic site with seasonal access.',
+        result: 'Two shipments by road and sea, installed by our crew on the agreed dates.',
         tags: ['Full interior', 'Road + sea', 'Seasonal access'],
-        placeholder: 'Photography pending — plant stand-in',
+        placeholder: 'Project photos coming soon',
       },
     },
   },
@@ -297,22 +305,22 @@ export const en: SiteCopy = {
     meta: {
       title: 'Projects — Design Choice',
       description:
-        'Production cases from Design Choice: hospitality, residential kitchens and a private Adriatic villa. Challenge, engineering, delivery, result.',
+        'Design Choice projects: a hotel, residential tower kitchens and a private villa on the Adriatic. Task, engineering, delivery, result.',
     },
-    eyebrow: 'Dossier',
-    title: 'Cases, as built.',
-    lede: 'Three production files. Names and photography are placeholders until the client releases the jobs. The plant, the sequence and the stamps are the same as on the floor.',
-    indexLabel: 'The file',
+    eyebrow: 'Portfolio',
+    title: 'Our projects',
+    lede: 'Three projects, each told from the first drawing to handover.',
+    indexLabel: 'Case',
     indexAria: 'Case index',
     next: 'Next case',
-    empty: 'No cases in this dossier yet.',
-    ctaTitle: 'Have a set that needs a plant.',
+    empty: 'No cases published yet.',
+    ctaTitle: 'Have drawings for a new project?',
     cta: 'Send your project',
   },
   ground: {
     eyebrow: 'On the ground',
-    title: 'Someone in your time zone.',
-    lede: 'We work directly with the design professional, not through dealers. In each market there is a person you can call.',
+    title: 'A contact in your time zone',
+    lede: 'We work directly with designers, architects and contractors, without dealers. Each market has its own contact.',
   },
   markets: {
     UA: {
@@ -320,31 +328,31 @@ export const en: SiteCopy = {
       city: 'Kyiv region',
       role: 'Plant, engineering, QC',
       person: 'Name, role',
-      heroLine: 'Plant and engineering in Kyiv region. Projects in Ukraine, the United States and the Adriatic.',
+      heroLine: 'Plant and engineering in Kyiv region. Projects in Ukraine, the United States and Montenegro.',
     },
     US: {
       label: 'United States',
       city: 'Miami / New York',
       role: 'Project desk, install crews',
       person: 'Name, role',
-      heroLine: 'A US project desk in your time zone. Production stays in Ukraine; the crate arrives labelled to your floor plan.',
+      heroLine: 'A US project desk in your time zone. We produce in Ukraine and label every crate to your floor plan.',
     },
     ME: {
       label: 'Montenegro',
       city: 'Tivat / Boka Bay',
       role: 'Site coordination, partner install',
       person: 'Name, role',
-      heroLine: 'Site coordination on the Boka Bay. The same sequence, with install windows planned around the Adriatic season.',
+      heroLine: 'Site coordination on the Boka Bay, with installation dates planned around the Adriatic season.',
     },
   },
   closing: {
-    title: 'Your concept. Our responsibility for delivery.',
+    title: 'Send us the drawings. We start with the analysis.',
     cta: 'Send your project',
   },
   sendForm: {
     eyebrow: 'Start',
     title: 'Send your project',
-    lede: 'Start as early as you can. Send the drawings you have today and we will tell you what happens next.',
+    lede: 'Attach drawings, specifications or a cloud link. We reply with questions and the next steps.',
     name: 'Name',
     company: 'Company',
     country: 'Country',
@@ -357,8 +365,8 @@ export const en: SiteCopy = {
     submit: 'Send your project',
     otherCountry: 'Other',
     acceptHint: 'PDF, DWG, XLS or a cloud link',
-    thanksTitle: 'Package noted.',
-    thanksBody: 'A production lead reads the files next. This preview does not upload anything yet.',
+    thanksTitle: 'Thank you.',
+    thanksBody: 'Online sending is not connected yet. Please email the files to the address above.',
     projectTypes: [
       { value: 'Hospitality', label: 'Hospitality' },
       { value: 'Residential', label: 'Residential' },
@@ -379,12 +387,12 @@ export const en: SiteCopy = {
       country: 'Country is required.',
       projectType: 'Project type is required.',
       timing: 'Timing is required.',
-      files: 'Use PDF, DWG, or XLS — or a cloud link.',
-      comment: 'Add a short comment, a file, or a cloud link.',
+      files: 'Use PDF, DWG or XLS, or a cloud link.',
+      comment: 'Add a short comment, a file or a cloud link.',
     },
   },
   footer: {
-    tagline: 'B2B custom millwork manufacturing',
+    tagline: 'B2B custom furniture and millwork manufacturing',
     site: 'Site',
     language: 'Language',
     legal: 'Design Choice',

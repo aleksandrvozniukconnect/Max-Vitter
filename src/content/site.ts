@@ -74,6 +74,16 @@ export const steps: readonly Step[] = [
   { key: 'support', n: '06' },
 ]
 
+// Hand-drawn pit-stop storyboard panel per station, revealed as the saga scrolls.
+export const stepArt: Record<StepKey, string> = {
+  consult: '/images/pit-stop/consult.png',
+  design: '/images/pit-stop/design.png',
+  confirm: '/images/pit-stop/confirm.png',
+  manufacture: '/images/pit-stop/manufacture.png',
+  deliver: '/images/pit-stop/deliver.png',
+  support: '/images/pit-stop/support.png',
+}
+
 export const formProjectTypeValues = [
   'Hospitality',
   'Residential',
