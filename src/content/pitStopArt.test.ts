@@ -115,14 +115,18 @@ describe('pit-stop storyboard art', () => {
       const ink = (pixel: readonly [number, number, number]) =>
         pixel[0] < 40 && pixel[1] < 30 && pixel[2] < 25
 
-      // Side face of the ROOM-1 floor crate. The EXPORT/AXPORT stencil is gone.
+      // Side face of the ROOM-1 floor crate. No ink, and no mid-tone letter contour.
       let floorInk = 0
-      for (let y = 704; y < 745; y += 1) {
-        for (let x = 798; x < 856; x += 1) {
-          if (ink(at(x, y))) floorInk += 1
+      let ghost = 0
+      for (let y = 700; y < 745; y += 1) {
+        for (let x = 798; x < 854; x += 1) {
+          const pixel = at(x, y)
+          if (ink(pixel)) floorInk += 1
+          if (pixel[0] < 120 && pixel[1] < 110 && pixel[2] < 95) ghost += 1
         }
       }
       expect(floorInk).toBe(0)
+      expect(ghost).toBe(0)
       // Large crate still reads EXPORT, and the small ROOF mark is untouched.
       expect(ink(at(880, 572))).toBe(false)
       expect(ink(at(875, 580))).toBe(true)

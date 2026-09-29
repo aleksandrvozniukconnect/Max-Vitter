@@ -103,113 +103,71 @@ def _erase_letters(px, box: tuple[int, int, int, int], width: int, height: int) 
 
 
 def _blank_floor_crate_label(image: Image.Image) -> bool:
-    """Remove the EXPORT/AXPORT stencil from the small floor crate.
+    """Wipe the floor-crate stencil, including the faint letter contour.
 
-    The side face beside ROOM-1 is filled by cloning nearby wood on that
-    same face. Crate edges, ROOF, and the other EXPORT marks stay. A second
-    pass finds no ink in the label box and leaves the drawing alone.
+    The first pass removed only the black ink, which left a mid-tone outline
+    of EXPORT. Every pixel of that outline on the side face is replaced with
+    nearby wood. Crate edges, ROOM-1, ROOF, and the large EXPORT stay.
+    A second pass finds no contour and changes nothing.
     """
     arr = np.array(image)
     height, width = arr.shape[:2]
-    red = arr[:, :, 0]
-    green = arr[:, :, 1]
-    blue = arr[:, :, 2]
-    strict = (red < 48) & (green < 38) & (blue < 30)
-    x0, y0, x1, y1 = 794, 700, 860, 746
-    mask = np.zeros((height, width), dtype=bool)
-    mask[y0:y1, x0:x1] = strict[y0:y1, x0:x1]
-    for x in range(x0, x1):
-        if int(mask[y0:y1, x].sum()) > 40:
-            mask[y0:y1, x] = False
-    if not mask.any():
-        return False
-
-    dilated = mask.copy()
+    red = arr[:, :, 0].astype(int)
+    green = arr[:, :, 1].astype(int)
+    blue = arr[:, :, 2].astype(int)
+    zone = np.zeros((height, width), dtype=bool)
+    zone[700:745, 798:854] = True
+    mask = zone & (red < 155) & (green < 140) & (blue < 125)
+    for x in range(798, 854):
+        if int(mask[700:745, x].sum()) > 30:
+            mask[700:745, x] = False
+    fringe = mask.copy()
     ys, xs = np.where(mask)
     for y, x in zip(ys.tolist(), xs.tolist()):
         for dy in (-1, 0, 1):
             for dx in (-1, 0, 1):
                 ny, nx = y + dy, x + dx
-                if not (y0 <= ny < y1 and x0 <= nx < x1) or dilated[ny, nx]:
-                    continue
-                if int(red[ny, nx]) < 115 and int(green[ny, nx]) < 100 and int(blue[ny, nx]) < 85:
-                    dilated[ny, nx] = True
-    mask = dilated
+                if zone[ny, nx] and red[ny, nx] < 175 and green[ny, nx] < 160:
+                    fringe[ny, nx] = True
+    mask = fringe
+    if not mask.any():
+        return False
 
-    face = np.zeros((height, width), dtype=bool)
-    face[688:745, 774:858] = True
-    face &= ~mask
-    face &= (red > 110) & (green > 90)
-    donors = np.stack(np.where(face), axis=1)
     work = arr.copy()
-    hole = mask.copy()
-    radius = 2
-
-    while hole.any():
-        hy, hx = np.where(hole)
-        known = ~hole
-        scores = []
-        for y, x in zip(hy.tolist(), hx.tolist()):
-            y_a, y_b = max(0, y - 1), min(height, y + 2)
-            x_a, x_b = max(0, x - 1), min(width, x + 2)
-            scores.append(int(known[y_a:y_b, x_a:x_b].sum()))
-        order = np.argsort(-np.array(scores))[:60]
-        progressed = False
-        for index in order.tolist():
-            y, x = int(hy[index]), int(hx[index])
-            if not hole[y, x]:
-                continue
-            y_lo, y_hi = max(688, y - 28), min(744, y + 28)
-            x_lo, x_hi = max(774, x - 55), min(857, x + 20)
-            cand = donors[
-                (donors[:, 0] >= y_lo)
-                & (donors[:, 0] <= y_hi)
-                & (donors[:, 1] >= x_lo)
-                & (donors[:, 1] <= x_hi)
-            ]
-            if len(cand) > 250:
-                cand = cand[:: max(1, len(cand) // 250)]
-            best = None
-            best_err = 10**18
-            for sy, sx in cand.tolist():
-                err = 0
-                count = 0
-                bad = False
-                for oy in range(-radius, radius + 1):
-                    for ox in range(-radius, radius + 1):
-                        ty, tx = y + oy, x + ox
-                        if not (0 <= ty < height and 0 <= tx < width) or hole[ty, tx]:
-                            continue
-                        qy, qx = sy + oy, sx + ox
-                        if not (0 <= qy < height and 0 <= qx < width) or hole[qy, qx]:
-                            bad = True
-                            break
-                        delta = work[ty, tx].astype(np.int32) - work[qy, qx].astype(np.int32)
-                        err += int(delta[0] * delta[0] + delta[1] * delta[1] + delta[2] * delta[2])
-                        count += 1
-                    if bad:
-                        break
-                if bad or count < 3:
-                    continue
-                err //= count
-                if err < best_err:
-                    best_err = err
-                    best = (sy, sx)
-            if best is None:
-                continue
-            work[y, x] = work[best]
-            hole[y, x] = False
-            progressed = True
-        if progressed:
-            continue
+    for _ in range(3):
+        hole = (
+            (work[:, :, 0].astype(int) < 155)
+            & (work[:, :, 1].astype(int) < 140)
+            & (work[:, :, 2].astype(int) < 125)
+            & zone
+        )
+        for x in range(798, 854):
+            if int(hole[700:745, x].sum()) > 30:
+                hole[700:745, x] = False
+        grown = hole.copy()
+        ys, xs = np.where(hole)
+        for y, x in zip(ys.tolist(), xs.tolist()):
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    ny, nx = y + dy, x + dx
+                    if zone[ny, nx] and int(work[ny, nx, 0]) < 175 and int(work[ny, nx, 1]) < 160:
+                        grown[ny, nx] = True
+        hole = grown
+        if not hole.any():
+            break
         hy, hx = np.where(hole)
         for y, x in zip(hy.tolist(), hx.tolist()):
             found = None
-            for span in range(1, 40):
+            for span in range(1, 25):
                 for oy in range(-span, span + 1):
                     for ox in (-span, span):
                         qy, qx = y + oy, x + ox
-                        if 0 <= qy < height and 0 <= qx < width and not hole[qy, qx] and int(work[qy, qx, 0]) > 100:
+                        if (
+                            0 <= qy < height
+                            and 0 <= qx < width
+                            and not hole[qy, qx]
+                            and int(work[qy, qx, 0]) > 150
+                        ):
                             found = (qy, qx)
                             break
                     if found:
@@ -218,9 +176,8 @@ def _blank_floor_crate_label(image: Image.Image) -> bool:
                     break
             if found:
                 work[y, x] = work[found]
-                hole[y, x] = False
-        break
-
+    if np.array_equal(work, arr):
+        return False
     image.paste(Image.fromarray(work))
     return True
 
