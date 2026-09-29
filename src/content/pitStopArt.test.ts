@@ -116,12 +116,14 @@ describe('pit-stop storyboard art', () => {
         pixel[0] < 40 && pixel[1] < 30 && pixel[2] < 25
 
       // Side face of the ROOM-1 floor crate: no letter ink, and the boards
-      // still have drawn grain instead of a flat pasted patch.
+      // match the wood beside them instead of a pale flat patch.
       let floorInk = 0
       let sum = 0
       let sumSquares = 0
       let count = 0
-      for (let y = 700; y < 745; y += 1) {
+      let sideSum = 0
+      let sideCount = 0
+      for (let y = 700; y < 743; y += 1) {
         for (let x = 798; x < 854; x += 1) {
           const pixel = at(x, y)
           if (ink(pixel)) floorInk += 1
@@ -129,11 +131,17 @@ describe('pit-stop storyboard art', () => {
           sumSquares += pixel[0] * pixel[0]
           count += 1
         }
+        for (let x = 778; x < 796; x += 1) {
+          sideSum += at(x, y)[0]
+          sideCount += 1
+        }
       }
       const mean = sum / count
+      const sideMean = sideSum / sideCount
       const deviation = Math.sqrt(sumSquares / count - mean * mean)
       expect(floorInk).toBe(0)
-      expect(deviation).toBeGreaterThan(15)
+      expect(deviation).toBeGreaterThan(18)
+      expect(Math.abs(mean - sideMean)).toBeLessThan(20)
       // Large crate still reads EXPORT, and the small ROOF mark is untouched.
       expect(ink(at(880, 572))).toBe(false)
       expect(ink(at(875, 580))).toBe(true)

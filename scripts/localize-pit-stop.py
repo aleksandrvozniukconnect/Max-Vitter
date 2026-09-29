@@ -102,70 +102,64 @@ def _erase_letters(px, box: tuple[int, int, int, int], width: int, height: int) 
         px[x, y] = color
 
 
-# Letter strokes on the floor-crate side face, packed against x=796, y=702, 58×43.
-_FLOOR_LETTER_MASK = (
-    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAHwAAAAAAAB/AAAAAAAAH8AAAAAAAefgAAAAAAH98AAAAAAAf44AAAAABh/"
-    "jgAAAAAfGOOAAAAAB+Y44AAAAAP5jjgAAADwzmOMAAAA/nHZwwAAAX/cd/DAAADP9h34MAAAcx2HfgwAAxzHYd+DAAHHMdh2cMAIe4x2HZwwDg7j"
-    "G4dnDgPDuM7hmeeA8Hw3uGY5wDwfD84ZjgAfB8PjjmEAB8Dg8HMYAAHwODAfxgAAbg8MB+AAABuDwwD4AAAO4PjAGAAAA7h+MAAAAADGG4wAAAAAO"
-    "85zAAAAAA/znMAAAAAH/McgAAAAAf8wwAAAAABw3AAAAAAAGD4AAAAAAAYOAAAAAAADgAAAAAAAAOAAAAAAAAA"
-)
+# Side face of the small foreground crate. The stencil sat inside this
+# rectangle. Rows above it are the same boards, with no lettering.
+_FLOOR_FACE = (798, 700, 862, 743)
+_FLOOR_GRAIN = (676, 700)
 
 
-def _floor_letter_mask(height: int, width: int) -> np.ndarray:
-    import base64
-
-    raw = base64.b64decode(_FLOOR_LETTER_MASK)
-    bits = []
-    for byte in raw:
-        for shift in range(7, -1, -1):
-            bits.append((byte >> shift) & 1)
-    mask = np.zeros((height, width), dtype=bool)
-    x0, y0, span = 796, 702, 58
-    for index, bit in enumerate(bits[: 58 * 43]):
-        if bit:
-            mask[y0 + index // span, x0 + index % span] = True
-    return mask
+def _wood_tone(block: np.ndarray) -> np.ndarray:
+    lum = block.mean(axis=1)
+    keep = block[lum >= np.median(lum)]
+    if len(keep) == 0:
+        keep = block
+    return np.median(keep, axis=0)
 
 
-def _blank_floor_crate_label(image: Image.Image) -> bool:
-    """Keep the floor-crate side face drawn, with the crate's own grain.
+def _redraw_floor_crate_face(image: Image.Image) -> bool:
+    """Redraw the floor crate's viewer-facing boards.
 
-    A flat fill there read as a pasted patch. Black letter ink, if it is
-    still present, is replaced by continuing the diagonal grain from the
-    boards around it. A face that is already bare wood is left alone.
+    Sampling letters out of the face left a pale flat patch and broke the
+    pencil lines. The unlabeled wood directly above that face is copied
+    down the same columns and folded so it covers the old lettering, while
+    each row keeps the brightness of the boards beside it. A second pass
+    changes nothing.
     """
-    arr = np.array(image)
-    panel = arr[702:745, 796:854]
-    letters = int(((panel[:, :, 0] < 50) & (panel[:, :, 1] < 40) & (panel[:, :, 2] < 32)).sum())
-    if letters < 12:
-        return False
-
-    height, width = arr.shape[:2]
-    mask = _floor_letter_mask(height, width)
+    arr = np.array(image if image.mode == "RGB" else image.convert("RGB")).astype(np.int16)
+    x0, y0, x1, y1 = _FLOOR_FACE
+    src_y0, src_y1 = _FLOOR_GRAIN
+    span = src_y1 - src_y0
     work = arr.copy()
-    directions = ((2, -1), (-2, 1), (4, -2), (-4, 2))
-    ys, xs = np.where(mask)
-    for y, x in zip(ys.tolist(), xs.tolist()):
-        best = None
-        best_distance = 999
-        for dx, dy in directions:
-            for step in range(1, 18):
-                qy, qx = y + dy * step, x + dx * step
-                if not (0 <= qy < height and 0 <= qx < width):
-                    break
-                if mask[qy, qx]:
-                    continue
-                if int(work[qy, qx, 0]) < 40:
-                    break
-                if step < best_distance:
-                    best_distance = step
-                    best = (qy, qx)
-                break
-        if best is not None:
-            work[y, x] = work[best]
+    for y in range(y0, y1):
+        left = _wood_tone(arr[y, 778:796])
+        right_block = arr[y, 862:866]
+        right_lum = right_block.mean(axis=1)
+        right_keep = right_block[right_lum >= 90]
+        right = _wood_tone(right_keep) if len(right_keep) else left
+        fold = (y - src_y0) % (2 * span)
+        if fold >= span:
+            fold = 2 * span - 1 - fold
+        grain = np.clip(arr[src_y0 + fold, x0:x1], 70, 230)
+        grain_mean = np.median(grain, axis=0)
+        blend = np.linspace(0, 1, x1 - x0)[:, None]
+        base = (1 - blend) * left + blend * right
+        work[y, x0:x1] = np.clip(base + (grain - grain_mean), 48, 230)
+
+    # Carry the darker pencil marks from the boards above down those columns.
+    above = arr[692:y0, x0:x1].mean(axis=2).min(axis=0) < 115
+    region = work[y0:y1, x0:x1]
+    lum = region.mean(axis=2)
+    darker = lum < np.median(lum, axis=1, keepdims=True)
+    tone = np.array([96, 74, 52], dtype=np.int16)
+    blended = np.clip((region + tone) // 2, 48, 200)
+    mask = darker & above[None, :]
+    region[mask] = blended[mask]
+    work[y0:y1, x0:x1] = region
+
     if np.array_equal(work, arr):
         return False
-    image.paste(Image.fromarray(work))
+    painted = Image.fromarray(work.astype(np.uint8))
+    image.paste(painted)
     return True
 
 
@@ -173,7 +167,7 @@ def repair_deliver_labels(image: Image.Image) -> bool:
     """Correct crate marks on the delivery drawing.
 
     ROORF becomes ROOF and the large crate's AXPORT becomes EXPORT. The
-    small floor crate stays bare wood with its grain. A second pass changes nothing.
+    small floor crate's side face is redrawn as bare boards. A second pass changes nothing.
     """
     image_rgb = image if image.mode == "RGB" else image.convert("RGB")
     px = image_rgb.load()
@@ -213,8 +207,8 @@ def repair_deliver_labels(image: Image.Image) -> bool:
                 px[x, y] = ink
         changed = True
 
-    # Small foreground crate: wipe the side-face stencil. The drawn E is not kept.
-    if _blank_floor_crate_label(image_rgb):
+    # Small foreground crate: redraw the side face the stencil used to cover.
+    if _redraw_floor_crate_face(image_rgb):
         changed = True
 
     if image.mode != "RGB":
