@@ -101,7 +101,7 @@ describe('pit-stop storyboard art', () => {
     expect(uk.equals(ru)).toBe(false)
   })
 
-  it('paints EXPORT on every deliver crate, including the floor crate that said AXPORT', () => {
+  it('leaves the floor crate blank and keeps the other deliver labels', () => {
     const files = [
       resolve('scripts/pit-stop-source/deliver.png'),
       ...localeIds.map((locale) => resolve('public', stepArtFor(locale, 'deliver').slice(1))),
@@ -115,16 +115,18 @@ describe('pit-stop storyboard art', () => {
       const ink = (pixel: readonly [number, number, number]) =>
         pixel[0] < 40 && pixel[1] < 30 && pixel[2] < 25
 
-      // Floor crate beside ROOM-1. The old A kept a right leg here; the E leaves it wood.
-      expect(ink(at(805, 731))).toBe(false)
-      expect(ink(at(801, 726))).toBe(true)
-      expect(ink(at(800, 734))).toBe(true)
-      expect(ink(at(801, 742))).toBe(true)
-      // The X of XPORT stays put.
-      expect(ink(at(810, 724))).toBe(true)
-      // Large crate: the earlier AXPORT is still an E, not an A.
+      // Side face of the ROOM-1 floor crate. The EXPORT/AXPORT stencil is gone.
+      let floorInk = 0
+      for (let y = 704; y < 745; y += 1) {
+        for (let x = 798; x < 856; x += 1) {
+          if (ink(at(x, y))) floorInk += 1
+        }
+      }
+      expect(floorInk).toBe(0)
+      // Large crate still reads EXPORT, and the small ROOF mark is untouched.
       expect(ink(at(880, 572))).toBe(false)
       expect(ink(at(875, 580))).toBe(true)
+      expect(ink(at(46, 412))).toBe(true)
     }
   })
 })

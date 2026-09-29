@@ -12,6 +12,7 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageDraw, ImageFont, PngImagePlugin
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -101,70 +102,134 @@ def _erase_letters(px, box: tuple[int, int, int, int], width: int, height: int) 
         px[x, y] = color
 
 
-def _strict_letter(pixel: tuple[int, int, int]) -> bool:
-    red, green, blue = pixel
-    return red < 55 and green < 45 and blue < 35
+def _blank_floor_crate_label(image: Image.Image) -> bool:
+    """Remove the EXPORT/AXPORT stencil from the small floor crate.
 
-
-def _repair_floor_axport(px, width: int, height: int) -> bool:
-    """The foreground floor crate still reads AXPORT beside ROOM-1.
-
-    Its A keeps a right leg at (805, 731). An E leaves that gap as wood.
-    The following XPORT is not touched. A second pass is a no-op.
+    The side face beside ROOM-1 is filled by cloning nearby wood on that
+    same face. Crate edges, ROOF, and the other EXPORT marks stay. A second
+    pass finds no ink in the label box and leaves the drawing alone.
     """
-    if not _strict_letter(px[805, 731]):
+    arr = np.array(image)
+    height, width = arr.shape[:2]
+    red = arr[:, :, 0]
+    green = arr[:, :, 1]
+    blue = arr[:, :, 2]
+    strict = (red < 48) & (green < 38) & (blue < 30)
+    x0, y0, x1, y1 = 794, 700, 860, 746
+    mask = np.zeros((height, width), dtype=bool)
+    mask[y0:y1, x0:x1] = strict[y0:y1, x0:x1]
+    for x in range(x0, x1):
+        if int(mask[y0:y1, x].sum()) > 40:
+            mask[y0:y1, x] = False
+    if not mask.any():
         return False
 
-    x0, y0, x1, y1 = 798, 723, 809, 745
-    glyph: set[tuple[int, int]] = set()
-    for y in range(y0, y1):
-        for x in range(x0, x1):
-            if _strict_letter(px[x, y]):
-                glyph.add((x, y))
-    fringe: set[tuple[int, int]] = set()
-    for x, y in glyph:
+    dilated = mask.copy()
+    ys, xs = np.where(mask)
+    for y, x in zip(ys.tolist(), xs.tolist()):
         for dy in (-1, 0, 1):
             for dx in (-1, 0, 1):
-                nx, ny = x + dx, y + dy
-                if not (x0 <= nx < x1 and y0 <= ny < y1) or (nx, ny) in glyph:
+                ny, nx = y + dy, x + dx
+                if not (y0 <= ny < y1 and x0 <= nx < x1) or dilated[ny, nx]:
                     continue
-                red, green, blue = px[nx, ny]
-                if red < 100 and green < 85 and blue < 70:
-                    fringe.add((nx, ny))
-    glyph |= fringe
+                if int(red[ny, nx]) < 115 and int(green[ny, nx]) < 100 and int(blue[ny, nx]) < 85:
+                    dilated[ny, nx] = True
+    mask = dilated
 
-    fills: dict[tuple[int, int], tuple[int, int, int]] = {}
-    for x, y in glyph:
-        fills[(x, y)] = _nearest_fill(px, x, y, width, height)
-    for (x, y), color in fills.items():
-        px[x, y] = color
+    face = np.zeros((height, width), dtype=bool)
+    face[688:745, 774:858] = True
+    face &= ~mask
+    face &= (red > 110) & (green > 90)
+    donors = np.stack(np.where(face), axis=1)
+    work = arr.copy()
+    hole = mask.copy()
+    radius = 2
 
-    ink = (14, 6, 0)
-    for local_y in range(20):
-        offset = int(round(2 - (2 * local_y) / 19))
-        screen_y = 724 + local_y
+    while hole.any():
+        hy, hx = np.where(hole)
+        known = ~hole
+        scores = []
+        for y, x in zip(hy.tolist(), hx.tolist()):
+            y_a, y_b = max(0, y - 1), min(height, y + 2)
+            x_a, x_b = max(0, x - 1), min(width, x + 2)
+            scores.append(int(known[y_a:y_b, x_a:x_b].sum()))
+        order = np.argsort(-np.array(scores))[:60]
+        progressed = False
+        for index in order.tolist():
+            y, x = int(hy[index]), int(hx[index])
+            if not hole[y, x]:
+                continue
+            y_lo, y_hi = max(688, y - 28), min(744, y + 28)
+            x_lo, x_hi = max(774, x - 55), min(857, x + 20)
+            cand = donors[
+                (donors[:, 0] >= y_lo)
+                & (donors[:, 0] <= y_hi)
+                & (donors[:, 1] >= x_lo)
+                & (donors[:, 1] <= x_hi)
+            ]
+            if len(cand) > 250:
+                cand = cand[:: max(1, len(cand) // 250)]
+            best = None
+            best_err = 10**18
+            for sy, sx in cand.tolist():
+                err = 0
+                count = 0
+                bad = False
+                for oy in range(-radius, radius + 1):
+                    for ox in range(-radius, radius + 1):
+                        ty, tx = y + oy, x + ox
+                        if not (0 <= ty < height and 0 <= tx < width) or hole[ty, tx]:
+                            continue
+                        qy, qx = sy + oy, sx + ox
+                        if not (0 <= qy < height and 0 <= qx < width) or hole[qy, qx]:
+                            bad = True
+                            break
+                        delta = work[ty, tx].astype(np.int32) - work[qy, qx].astype(np.int32)
+                        err += int(delta[0] * delta[0] + delta[1] * delta[1] + delta[2] * delta[2])
+                        count += 1
+                    if bad:
+                        break
+                if bad or count < 3:
+                    continue
+                err //= count
+                if err < best_err:
+                    best_err = err
+                    best = (sy, sx)
+            if best is None:
+                continue
+            work[y, x] = work[best]
+            hole[y, x] = False
+            progressed = True
+        if progressed:
+            continue
+        hy, hx = np.where(hole)
+        for y, x in zip(hy.tolist(), hx.tolist()):
+            found = None
+            for span in range(1, 40):
+                for oy in range(-span, span + 1):
+                    for ox in (-span, span):
+                        qy, qx = y + oy, x + ox
+                        if 0 <= qy < height and 0 <= qx < width and not hole[qy, qx] and int(work[qy, qx, 0]) > 100:
+                            found = (qy, qx)
+                            break
+                    if found:
+                        break
+                if found:
+                    break
+            if found:
+                work[y, x] = work[found]
+                hole[y, x] = False
+        break
 
-        def plot(local_x: int, sy: int = screen_y, shift: int = offset) -> None:
-            px[799 + local_x + shift, sy] = ink
-
-        plot(0)
-        plot(1)
-        if local_y <= 2:
-            for local_x in range(8):
-                plot(local_x)
-        if 8 <= local_y <= 10:
-            for local_x in range(7):
-                plot(local_x)
-        if local_y >= 17:
-            for local_x in range(8):
-                plot(local_x)
+    image.paste(Image.fromarray(work))
     return True
 
 
 def repair_deliver_labels(image: Image.Image) -> bool:
-    """Correct crate marks on the delivery drawing: ROORF → ROOF, AXPORT → EXPORT.
+    """Correct crate marks on the delivery drawing.
 
-    Idempotent: a second pass leaves the corrected labels alone.
+    ROORF becomes ROOF, the large crate's AXPORT becomes EXPORT, and the
+    small floor crate's stencil is removed. A second pass changes nothing.
     """
     image_rgb = image if image.mode == "RGB" else image.convert("RGB")
     px = image_rgb.load()
@@ -204,8 +269,8 @@ def repair_deliver_labels(image: Image.Image) -> bool:
                 px[x, y] = ink
         changed = True
 
-    # Small foreground crate (ROOM-1 on the top face): the side face still says AXPORT.
-    if _repair_floor_axport(px, width, height):
+    # Small foreground crate: wipe the side-face stencil. The drawn E is not kept.
+    if _blank_floor_crate_label(image_rgb):
         changed = True
 
     if image.mode != "RGB":
