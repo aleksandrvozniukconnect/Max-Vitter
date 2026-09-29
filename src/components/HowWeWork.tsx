@@ -5,7 +5,6 @@ import {
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
-  useTransform,
 } from 'framer-motion'
 import { stepArt, steps, type Step, type StepKey } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
@@ -32,24 +31,15 @@ function ChapterArt({
   layout: 'left' | 'right' | 'wide'
   reduce: boolean | null
 }) {
-  const ref = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start 92%', 'start 38%'],
-  })
-  const fromX = layout === 'right' ? 56 : layout === 'left' ? -56 : 0
-  const x = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [fromX, 0])
-  const opacity = useTransform(scrollYProgress, [0, 0.55], reduce ? [1, 1] : [0.06, 1])
-  const blur = useTransform(scrollYProgress, (v) =>
-    reduce ? 'blur(0px)' : `blur(${Math.max(0, 16 * (1 - v))}px)`,
-  )
-  const scale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1.06, 1])
+  const fromX = layout === 'right' ? 48 : layout === 'left' ? -48 : 0
 
   return (
     <motion.figure
-      ref={ref}
       className={styles.artWrap}
-      style={{ x, opacity, filter: blur, scale }}
+      initial={reduce ? false : { opacity: 0.08, filter: 'blur(16px)', x: fromX, scale: 1.05 }}
+      whileInView={{ opacity: 1, filter: 'blur(0px)', x: 0, scale: 1 }}
+      viewport={{ amount: 0.28, once: false }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
     >
       <img
         className={styles.art}
