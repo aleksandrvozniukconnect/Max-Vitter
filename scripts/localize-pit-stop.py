@@ -235,8 +235,12 @@ def repair_deliver_labels(image: Image.Image) -> bool:
                 px[x, y] = ink
         changed = True
 
-    # Small foreground crate: redraw the side face the stencil used to cover.
-    if _redraw_floor_crate_face(image_rgb):
+    # Small foreground crate: only redraw when the side was blanked for an old typo.
+    # Approved deliver-draft.jpg already shows ROOM-1 / EXPORT — do not wipe it.
+    labeled = sum(
+        1 for y in range(698, 716) for x in range(778, 862) if _letter(px[x, y])
+    )
+    if labeled < 40 and _redraw_floor_crate_face(image_rgb):
         changed = True
 
     if image.mode != "RGB":

@@ -101,7 +101,7 @@ describe('pit-stop storyboard art', () => {
     expect(uk.equals(ru)).toBe(false)
   })
 
-  it('leaves the floor crate blank and keeps the other deliver labels', () => {
+  it('keeps crate stencils on the deliver panel', () => {
     const files = [
       resolve('scripts/pit-stop-source/deliver.png'),
       ...localeIds.map((locale) => resolve('public', stepArtFor(locale, 'deliver').slice(1))),
@@ -115,37 +115,11 @@ describe('pit-stop storyboard art', () => {
       const ink = (pixel: readonly [number, number, number]) =>
         pixel[0] < 40 && pixel[1] < 30 && pixel[2] < 25
 
-      // Side face of the ROOM-1 floor crate is drawn wood: pencil contrast,
-      // wood-colored, and not a flat pasted patch. Plank ink is allowed.
-      let sum = 0
-      let sumSquares = 0
-      let count = 0
-      let sideSum = 0
-      let sideCount = 0
-      for (let y = 690; y < 740; y += 1) {
-        for (let x = 790; x < 850; x += 1) {
-          const pixel = at(x, y)
-          sum += pixel[0]
-          sumSquares += pixel[0] * pixel[0]
-          count += 1
-        }
-        for (let x = 660; x < 700; x += 1) {
-          sideSum += at(x, y)[0]
-          sideCount += 1
-        }
-      }
-      const mean = sum / count
-      const sideMean = sideSum / sideCount
-      const deviation = Math.sqrt(sumSquares / count - mean * mean)
-      expect(deviation).toBeGreaterThan(20)
-      expect(mean).toBeGreaterThan(120)
-      expect(mean).toBeLessThan(190)
-      expect(Math.abs(mean - sideMean)).toBeLessThan(40)
-      // Large crate reads EXPORT (not a stray AXPORT leg at the old A slot).
-      expect(ink(at(880, 572))).toBe(false)
-      expect(ink(at(857, 552))).toBe(true)
-      // Clipboard ROOF mark moved slightly in the redrawn deliver panel.
-      expect(ink(at(71, 412))).toBe(true)
+      // Foreground crate still reads ROOM-1 / EXPORT (from deliver-draft.jpg).
+      expect(ink(at(820, 693))).toBe(true)
+      expect(ink(at(800, 701))).toBe(true)
+      // Mid stack keeps EXPORT ITEM-A.
+      expect(ink(at(138, 480))).toBe(true)
     }
   })
 })

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Rebuild localized deliver.png files from public/images/pit-stop/deliver-draft-v2.jpg."""
+"""Rebuild localized deliver.png files from public/images/pit-stop/deliver-draft.jpg.
+
+Only the bottom caption strip is repainted per locale. Crate labels and the rest of
+the drawing are left exactly as in the approved draft (no repair_deliver_labels).
+"""
 
 from __future__ import annotations
 
@@ -12,7 +16,7 @@ from pathlib import Path
 from PIL import Image, PngImagePlugin
 
 ROOT = Path(__file__).resolve().parents[1]
-DRAFT = ROOT / "public" / "images" / "pit-stop" / "deliver-draft-v2.jpg"
+DRAFT = ROOT / "public" / "images" / "pit-stop" / "deliver-draft.jpg"
 SOURCE = ROOT / "scripts" / "pit-stop-source" / "deliver.png"
 CAPTIONS = Path(os.environ["TEMP"]) / "pit-stop-captions.json"
 
@@ -38,10 +42,8 @@ def main() -> None:
         im = im.resize((1152, 864), Image.LANCZOS)
     im.save(SOURCE)
 
+    im.save(SOURCE)
     deliver = im.copy()
-    if loc.repair_deliver_labels(deliver):
-        deliver.save(SOURCE)
-        print("repaired deliver source")
 
     captions = json.loads(CAPTIONS.read_text(encoding="utf-8"))
     for locale in ("en", "uk", "ru"):
