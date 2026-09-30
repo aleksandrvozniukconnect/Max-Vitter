@@ -102,10 +102,14 @@ def _erase_letters(px, box: tuple[int, int, int, int], width: int, height: int) 
         px[x, y] = color
 
 
-# Side panel interior. The black outline sits just outside this box.
-_FLOOR_FACE = (775, 678, 863, 746)
-# Top face of the same crate: unlabeled boards, still the original drawing.
-_FLOOR_TOP = ((668.0, 634.0), (852.0, 632.0), (858.0, 668.0), (664.0, 670.0))
+# One continuous patch of this crate's lit top planks. The window stays
+# inside the even boards: clear of the dark left corner, the front lip,
+# and the chevron where the top planks meet.
+_FLOOR_TOP = ((744.0, 620.0), (788.0, 620.0), (788.0, 656.0), (744.0, 656.0))
+# Side-panel interior, just inside the black outline.
+# Outline: left x772–773, right x864, bottom y747, top edge sloping
+# from (774, 674) up to (863, 669).
+_FLOOR_DEST = ((774.0, 674.0), (863.0, 669.0), (863.0, 746.0), (774.0, 746.0))
 
 
 def _perspective_from_dest(dest, source) -> np.ndarray:
@@ -129,53 +133,55 @@ def _sample_bilinear(image: np.ndarray, u: float, v: float) -> np.ndarray:
     return top * (1 - fy) + bottom * fy
 
 
+def _point_in_quad(quad, x: float, y: float) -> bool:
+    inside = False
+    j = 3
+    for i in range(4):
+        xi, yi = quad[i]
+        xj, yj = quad[j]
+        if (yi > y) != (yj > y) and x < (xj - xi) * (y - yi) / (yj - yi) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+
 def _redraw_floor_crate_face(image: Image.Image) -> bool:
     """Cover the floor crate's side with wood from its own top face.
 
-    The side panel is the top face of this same crate, perspective-mapped
-    into the outline. The top is lit brighter, so the mapped wood is shifted
-    to the tone of the ROOM-1 face. The outer two pixels blend into the
-    existing outline. A second pass changes nothing.
+    One continuous patch of the lit top planks is perspective-mapped across
+    the whole side panel. The top is the lit plane, so a single shift brings
+    it to the ROOM-1 wood. The black outline stays outside the quad. A second
+    pass changes nothing.
     """
     arr = np.array(image if image.mode == "RGB" else image.convert("RGB")).astype(np.float32)
-    x0, y0, x1, y1 = _FLOOR_FACE
-    dest = np.array([[x0, y0], [x1 - 1, y0 + 2], [x1 - 1, y1 - 1], [x0, y1 - 1]], dtype=np.float64)
-    homography = _perspective_from_dest(dest, np.asarray(_FLOOR_TOP, dtype=np.float64))
+    dest = _FLOOR_DEST
+    homography = _perspective_from_dest(
+        np.asarray(dest, dtype=np.float64),
+        np.asarray(_FLOOR_TOP, dtype=np.float64),
+    )
     a, b, c, d, e, f, g, h = homography
-    sampled = np.empty((y1 - y0, x1 - x0, 3), dtype=np.float32)
-    for y in range(y0, y1):
-        for x in range(x0, x1):
-            denom = g * x + h * y + 1.0
-            sampled[y - y0, x - x0] = _sample_bilinear(
-                arr, (a * x + b * y + c) / denom, (d * x + e * y + f) / denom
-            )
+    xs = range(774, 864)
+    ys = range(668, 747)
+    coords = [(x, y) for y in ys for x in xs if _point_in_quad(dest, x + 0.5, y + 0.5)]
+    sampled = np.empty((len(coords), 3), dtype=np.float32)
+    for index, (x, y) in enumerate(coords):
+        denom = g * x + h * y + 1.0
+        sampled[index] = _sample_bilinear(
+            arr, (a * x + b * y + c) / denom, (d * x + e * y + f) / denom
+        )
 
-    reference = arr[700:740, 690:740].reshape(-1, 3)
-    shift = np.median(reference, axis=0) - np.median(sampled.reshape(-1, 3), axis=0)
-    # The top face is the lit plane. Pull it down to the side-face wood.
-    shift = shift - np.array([16.0, 14.0, 12.0])
+    # ROOM-1 wood only. Letter ink would pull the side darker than the boards.
+    reference = arr[690:735, 660:750]
+    luminance = (
+        0.2126 * reference[:, :, 0] + 0.7152 * reference[:, :, 1] + 0.0722 * reference[:, :, 2]
+    )
+    wood = reference[(luminance > 100) & (luminance < 200)]
+    shift = wood.mean(axis=0) - sampled.mean(axis=0)
     sampled = np.clip(sampled + shift, 0, 255)
 
     work = arr.copy()
-    for y in range(y0, y1):
-        for x in range(x0, x1):
-            dist = min(x - x0, (x1 - 1) - x, y - y0, (y1 - 1) - y)
-            color = sampled[y - y0, x - x0]
-            if dist >= 2:
-                work[y, x] = color
-                continue
-            # Blend into the outline, which sits just outside this box.
-            if x - x0 <= (x1 - 1) - x:
-                ox = x0 - 1
-            else:
-                ox = x1
-            if y - y0 <= (y1 - 1) - y:
-                oy = y0 - 1
-            else:
-                oy = y1
-            edge = arr[min(max(oy, 0), arr.shape[0] - 1), min(max(ox, 0), arr.shape[1] - 1)]
-            mix = max(dist, 0) / 2
-            work[y, x] = color * mix + edge * (1 - mix)
+    for (x, y), color in zip(coords, sampled):
+        work[y, x] = color
 
     before = arr.astype(np.uint8)
     painted = np.clip(work, 0, 255).astype(np.uint8)
