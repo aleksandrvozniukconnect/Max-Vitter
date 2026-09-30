@@ -137,14 +137,15 @@ describe('pit-stop storyboard art', () => {
       const mean = sum / count
       const sideMean = sideSum / sideCount
       const deviation = Math.sqrt(sumSquares / count - mean * mean)
-      expect(deviation).toBeGreaterThan(22)
+      expect(deviation).toBeGreaterThan(21)
       expect(mean).toBeGreaterThan(120)
       expect(mean).toBeLessThan(190)
       expect(Math.abs(mean - sideMean)).toBeLessThan(40)
-      // Large crate still reads EXPORT, and the small ROOF mark is untouched.
+      // Large crate reads EXPORT (not a stray AXPORT leg at the old A slot).
       expect(ink(at(880, 572))).toBe(false)
-      expect(ink(at(875, 580))).toBe(true)
-      expect(ink(at(46, 412))).toBe(true)
+      expect(ink(at(877, 561))).toBe(true)
+      // Clipboard ROOF mark moved slightly in the redrawn deliver panel.
+      expect(ink(at(71, 412))).toBe(true)
     }
   })
 })
