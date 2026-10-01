@@ -1,23 +1,22 @@
 .section {
-  background: var(--white);
+  background: var(--paper);
 }
 
 .intro {
   width: min(760px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 16px 0 40px;
+  padding: 64px 0 32px;
   text-align: center;
 }
 
 @media (min-width: 800px) {
   .intro {
-    padding-top: 32px;
+    padding-top: 96px;
   }
 }
 
 .band {
-  background: var(--paper);
-  padding: 48px 20px 80px;
+  padding: 16px 20px 80px;
 }
 
 .bandInner {
@@ -266,7 +265,7 @@ html:lang(ru) .chapter h3 {
 
 @media (min-width: 900px) {
   .band {
-    padding: 56px 48px 104px;
+    padding: 16px 48px 104px;
   }
 
   .stage {
