@@ -15,7 +15,7 @@ export function ClosingCta({ title, cta, href = '/#start' }: ClosingCtaProps) {
 
   return (
     <section className={styles.section} aria-labelledby="closing-title">
-      <img className={styles.bg} src={photos.cta} alt="" />
+      <img className={styles.bg} src={photos.cta} alt="" width={1800} height={2700} loading="lazy" />
       <Reveal className={styles.panel}>
         <h2 id="closing-title">{title ?? copy.closing.title}</h2>
         <AppLink className={styles.button} href={href}>

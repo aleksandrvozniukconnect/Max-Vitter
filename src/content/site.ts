@@ -95,19 +95,19 @@ export const formTimingValues = [
 export type FormTiming = (typeof formTimingValues)[number]
 
 export const photos = {
-  hero: '/images/hero-plant.jpg',
-  detailA: '/images/hero-detail-a.jpg',
-  detailB: '/images/hero-detail-b.jpg',
-  process: '/images/process-floor.jpg',
-  plant: '/images/company.jpg',
+  hero: '/images/hero-plant.webp',
+  detailA: '/images/hero-detail-a.webp',
+  detailB: '/images/hero-detail-b.webp',
+  process: '/images/process-floor.webp',
+  plant: '/images/company.webp',
   capabilities: [
-    '/images/mosaic-interior.jpg',
-    '/images/mosaic-material.jpg',
-    '/images/mosaic-geometry.jpg',
-    '/images/mosaic-drawing.jpg',
+    '/images/mosaic-interior.webp',
+    '/images/mosaic-material.webp',
+    '/images/mosaic-geometry.webp',
+    '/images/mosaic-drawing.webp',
   ],
-  projects: ['/images/project-a.jpg', '/images/project-b.jpg', '/images/mosaic-interior.jpg'],
-  cta: '/images/cta-floor.jpg',
+  projects: ['/images/project-a.webp', '/images/project-b.webp', '/images/mosaic-interior.webp'],
+  cta: '/images/cta-floor.webp',
 }
 
 export const brand = {

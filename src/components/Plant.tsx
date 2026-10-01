@@ -11,7 +11,7 @@ export function Plant() {
     <section className={styles.section} aria-labelledby="plant-title">
       <div className={`${styles.wrap} ${styles.plant}`}>
         <Reveal className={styles.plantMedia}>
-          <img src={photos.plant} alt="" />
+          <img src={photos.plant} alt="" width={441} height={536} loading="lazy" />
         </Reveal>
         <Reveal className={styles.plantCopy} delay={0.08}>
           <p className="eyebrow">{plant.eyebrow}</p>
