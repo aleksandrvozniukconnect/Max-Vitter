@@ -80,10 +80,16 @@
 
 .desktopNav a {
   color: var(--ink);
+  padding: 8px 4px;
+  transition: opacity 120ms ease;
 }
 
 .desktopNav a:hover {
   opacity: 0.55;
+}
+
+.desktopNav a:active {
+  opacity: 0.35;
 }
 
 .navCurrent {
@@ -116,8 +122,9 @@
 }
 
 .langs button {
-  min-width: 34px;
-  padding: 6px 7px;
+  min-width: 38px;
+  min-height: 36px;
+  padding: 8px 8px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -127,10 +134,15 @@
   letter-spacing: 0.06em;
   color: var(--ink);
   cursor: pointer;
+  transition: background 120ms ease;
 }
 
 .langs button:hover {
   background: var(--paper);
+}
+
+.langs button:active {
+  background: var(--paper-deep);
 }
 
 .langActive {
@@ -153,8 +165,16 @@
   white-space: nowrap;
 }
 
+.cta {
+  transition: background 120ms ease;
+}
+
 .cta:hover {
   background: #2a2d34;
+}
+
+.cta:active {
+  background: #1a1c22;
 }
 
 .ctaDot {
@@ -176,6 +196,15 @@
   border-radius: 12px;
   background: var(--white);
   cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.burger:hover {
+  background: var(--paper);
+}
+
+.burger:active {
+  background: var(--paper-deep);
 }
 
 .burger span {
@@ -183,6 +212,7 @@
   width: 16px;
   height: 1.5px;
   background: var(--ink);
+  transition: transform 120ms ease;
 }
 
 .burgerOpen span:first-child {
@@ -261,8 +291,9 @@
   }
 
   .langs button {
-    min-width: 30px;
-    padding: 6px 5px;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 8px 6px;
   }
 
   .overlay {

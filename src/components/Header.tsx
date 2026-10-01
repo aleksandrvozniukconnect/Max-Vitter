@@ -22,8 +22,14 @@ export function Header() {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
+    if (!menuOpen) return () => { document.body.style.overflow = '' }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKey)
     }
   }, [menuOpen])
 

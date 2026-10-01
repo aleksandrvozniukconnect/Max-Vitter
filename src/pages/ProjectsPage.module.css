@@ -114,6 +114,10 @@
   line-height: 1.25;
 }
 
+.railList a {
+  transition: color 120ms ease;
+}
+
 .railList a:hover {
   color: var(--ink);
 }
@@ -305,6 +309,10 @@
   gap: 16px;
   padding-top: 8px;
   color: var(--ink);
+}
+
+.filmstrip {
+  transition: opacity 120ms ease;
 }
 
 .filmstrip:hover {

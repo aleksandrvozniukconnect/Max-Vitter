@@ -53,6 +53,10 @@
   line-height: 1.55;
 }
 
+.grid a {
+  transition: color 120ms ease;
+}
+
 .grid a:hover {
   color: #fff;
 }
@@ -65,18 +69,25 @@
 }
 
 .langs button {
-  padding: 0;
+  padding: 8px 12px;
   border: 0;
+  border-radius: 8px;
   background: transparent;
   color: #eee;
   font: inherit;
   font-size: 0.95rem;
   letter-spacing: 0.06em;
   cursor: pointer;
+  transition: color 120ms ease, background 120ms ease;
 }
 
 .langs button:hover {
   color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.langs button:active {
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .langActive {
