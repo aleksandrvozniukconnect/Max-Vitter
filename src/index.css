@@ -133,6 +133,7 @@ p {
   max-width: 38rem;
   color: var(--ink-soft);
   line-height: 1.7;
+  text-wrap: balance;
 }
 
 .pill {
