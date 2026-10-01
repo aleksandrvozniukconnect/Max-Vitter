@@ -21,14 +21,15 @@ export function Header() {
   const compactFromStart = !showIntro
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
-    if (!menuOpen) return () => { document.body.style.overflow = '' }
+    const root = document.documentElement
+    root.style.overflow = menuOpen ? 'hidden' : ''
+    if (!menuOpen) return () => { root.style.overflow = '' }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setMenuOpen(false)
     }
     document.addEventListener('keydown', onKey)
     return () => {
-      document.body.style.overflow = ''
+      root.style.overflow = ''
       document.removeEventListener('keydown', onKey)
     }
   }, [menuOpen])
