@@ -56,8 +56,16 @@
   background: #000;
 }
 
+.button {
+  transition: background 120ms ease;
+}
+
 .button:hover {
   background: #f3f3f3;
+}
+
+.button:active {
+  background: #e8e8e8;
 }
 
 @media (min-width: 800px) {

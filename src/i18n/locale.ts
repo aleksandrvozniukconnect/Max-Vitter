@@ -56,4 +56,13 @@ export function applyDocumentLocale(
   document.title = meta.title
   const description = document.querySelector('meta[name="description"]')
   if (description) description.setAttribute('content', meta.description)
+
+  const ogTitle = document.querySelector('meta[property="og:title"]')
+  if (ogTitle) ogTitle.setAttribute('content', meta.title)
+  const ogDesc = document.querySelector('meta[property="og:description"]')
+  if (ogDesc) ogDesc.setAttribute('content', meta.description)
+  const twTitle = document.querySelector('meta[name="twitter:title"]')
+  if (twTitle) twTitle.setAttribute('content', meta.title)
+  const twDesc = document.querySelector('meta[name="twitter:description"]')
+  if (twDesc) twDesc.setAttribute('content', meta.description)
 }

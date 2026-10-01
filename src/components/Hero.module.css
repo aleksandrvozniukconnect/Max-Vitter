@@ -13,13 +13,14 @@
   margin: 0 auto 24px;
   max-width: 18ch;
   font-size: clamp(2.8rem, 7.4vw, 5.6rem);
-  line-height: 1;
+  line-height: 1.05;
   text-transform: uppercase;
 }
 
 html:lang(uk) .title,
 html:lang(ru) .title {
   max-width: 22ch;
+  line-height: 1.08;
 }
 
 .lede {
@@ -28,6 +29,7 @@ html:lang(ru) .title {
   font-size: 1.05rem;
   line-height: 1.7;
   color: var(--ink-soft);
+  text-wrap: balance;
 }
 
 .actions {

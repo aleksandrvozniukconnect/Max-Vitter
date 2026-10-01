@@ -14,7 +14,7 @@ export type PitStopCaption = {
 }
 
 export function stepArtFor(locale: LocaleId, key: StepKey): string {
-  return `/images/pit-stop/${locale}/${key}.png`
+  return `/images/pit-stop/${locale}/${key}.webp`
 }
 
 function captionLang(locale: LocaleId): string {

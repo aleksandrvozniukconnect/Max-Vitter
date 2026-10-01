@@ -52,7 +52,7 @@ export function Hero() {
       </div>
 
       <div className={styles.media}>
-        <img src={photos.hero} alt="" />
+        <img src={photos.hero} alt="" width={1800} height={1200} fetchPriority="high" />
         <p className={styles.marketLine}>{copy.markets.UA.heroLine}</p>
       </div>
     </section>

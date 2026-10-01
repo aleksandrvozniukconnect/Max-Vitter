@@ -1,5 +1,6 @@
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
+import { ScrollTop } from './components/ScrollTop'
 import { LocaleProvider } from './context/LocaleContext'
 import { usePathname } from './hooks/usePathname'
 import { isProjectsPath } from './lib/routes'
@@ -12,9 +13,11 @@ function Shell() {
 
   return (
     <>
+      <a href="#main" className="skip-link">Skip to content</a>
       <Header />
-      <main>{projects ? <ProjectsPage /> : <HomePage />}</main>
+      <main id="main">{projects ? <ProjectsPage /> : <HomePage />}</main>
       <Footer />
+      <ScrollTop />
     </>
   )
 }

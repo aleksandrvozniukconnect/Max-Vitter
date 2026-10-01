@@ -49,6 +49,8 @@ function ChapterArt({
         className={styles.art}
         src={stepArtFor(locale, stepKey)}
         alt={title}
+        width={1152}
+        height={864}
         loading="lazy"
         draggable={false}
       />

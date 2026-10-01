@@ -226,7 +226,7 @@ export const en: SiteCopy = {
     },
     deliver: {
       title: 'Delivery',
-      body: 'Every crate is labelled with its item and room. Sea, road or air.',
+      body: 'Every crate is labeled with its item and room. Sea, road or air.',
       deliverable: 'Packing list and export documents',
       gate: 'Approved for Shipment',
     },
@@ -239,7 +239,7 @@ export const en: SiteCopy = {
   plant: {
     eyebrow: 'Made in our own plant',
     title: 'Engineering, production and QC in one building.',
-    body: 'Machining, veneer, finishing, assembly, quality control and packing all happen in one plant in Kyiv region. Come and see it, or we can walk you through it on a video call.',
+    body: 'Machining, veneer, finishing, assembly, quality control and packing all happen in one plant in the Kyiv region. Come and see it, or we can walk you through it on a video call.',
     facts: ['Own engineering office', 'Own production floor', 'Independent QC'],
   },
   capabilities: {
@@ -248,7 +248,7 @@ export const en: SiteCopy = {
     items: {
       kitchens: {
         title: 'Kitchens and built-ins',
-        body: 'Carcasses, fronts, worktops, integrated appliances.',
+        body: 'Cabinets, fronts, countertops, integrated appliances.',
       },
       wardrobes: {
         title: 'Wardrobes and dressing rooms',
@@ -256,7 +256,7 @@ export const en: SiteCopy = {
       },
       walls: {
         title: 'Wall systems and doors',
-        body: 'Panelling, concealed doors, acoustic and feature walls.',
+        body: 'Paneling, concealed doors, acoustic and feature walls.',
       },
       millwork: {
         title: 'Furniture and millwork',
@@ -276,7 +276,7 @@ export const en: SiteCopy = {
         title: 'Hotel, 64 keys',
         shortTitle: 'Hotel',
         sector: 'Hospitality',
-        challenge: 'One architect set repeated across rooms, with a fixed install window.',
+        challenge: 'One architectural set repeated across rooms, with a fixed install window.',
         result: 'We approved one assembly for every room and installed inside the window.',
         tags: ['Repeating set', 'Guest rooms', 'Veneer'],
         placeholder: 'Project photos coming soon',
@@ -328,7 +328,7 @@ export const en: SiteCopy = {
       city: 'Kyiv region',
       role: 'Plant, engineering, QC',
       person: 'Name, role',
-      heroLine: 'Plant and engineering in Kyiv region. Projects in Ukraine, the United States and Montenegro.',
+      heroLine: 'Plant and engineering in the Kyiv region. Projects in Ukraine, the United States and Montenegro.',
     },
     US: {
       label: 'United States',

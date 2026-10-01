@@ -43,8 +43,9 @@ function readPngItxt(bytes: Uint8Array, keyword: string): string | null {
   return null
 }
 
-function artFile(locale: LocaleId, key: StepKey): Uint8Array {
-  return readFileSync(resolve('public', stepArtFor(locale, key).slice(1)))
+/** Read the source PNG (the generation pipeline output, kept alongside the WebP). */
+function artPngFile(locale: LocaleId, key: StepKey): Uint8Array {
+  return readFileSync(resolve('public', `images/pit-stop/${locale}/${key}.png`))
 }
 
 describe('pit-stop storyboard art', () => {
@@ -53,7 +54,7 @@ describe('pit-stop storyboard art', () => {
     expect(new Set(paths).size).toBe(localeIds.length * stepKeys.length)
     for (const locale of localeIds) {
       for (const key of stepKeys) {
-        expect(stepArtFor(locale, key)).toBe(`/images/pit-stop/${locale}/${key}.png`)
+        expect(stepArtFor(locale, key)).toBe(`/images/pit-stop/${locale}/${key}.webp`)
       }
     }
   })
@@ -87,15 +88,15 @@ describe('pit-stop storyboard art', () => {
   it('ships a PNG per locale whose caption matches the dictionary', () => {
     for (const locale of localeIds) {
       for (const key of stepKeys) {
-        const bytes = artFile(locale, key)
+        const bytes = artPngFile(locale, key)
         const caption = pitStopCaption(locale, key)
         expect(readPngItxt(bytes, 'pit-stop-caption')).toBe(`${caption.title}\n${caption.body}`)
       }
     }
 
-    const en = Buffer.from(artFile('en', 'consult'))
-    const uk = Buffer.from(artFile('uk', 'consult'))
-    const ru = Buffer.from(artFile('ru', 'consult'))
+    const en = Buffer.from(artPngFile('en', 'consult'))
+    const uk = Buffer.from(artPngFile('uk', 'consult'))
+    const ru = Buffer.from(artPngFile('ru', 'consult'))
     expect(en.equals(uk)).toBe(false)
     expect(en.equals(ru)).toBe(false)
     expect(uk.equals(ru)).toBe(false)
@@ -104,7 +105,7 @@ describe('pit-stop storyboard art', () => {
   it('keeps crate stencils on the deliver panel', () => {
     const files = [
       resolve('scripts/pit-stop-source/deliver.png'),
-      ...localeIds.map((locale) => resolve('public', stepArtFor(locale, 'deliver').slice(1))),
+      ...localeIds.map((locale) => resolve('public', `images/pit-stop/${locale}/deliver.png`)),
     ]
     for (const file of files) {
       const { width, rgb } = readPngRgb(readFileSync(file))
