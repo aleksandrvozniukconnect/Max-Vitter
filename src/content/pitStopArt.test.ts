@@ -54,7 +54,7 @@ describe('pit-stop storyboard art', () => {
     expect(new Set(paths).size).toBe(localeIds.length * stepKeys.length)
     for (const locale of localeIds) {
       for (const key of stepKeys) {
-        expect(stepArtFor(locale, key)).toBe(`/images/pit-stop/${locale}/${key}-1152.webp`)
+        expect(stepArtFor(locale, key)).toEqual(expect.stringMatching(new RegExp(`^/images/pit-stop/${locale}/${key}-1152\\.webp\\?v=\\d+$`)))
       }
     }
   })

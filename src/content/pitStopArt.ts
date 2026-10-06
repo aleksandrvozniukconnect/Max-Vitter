@@ -13,13 +13,16 @@ export type PitStopCaption = {
   body: string
 }
 
+/** Bump when the WebP files are regenerated so cached copies are refetched. */
+const ART_VERSION = 3
+
 export function stepArtFor(locale: LocaleId, key: StepKey): string {
-  return `/images/pit-stop/${locale}/${key}-1152.webp`
+  return `/images/pit-stop/${locale}/${key}-1152.webp?v=${ART_VERSION}`
 }
 
 export function stepArtSrcSet(locale: LocaleId, key: StepKey): string {
   const base = `/images/pit-stop/${locale}/${key}`
-  return `${base}-480.webp 480w, ${base}-800.webp 800w, ${base}-1152.webp 1152w`
+  return `${base}-480.webp?v=${ART_VERSION} 480w, ${base}-800.webp?v=${ART_VERSION} 800w, ${base}-1152.webp?v=${ART_VERSION} 1152w`
 }
 
 function captionLang(locale: LocaleId): string {
