@@ -59,7 +59,6 @@ function ChapterArt({
       </div>
       <figcaption className={styles.caption}>
         <span className={styles.captionTitle}>{caption.title}</span>
-        <span className={styles.captionBody}>{caption.body}</span>
       </figcaption>
     </motion.figure>
   )
@@ -99,9 +98,6 @@ function Chapter({
     >
       <ChapterArt locale={locale} stepKey={step.key} layout={layout} reduce={reduce} />
       <div className={styles.copy}>
-        <p className={styles.gear}>
-          {howWeWork.gear} {index + 1}
-        </p>
         <div className={styles.cardHead}>
           <span className={styles.n}>{step.n}</span>
           <span className={styles.icon}>

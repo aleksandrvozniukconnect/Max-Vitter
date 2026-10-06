@@ -14,12 +14,12 @@ export type PitStopCaption = {
 }
 
 export function stepArtFor(locale: LocaleId, key: StepKey): string {
-  return `/images/pit-stop/${locale}/${key}.webp`
+  return `/images/pit-stop/${locale}/${key}-1152.webp`
 }
 
 export function stepArtSrcSet(locale: LocaleId, key: StepKey): string {
   const base = `/images/pit-stop/${locale}/${key}`
-  return `${base}-480.webp 480w, ${base}-800.webp 800w, ${base}.webp 1152w`
+  return `${base}-480.webp 480w, ${base}-800.webp 800w, ${base}-1152.webp 1152w`
 }
 
 function captionLang(locale: LocaleId): string {

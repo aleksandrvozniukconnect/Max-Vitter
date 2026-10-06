@@ -47,7 +47,6 @@ export type SiteCopy = {
     title: string
     lede: string
     rail: string
-    gear: string
     youReceive: string
     gateNote: string
     pace: string
@@ -194,7 +193,6 @@ export const en: SiteCopy = {
     title: 'A pit stop for your project',
     lede: 'Your project pulls into our pit lane. Each function works its own zone, the project manager keeps the pace, and the next stage gets a green light only after a signature.',
     rail: 'Pit lane',
-    gear: 'Gear',
     youReceive: 'You receive',
     gateNote: 'Red light until signed',
     pace: 'The project manager sets the pace for every team',

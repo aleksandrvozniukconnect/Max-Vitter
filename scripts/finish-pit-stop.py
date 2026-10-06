@@ -77,7 +77,7 @@ def main() -> None:
             src = ART_DIR / locale / f"{step}.png"
             art = recolor(Image.open(src), LAMPS.get(step))
             art = art.crop((0, 0, art.width, CROP_HEIGHT))
-            art.save(ART_DIR / locale / f"{step}.webp", "WEBP", quality=84, method=6)
+            art.save(ART_DIR / locale / f"{step}-1152.webp", "WEBP", quality=84, method=6)
             for width in SMALL_WIDTHS:
                 small = art.resize((width, round(width * art.height / art.width)), Image.LANCZOS)
                 small.save(ART_DIR / locale / f"{step}-{width}.webp", "WEBP", quality=82, method=6)
