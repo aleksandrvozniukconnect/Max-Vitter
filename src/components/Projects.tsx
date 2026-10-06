@@ -15,7 +15,7 @@ export function Projects() {
         <p className="eyebrow">{projects.eyebrow}</p>
         <h2 className="section-title">{projects.title}</h2>
         <p className="lede">{projects.lede}</p>
-        <AppLink className={styles.seeAll} href={PROJECTS_PATH}>
+        <AppLink className={`pill ${styles.seeAll}`} href={PROJECTS_PATH}>
           {projects.seeAll}
         </AppLink>
       </Reveal>

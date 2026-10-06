@@ -41,7 +41,7 @@ function ChapterArt({
       className={styles.artWrap}
       initial={reduce ? false : { opacity: 0.08, filter: 'blur(16px)', x: fromX, scale: 1.05 }}
       whileInView={{ opacity: 1, filter: 'blur(0px)', x: 0, scale: 1 }}
-      viewport={{ amount: 0.28, once: false }}
+      viewport={{ amount: 0.85, margin: '0px 0px -6% 0px', once: true }}
       transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className={styles.artFrame}>
