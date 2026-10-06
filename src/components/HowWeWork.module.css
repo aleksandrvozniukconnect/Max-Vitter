@@ -118,11 +118,14 @@
 
 .artWrap {
   margin: 0;
+  will-change: transform, opacity, filter;
+}
+
+.artFrame {
   overflow: hidden;
   border-radius: 8px;
   aspect-ratio: 1152 / 736;
   background: var(--paper-deep);
-  will-change: transform, opacity, filter;
 }
 
 .art {
@@ -130,6 +133,28 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.captionTitle {
+  font-family: var(--display);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.captionBody {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  color: var(--ink-soft);
 }
 
 .copy {
@@ -322,6 +347,9 @@ html:lang(ru) .chapter h3 {
 
   .wide .artWrap {
     order: 0;
+  }
+
+  .wide .artFrame {
     aspect-ratio: 16 / 8;
     max-height: 420px;
   }

@@ -6,7 +6,7 @@ import {
   useReducedMotion,
   useScroll,
 } from 'framer-motion'
-import { stepArtFor } from '../content/pitStopArt'
+import { pitStopCaption, stepArtFor, stepArtSrcSet } from '../content/pitStopArt'
 import { steps, type Step, type StepKey } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
 import type { LocaleId } from '../i18n/locale'
@@ -25,16 +25,15 @@ function chapterLayout(index: number): 'left' | 'right' | 'wide' {
 function ChapterArt({
   locale,
   stepKey,
-  title,
   layout,
   reduce,
 }: {
   locale: LocaleId
   stepKey: StepKey
-  title: string
   layout: 'left' | 'right' | 'wide'
   reduce: boolean | null
 }) {
+  const caption = pitStopCaption(locale, stepKey)
   const fromX = layout === 'right' ? 48 : layout === 'left' ? -48 : 0
 
   return (
@@ -45,15 +44,23 @@ function ChapterArt({
       viewport={{ amount: 0.28, once: false }}
       transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
     >
-      <img
-        className={styles.art}
-        src={stepArtFor(locale, stepKey)}
-        alt={title}
-        width={1152}
-        height={736}
-        loading="lazy"
-        draggable={false}
-      />
+      <div className={styles.artFrame}>
+        <img
+          className={styles.art}
+          src={stepArtFor(locale, stepKey)}
+          srcSet={stepArtSrcSet(locale, stepKey)}
+          sizes="(min-width: 900px) 520px, calc(100vw - 80px)"
+          alt=""
+          width={1152}
+          height={736}
+          loading="lazy"
+          draggable={false}
+        />
+      </div>
+      <figcaption className={styles.caption}>
+        <span className={styles.captionTitle}>{caption.title}</span>
+        <span className={styles.captionBody}>{caption.body}</span>
+      </figcaption>
     </motion.figure>
   )
 }
@@ -90,7 +97,7 @@ function Chapter({
         active ? styles.chapterActive : ''
       }`}
     >
-      <ChapterArt locale={locale} stepKey={step.key} title={text.title} layout={layout} reduce={reduce} />
+      <ChapterArt locale={locale} stepKey={step.key} layout={layout} reduce={reduce} />
       <div className={styles.copy}>
         <p className={styles.gear}>
           {howWeWork.gear} {index + 1}

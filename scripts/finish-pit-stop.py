@@ -19,6 +19,7 @@ LOCALES = ("en", "uk", "ru")
 STEPS = ("consult", "design", "confirm", "manufacture", "deliver", "support")
 
 CROP_HEIGHT = 736
+SMALL_WIDTHS = (480, 800)
 
 INK = np.array([0x11, 0x13, 0x18], float)
 BRASS_MID = np.array([0x9c, 0x84, 0x5f], float)
@@ -77,6 +78,9 @@ def main() -> None:
             art = recolor(Image.open(src), LAMPS.get(step))
             art = art.crop((0, 0, art.width, CROP_HEIGHT))
             art.save(ART_DIR / locale / f"{step}.webp", "WEBP", quality=84, method=6)
+            for width in SMALL_WIDTHS:
+                small = art.resize((width, round(width * art.height / art.width)), Image.LANCZOS)
+                small.save(ART_DIR / locale / f"{step}-{width}.webp", "WEBP", quality=82, method=6)
             print(f"{locale}/{step}")
 
 

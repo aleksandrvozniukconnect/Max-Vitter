@@ -17,6 +17,11 @@ export function stepArtFor(locale: LocaleId, key: StepKey): string {
   return `/images/pit-stop/${locale}/${key}.webp`
 }
 
+export function stepArtSrcSet(locale: LocaleId, key: StepKey): string {
+  const base = `/images/pit-stop/${locale}/${key}`
+  return `${base}-480.webp 480w, ${base}-800.webp 800w, ${base}.webp 1152w`
+}
+
 function captionLang(locale: LocaleId): string {
   if (locale === 'uk') return 'uk'
   if (locale === 'ru') return 'ru'
