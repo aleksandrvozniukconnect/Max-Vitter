@@ -50,7 +50,7 @@ function ChapterArt({
         src={stepArtFor(locale, stepKey)}
         alt={title}
         width={1152}
-        height={864}
+        height={736}
         loading="lazy"
         draggable={false}
       />

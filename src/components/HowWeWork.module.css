@@ -120,7 +120,7 @@
   margin: 0;
   overflow: hidden;
   border-radius: 8px;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1152 / 736;
   background: var(--paper-deep);
   will-change: transform, opacity, filter;
 }
