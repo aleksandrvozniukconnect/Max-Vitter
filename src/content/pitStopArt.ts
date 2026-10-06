@@ -14,7 +14,7 @@ export type PitStopCaption = {
 }
 
 /** Bump when the WebP files are regenerated so cached copies are refetched. */
-const ART_VERSION = 3
+const ART_VERSION = 4
 
 export function stepArtFor(locale: LocaleId, key: StepKey): string {
   return `/images/pit-stop/${locale}/${key}-1152.webp?v=${ART_VERSION}`
