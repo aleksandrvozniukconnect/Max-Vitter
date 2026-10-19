@@ -1,7 +1,11 @@
 {
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
-    { "source": "/projects", "destination": "/index.html" }
+    { "source": "/projects", "destination": "/index.html" },
+    { "source": "/assembly/q/:code", "destination": "/assembly/q.html" }
+  ],
+  "redirects": [
+    { "source": "/assembly", "destination": "/assembly/", "permanent": false }
   ],
   "headers": [
     {
@@ -14,6 +18,12 @@
       "source": "/brand/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
+    },
+    {
+      "source": "/assembly/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
     },
     {

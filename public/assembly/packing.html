@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Упаковка и загрузка</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="top">
+    <a href="index.html" class="back">← Все изделия</a>
+    <h1>Упаковка и загрузка</h1>
+    <p class="muted" id="sub">Загрузка…</p>
+  </header>
+
+  <main class="container">
+    <p id="err" class="error" hidden></p>
+    <div id="app" hidden>
+      <p class="note">Демонстрация сценария. Состояние хранится только в этом браузере; в рабочем сервисе его хранил бы сервер. Сканер в режиме клавиатуры вводит код в активное поле и нажимает Enter.</p>
+      <div class="seg" id="mode">
+        <button type="button" data-m="pack" class="is-on">Упаковка</button>
+        <button type="button" data-m="load">Загрузка контейнера</button>
+      </div>
+
+      <section id="pane-pack">
+        <div class="block">
+          <label for="item-sel">Изделие</label>
+          <select id="item-sel"></select>
+          <div class="nav-row wrap">
+            <button class="btn" id="open-pack" type="button">Открыть новую упаковку</button>
+          </div>
+        </div>
+        <div class="block" id="draft" hidden>
+          <h2 id="draft-title"></h2>
+          <div class="scan-box"><input id="scan-pack" class="scan" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Отсканируйте этикетку детали"></div>
+          <div id="msg-pack"></div>
+          <ul class="plain" id="draft-list"></ul>
+          <p class="muted" id="draft-left"></p>
+          <details>
+            <summary class="muted">Имитировать сканирование (для проверки без сканера)</summary>
+            <div class="pick-list" id="sim-pack"></div>
+          </details>
+          <div class="nav-row wrap">
+            <button class="btn" id="close-pack" type="button">Закрыть упаковку</button>
+            <button class="btn btn-ghost" id="cancel-pack" type="button">Отменить упаковку</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="pane-load" hidden>
+        <div class="block">
+          <h2>Сканирование упаковок у контейнера</h2>
+          <div class="scan-box"><input id="scan-load" class="scan" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Отсканируйте этикетку упаковки"></div>
+          <div id="msg-load"></div>
+          <details>
+            <summary class="muted">Имитировать сканирование</summary>
+            <div class="pick-list" id="sim-load"></div>
+          </details>
+        </div>
+      </section>
+
+      <div class="block">
+        <h2>Упаковки отправки</h2>
+        <div id="packs"></div>
+      </div>
+
+      <div class="block">
+        <h2>Расхождения</h2>
+        <div id="diff"></div>
+      </div>
+
+      <div class="block">
+        <button class="btn btn-ghost" id="reset" type="button">Сбросить демо-данные</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="assets/core.js"></script>
+  <script>
+    (function () {
+      const { esc, loadOrder, loadModel, expected, loadShipment, saveShipment, resetShipment, parseCode, normalizeCode, commonUid } = AsmCore;
+      const $ = id => document.getElementById(id);
+      const qs = new URLSearchParams(location.search);
+      const orderId = qs.get("o") || "670";
+      let order, ship, models = {}, exp = {};   // exp[itemId] = ожидаемые позиции
+      let mode = "pack";
+
+      const STATUS = { closed: ["упакована", "warn"], loaded: ["загружена", "ok"] };
+      const save = () => saveShipment(order.id, ship);
+      const common = () => ({ code: commonUid(order), title: order.commonKit.name });
+
+      function msg(box, text, kind) {
+        $(box).innerHTML = text ? `<div class="msg ${kind || ""}">${esc(text)}</div>` : "";
+      }
+
+      const itemById = id => order.items.find(i => i.id === id);
+      const itemLabel = it => `${it.code} · ${it.room}, этаж ${it.floor}`;
+      const packOfCode = code => ship.packages.find(p => p.codes.includes(code));
+      const titleOf = code => {
+        const c = parseCode(code);
+        if (!c) return code;
+        if (c.kind === "common") return order.commonKit.name;
+        const it = itemById(c.item);
+        const e = it && exp[it.id].find(x => x.code === code);
+        return e ? `${it.code} · ${e.title} (${e.short})` : code;
+      };
+
+      // ---------- Проверка сканирования в упаковку ----------
+      function checkPack(raw) {
+        const code = normalizeCode(raw);
+        const d = ship.draft;
+        if (!code) return null;
+        const c = parseCode(code);
+        if (!c) return ["Неизвестный код: «" + code + "»", "bad"];
+        if (c.kind === "pack") return ["Это этикетка упаковки, а не детали. Упаковки сканируют при загрузке.", "bad"];
+        if (c.order !== order.id) return ["Код из другого заказа (" + c.order + ")", "bad"];
+        if (c.kind === "common") {
+          if (d.codes.includes(code)) return ["Общий комплект уже отсканирован в этой упаковке", "warn"];
+          const other = packOfCode(code);
+          if (other) return ["Общий комплект уже в упаковке №" + other.n, "bad"];
+          return { add: code };
+        }
+        const it = itemById(c.item);
+        if (!it) return ["В заказе нет изделия «" + c.item + "»", "bad"];
+        if (d.item === "common") return ["В упаковку общего комплекта детали изделий не кладут", "bad"];
+        if (it.id !== d.item) return ["Деталь другого изделия: " + itemLabel(it) + ". В упаковку идут детали только одного изделия.", "bad"];
+        const known = exp[it.id].find(e => e.code === code);
+        if (!known) {
+          const b = models[it.id].blocks[c.bi];
+          if (c.kind === "part" && b && b.ready) return ["Деталь входит в готовый узел «" + b.name + "». Сканируйте узел целиком.", "bad"];
+          return ["В изделии " + it.code + " нет такой позиции: " + code, "bad"];
+        }
+        if (d.codes.includes(code)) return ["Уже отсканировано: " + titleOf(code), "warn"];
+        const other = packOfCode(code);
+        if (other) return ["Эта позиция уже в упаковке №" + other.n + ": " + titleOf(code), "bad"];
+        return { add: code };
+      }
+
+      function scanPack(raw) {
+        const r = checkPack(raw);
+        if (!r) return;
+        if (r.add) {
+          ship.draft.codes.push(r.add);
+          save();
+          msg("msg-pack", "Добавлено: " + titleOf(r.add));
+        } else msg("msg-pack", r[0], r[1]);
+        render();
+      }
+
+      // ---------- Загрузка ----------
+      function scanLoad(raw) {
+        const code = normalizeCode(raw);
+        if (!code) return;
+        const c = parseCode(code);
+        if (!c) return msg("msg-load", "Неизвестный код: «" + code + "»", "bad");
+        if (c.kind !== "pack") return msg("msg-load", "Это этикетка детали, а не упаковки. При загрузке сканируют упаковки.", "bad");
+        if (c.order !== order.id) return msg("msg-load", "Упаковка из другого заказа (" + c.order + ")", "bad");
+        const p = ship.packages.find(x => x.n === c.n);
+        if (!p) return msg("msg-load", "Упаковки №" + c.n + " нет в отправке. Возможно, она ещё не закрыта.", "bad");
+        if (p.status === "loaded") return msg("msg-load", "Упаковка №" + c.n + " уже загружена", "warn");
+        p.status = "loaded";
+        save();
+        msg("msg-load", "Загружена упаковка №" + c.n);
+        render();
+      }
+
+      // ---------- Отрисовка ----------
+      function renderDraft() {
+        const d = ship.draft;
+        $("draft").hidden = !d;
+        if (!d) return;
+        const it = itemById(d.item);
+        $("draft-title").textContent = (d.n ? "Упаковка №" + d.n + " (открыта заново)" : "Новая упаковка") + " · " + (it ? itemLabel(it) : "общий комплект");
+        $("draft-list").innerHTML = d.codes.map((c, i) => `<li><span>${esc(titleOf(c))}</span><button type="button" class="btn btn-ghost" data-rm="${i}" aria-label="Убрать">✕</button></li>`).join("") || '<li><span class="muted">Пока ничего не отсканировано</span></li>';
+        $("close-pack").disabled = !d.codes.length;
+        const todo = it ? exp[it.id].filter(e => !packOfCode(e.code) && !d.codes.includes(e.code)) : [];
+        $("draft-left").textContent = it ? "Осталось упаковать по изделию: " + todo.length : "";
+        const sim = (it ? todo : [common()].filter(e => !packOfCode(e.code) && !d.codes.includes(e.code)));
+        $("sim-pack").innerHTML = sim.map(e => `<button type="button" data-sim="${esc(e.code)}">${esc(e.short ? e.short : e.title)}</button>`).join("") +
+          (it && !packOfCode(common().code) && !d.codes.includes(common().code) ? ` <button type="button" data-sim="${esc(common().code)}">общий комплект</button>` : "");
+      }
+
+      function renderPacks() {
+        const list = ship.packages.slice().sort((a, b) => a.n - b.n);
+        $("packs").innerHTML = list.map(p => {
+          const it = itemById(p.item);
+          const st = STATUS[p.status] || STATUS.closed;
+          const url = "pack.html?o=" + encodeURIComponent(order.id) + "&p=" + p.n;
+          const reopen = p.status === "closed" && !ship.draft ? ` <button type="button" class="btn btn-ghost" data-reopen="${p.n}">Открыть заново</button>` : "";
+          const unload = p.status === "loaded" ? ` <button type="button" class="btn btn-ghost" data-unload="${p.n}">Снять отметку</button>` : "";
+          return `<details class="pack-card"><summary>№${p.n} · ${it ? esc(it.code) : "общий комплект"} <span class="badge ${st[1]}">${st[0]}</span></summary>
+            <ul class="plain">${p.codes.map(c => `<li><span>${esc(titleOf(c))}</span></li>`).join("")}</ul>
+            <p><a href="${url}">Страница упаковки</a> · <a href="qr.html?o=${encodeURIComponent(order.id)}&kind=pack&p=${p.n}">Этикетка</a>${reopen}${unload}</p></details>`;
+        }).join("") || '<p class="muted">Упаковок ещё нет.</p>';
+
+        const toLoad = list.filter(p => p.status === "closed");
+        $("sim-load").innerHTML = toLoad.map(p => `<button type="button" data-simload="${p.n}">№${p.n}</button>`).join("") || '<span class="muted">Все закрытые упаковки загружены</span>';
+      }
+
+      function renderDiff() {
+        const lines = [];
+        order.items.forEach(it => {
+          exp[it.id].forEach(e => {
+            if (!packOfCode(e.code)) lines.push(["bad", `${it.code}: ${e.kind === "part" ? "деталь " + e.des : e.kind === "unit" ? e.short : e.short} «${e.title}» не упакована`]);
+          });
+        });
+        if (!packOfCode(common().code)) lines.push(["warn", order.commonKit.name + " не упакован"]);
+        ship.packages.filter(p => p.status === "closed").forEach(p => lines.push(["bad", `Упаковка №${p.n} не загружена`]));
+        const done = !lines.length;
+        $("diff").innerHTML = done ? '<div class="msg">Расхождений нет: всё упаковано и загружено.</div>' :
+          lines.map(l => `<div class="msg ${l[0] === "bad" ? "bad" : "warn"}">${esc(l[1])}</div>`).join("");
+      }
+
+      function render() {
+        renderDraft();
+        renderPacks();
+        renderDiff();
+        $("open-pack").disabled = !!ship.draft;
+        $("item-sel").disabled = !!ship.draft;
+      }
+
+      // ---------- События ----------
+      function bindScan(inputId, fn) {
+        $(inputId).addEventListener("keydown", e => {
+          if (e.key !== "Enter") return;
+          e.preventDefault();
+          const v = e.target.value;
+          e.target.value = "";
+          fn(v);
+          e.target.focus();
+        });
+      }
+
+      function init() {
+        $("sub").textContent = "Заказ " + order.id + " · отправка";
+        $("item-sel").innerHTML = order.items.map(it => `<option value="${esc(it.id)}">${esc(itemLabel(it))}</option>`).join("") +
+          `<option value="common">${esc(order.commonKit.name)}</option>`;
+        $("open-pack").addEventListener("click", () => {
+          ship.draft = { item: $("item-sel").value, codes: [] };
+          save();
+          msg("msg-pack", "");
+          render();
+          $("scan-pack").focus();
+        });
+        bindScan("scan-pack", scanPack);
+        bindScan("scan-load", scanLoad);
+
+        $("draft-list").addEventListener("click", e => {
+          const i = e.target.dataset.rm;
+          if (i === undefined) return;
+          ship.draft.codes.splice(Number(i), 1);
+          save();
+          msg("msg-pack", "Позиция убрана из упаковки");
+          render();
+        });
+        $("sim-pack").addEventListener("click", e => { if (e.target.dataset.sim) scanPack(e.target.dataset.sim); });
+        $("sim-load").addEventListener("click", e => { if (e.target.dataset.simload) scanLoad(order.id + "-pk-" + e.target.dataset.simload); });
+
+        $("close-pack").addEventListener("click", () => {
+          const d = ship.draft;
+          if (!d || !d.codes.length) return;
+          const n = d.n || Math.max(0, ...ship.packages.map(p => p.n)) + 1;
+          ship.packages.push({ n, item: d.item === "common" ? null : d.item, codes: d.codes.slice(), status: "closed" });
+          ship.draft = null;
+          save();
+          msg("msg-pack", "");
+          render();
+          $("packs").insertAdjacentHTML("afterbegin", `<div class="msg">Упаковка №${n} закрыта. <a href="qr.html?o=${encodeURIComponent(order.id)}&kind=pack&p=${n}">Напечатать этикетку</a></div>`);
+        });
+        $("cancel-pack").addEventListener("click", () => { ship.draft = null; save(); msg("msg-pack", ""); render(); });
+
+        $("packs").addEventListener("click", e => {
+          const r = e.target.dataset.reopen, u = e.target.dataset.unload;
+          if (r) {
+            const p = ship.packages.find(x => x.n === Number(r));
+            ship.packages = ship.packages.filter(x => x !== p);
+            ship.draft = { item: p.item || "common", codes: p.codes.slice(), n: p.n };
+            save();
+            render();
+          }
+          if (u) { ship.packages.find(x => x.n === Number(u)).status = "closed"; save(); render(); }
+        });
+
+        $("mode").addEventListener("click", e => {
+          const m = e.target.dataset.m;
+          if (!m) return;
+          mode = m;
+          $("mode").querySelectorAll("button").forEach(b => b.classList.toggle("is-on", b === e.target));
+          $("pane-pack").hidden = m !== "pack";
+          $("pane-load").hidden = m !== "load";
+          $(m === "pack" ? "scan-pack" : "scan-load").focus();
+        });
+        $("reset").addEventListener("click", () => {
+          if (!confirm("Вернуть демо-данные в исходное состояние?")) return;
+          resetShipment(order.id);
+          location.reload();
+        });
+
+        $("app").hidden = false;
+        render();
+      }
+
+      loadOrder(orderId).then(o => {
+        order = o;
+        return Promise.all([loadShipment(o.id), Promise.all(o.items.map(i => loadModel(i.model)))]);
+      }).then(([s, ms]) => {
+        ship = s;
+        if (!("draft" in ship)) ship.draft = null;
+        order.items.forEach((it, k) => { models[it.id] = ms[k]; exp[it.id] = expected(order, it, ms[k]); });
+        init();
+      }).catch(err => {
+        $("sub").textContent = "";
+        $("err").hidden = false;
+        $("err").textContent = err.message;
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Упаковка</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="top">
+    <a href="index.html" class="back">← Все изделия</a>
+    <p class="where" id="p-where" hidden></p>
+    <h1 id="p-title">Загрузка…</h1>
+    <p class="muted" id="p-meta"></p>
+  </header>
+
+  <main class="container">
+    <p id="p-error" class="error" hidden></p>
+    <div id="p-body" hidden>
+      <div class="viewer" id="viewer"></div>
+      <p class="muted">В упаковке — подсвеченные детали. Остальные детали изделия показаны бледно.</p>
+      <div class="block">
+        <h2>Что в упаковке</h2>
+        <ul class="plain" id="p-list"></ul>
+        <p><a class="btn" id="p-open" href="#">Открыть инструкцию изделия →</a></p>
+      </div>
+      <div class="block" id="p-others" hidden>
+        <h2>Другие упаковки этого изделия</h2>
+        <div class="chips" id="p-others-list"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/OrbitControls.js"></script>
+  <script src="assets/core.js"></script>
+  <script src="assets/viewer3d.js"></script>
+  <script>
+    (function () {
+      const { esc, loadOrder, loadModel, expected, loadShipment, readable, modelUrl, partUid } = AsmCore;
+      const qs = new URLSearchParams(location.search);
+      const $ = id => document.getElementById(id);
+      const STATUS = { open: ["не закрыта", "warn"], closed: ["упакована", "ok"], loaded: ["загружена в контейнер", "ok"] };
+
+      function fail(msg) {
+        $("p-title").textContent = "Упаковка не найдена";
+        $("p-error").hidden = false;
+        $("p-error").textContent = msg;
+      }
+
+      const o = qs.get("o"), n = Number(qs.get("p"));
+      Promise.all([loadOrder(o), loadShipment(o)]).then(([order, ship]) => {
+        const pack = ship.packages.find(p => p.n === n);
+        if (!pack) throw new Error("Упаковки №" + n + " нет в отправке по заказу " + o + ".");
+        const commonCode = AsmCore.commonUid(order);
+        const item = order.items.find(i => i.id === pack.item);
+        const st = STATUS[pack.status] || STATUS.closed;
+
+        $("p-title").textContent = "Упаковка №" + n;
+        $("p-meta").innerHTML = `<span class="badge ${st[1]}">${st[0]}</span>`;
+        $("p-body").hidden = false;
+
+        if (!item) {
+          // общий комплект: у него нет помещения и изделия
+          $("p-where").hidden = false;
+          $("p-where").textContent = "Заказ " + order.id + " · общий комплект";
+          $("p-list").innerHTML = pack.codes.map(c => `<li><span>${esc(c === commonCode ? order.commonKit.name : c)}</span></li>`).join("");
+          $("viewer").hidden = true;
+          $("p-open").hidden = true;
+          return;
+        }
+
+        $("p-where").hidden = false;
+        $("p-where").textContent = readable(order, item);
+        return loadModel(item.model).then(model => {
+          const exp = expected(order, item, model);
+          const inPack = new Set(pack.codes);
+          const hit = new Set();
+          exp.forEach(e => {
+            if (!inPack.has(e.code)) return;
+            if (e.kind === "part") hit.add(e.pos);
+            if (e.kind === "unit") model.blocks[e.bi].parts.forEach(p => hit.add(p.pos));
+          });
+
+          $("p-title").textContent = `Упаковка №${n} · ${item.code}`;
+          $("p-list").innerHTML = exp.filter(e => inPack.has(e.code)).map(e => {
+            const href = e.kind === "part" ? modelUrl(order, item, { part: e.pos }) : e.kind === "unit" ? modelUrl(order, item, { module: e.bi + 1 }) : modelUrl(order, item, { tab: "spec" });
+            const tag = e.kind === "part" ? e.des : e.kind === "unit" ? "узел" : "комплект";
+            return `<li><a href="${href}"><b>${esc(tag)}</b> · ${esc(e.title)}</a></li>`;
+          }).join("") || '<li><span class="muted">Пока пусто</span></li>';
+          $("p-open").href = modelUrl(order, item);
+
+          const v = new Viewer3D($("viewer"));
+          v.load(model);
+          v.setStates(pos => hit.has(pos) ? "active" : "ghost");
+
+          const others = ship.packages.filter(p => p.item === item.id && p.n !== n);
+          if (others.length) {
+            $("p-others").hidden = false;
+            $("p-others-list").innerHTML = others.map(p => `<a class="chip" href="pack.html?o=${encodeURIComponent(order.id)}&p=${p.n}">№${p.n}</a>`).join("");
+          }
+        });
+      }).catch(err => fail(err.message));
+    })();
+  </script>
+</body>
+</html>

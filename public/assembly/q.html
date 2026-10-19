@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Открываем инструкцию…</title>
+  <link rel="stylesheet" href="/assembly/assets/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1 id="t">Открываем…</h1>
+    <p class="muted" id="s">Определяем изделие по QR-коду.</p>
+  </header>
+  <main class="container"><p id="err" class="error" hidden></p></main>
+
+  <!-- Постоянный адрес QR: /assembly/q/<код>. Код не меняется при обновлении инструкции, меняется только то, куда он ведёт. -->
+  <script src="/assembly/assets/core.js"></script>
+  <script>
+    (function () {
+      const { parseCode, normalizeCode, loadOrder, loadModel, designations, modelUrl, esc } = AsmCore;
+      const qs = new URLSearchParams(location.search);
+      const raw = qs.get("c") || decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "");
+      const code = normalizeCode(raw);
+
+      function fail(msg) {
+        document.getElementById("t").textContent = "Код не найден";
+        document.getElementById("s").textContent = "";
+        const e = document.getElementById("err");
+        e.hidden = false;
+        e.innerHTML = esc(msg) + ' <a href="/assembly/index.html">К списку изделий</a>.';
+      }
+
+      const c = parseCode(code);
+      if (!c) return fail("Не удалось распознать код «" + code + "». Проверьте этикетку.");
+      // Из каталога /assembly/q/ ссылки на страницы абсолютные
+      const go = u => location.replace("/assembly/" + u);
+
+      if (c.kind === "pack") return go("pack.html?o=" + encodeURIComponent(c.order) + "&p=" + c.n);
+      loadOrder(c.order).then(order => {
+        if (c.kind === "common") return go("index.html");
+        const item = order.items.find(x => x.id === c.item);
+        if (!item) throw new Error("В заказе " + c.order + " нет такого изделия.");
+        return loadModel(item.model).then(m => {
+          if (c.kind === "kit") return go(modelUrl(order, item, { tab: "spec" }));
+          if (c.kind === "unit") return go(modelUrl(order, item, { module: c.bi + 1 }));
+          const d = designations(m).find(x => x.bi === c.bi && x.des === (c.bi + 1) + "." + (c.pi + 1));
+          if (!d) throw new Error("В изделии нет детали " + (c.bi + 1) + "." + (c.pi + 1) + ".");
+          go(modelUrl(order, item, { part: d.p.pos }));
+        });
+      }).catch(err => fail(err.message));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Этикетки с QR-кодами</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="top no-print">
+    <a href="index.html" class="back">← Все изделия</a>
+    <h1>Этикетки с QR-кодами</h1>
+    <p class="muted">Этикетка детали или узла и этикетка упаковки. QR ведёт на постоянный адрес: при обновлении инструкции наклейки менять не нужно. Размер этикеток и макет уточняются на испытании.</p>
+  </header>
+
+  <main class="container">
+    <div class="block no-print">
+      <label for="kind">Что печатать</label>
+      <select id="kind">
+        <option value="parts">Этикетки деталей и узлов изделия</option>
+        <option value="pack">Этикетки упаковок</option>
+      </select>
+      <div id="item-wrap">
+        <label for="sel">Изделие</label>
+        <select id="sel"></select>
+      </div>
+      <div id="pack-wrap" hidden>
+        <label for="packsel">Упаковка</label>
+        <select id="packsel"></select>
+      </div>
+      <label for="base">Адрес сайта</label>
+      <input id="base" type="url" placeholder="https://ваш-сайт.com/assembly/">
+      <p class="muted">Адрес подставлен автоматически. Измените, если сайт опубликован по другому адресу.</p>
+      <button id="print" class="btn" type="button">Печать</button>
+    </div>
+    <div id="out"></div>
+  </main>
+
+  <script src="vendor/qrcode.js"></script>
+  <script src="assets/core.js"></script>
+  <script>
+    (function () {
+      const { esc, loadOrder, loadModel, designations, expected, loadShipment, readable, partUid, unitUid, kitUid, packUid, qrUrl, root, commonUid } = AsmCore;
+      const $ = id => document.getElementById(id);
+      const qs = new URLSearchParams(location.search);
+      const orderId = qs.get("o") || "670";
+      let order, ship;
+      $("base").value = root();
+
+      function qrSvg(url) {
+        const qr = qrcode(0, "M");
+        qr.addData(url);
+        qr.make();
+        return qr.createSvgTag({ cellSize: 4, margin: 1, scalable: true });
+      }
+
+      // Макет по ТЗ: заказ/этаж/помещение · изделие и модуль · номер и название · QR · идентификатор экземпляра
+      function label(top, mid, name, code) {
+        const url = qrUrl($("base").value, code);
+        return `<div class="tz-label"><div><div class="l1">${esc(top)}</div><div>${esc(mid)}</div><div class="l-name">${esc(name)}</div><small>${esc(code)}</small></div><div class="qr">${qrSvg(url)}</div></div>`;
+      }
+
+      function renderParts() {
+        const it = order.items.find(i => i.id === $("sel").value);
+        if (!it) return;
+        return loadModel(it.model).then(m => {
+          const top = `Заказ ${order.id} · этаж ${it.floor} · ${it.room}`;
+          const dess = designations(m);
+          const cards = [];
+          m.blocks.forEach((b, bi) => {
+            if (b.ready) {
+              cards.push(label(top, `${it.code} · модуль ${bi + 1}`, `Узел «${b.name}» (в сборе)`, unitUid(order, it, bi)));
+            } else {
+              dess.filter(d => d.bi === bi).forEach(d => cards.push(label(top, `${it.code} · модуль ${bi + 1} «${b.name}»`, `${d.des} · ${d.p.name}`, partUid(order, it, d.des))));
+            }
+          });
+          if (m.blocks.some(b => b.hardware.length)) cards.push(label(top, it.code, "Комплект фурнитуры", kitUid(order, it)));
+          $("out").innerHTML = `<p class="muted no-print">${cards.length} этикеток. Готовый узел получает одну этикетку на весь узел.</p><div class="tz-label-sheet">${cards.join("")}</div>`;
+        });
+      }
+
+      function renderPack() {
+        const p = ship.packages.find(x => x.n === Number($("packsel").value));
+        if (!p) { $("out").innerHTML = '<p class="muted">Упаковок пока нет. Закройте упаковку на странице «Упаковка и загрузка».</p>'; return; }
+        const it = order.items.find(i => i.id === p.item);
+        const top = it ? `Заказ ${order.id} · этаж ${it.floor} · ${it.room}` : `Заказ ${order.id} · общий комплект`;
+        const mid = it ? `${it.code} · упаковка №${p.n}` : `Упаковка №${p.n}`;
+        const what = it ? loadModel(it.model).then(m => {
+          const byCode = {};
+          expected(order, it, m).forEach(e => { byCode[e.code] = e; });
+          return p.codes.map(c => (byCode[c] ? byCode[c].short : c)).join(", ");
+        }) : Promise.resolve(order.commonKit.name);
+        return what.then(list => {
+          const url = qrUrl($("base").value, packUid(order, p.n));
+          $("out").innerHTML = `<div class="tz-label-sheet"><div class="tz-label"><div><div class="l1">${esc(top)}</div><div>${esc(mid)}</div><div class="l-name">${esc(list)}</div><small>${esc(packUid(order, p.n))}</small></div><div class="qr">${qrSvg(url)}</div></div></div>`;
+        });
+      }
+
+      function render() {
+        const parts = $("kind").value === "parts";
+        $("item-wrap").hidden = !parts;
+        $("pack-wrap").hidden = parts;
+        return parts ? renderParts() : renderPack();
+      }
+
+      Promise.all([loadOrder(orderId), loadShipment(orderId)]).then(([o, s]) => {
+        order = o; ship = s;
+        order.items.forEach(it => $("sel").add(new Option(`${it.code} · ${it.room}, этаж ${it.floor}`, it.id)));
+        ship.packages.slice().sort((a, b) => a.n - b.n).forEach(p => {
+          const it = order.items.find(i => i.id === p.item);
+          $("packsel").add(new Option(`№${p.n} · ${it ? it.code : "общий комплект"}`, p.n));
+        });
+        if (qs.get("kind")) $("kind").value = qs.get("kind");
+        if (qs.get("item")) $("sel").value = qs.get("item");
+        if (qs.get("p")) $("packsel").value = qs.get("p");
+        render();
+      }).catch(err => { $("out").innerHTML = `<p class="error">${esc(err.message)}</p>`; });
+
+      ["kind", "sel", "packsel"].forEach(id => $(id).addEventListener("change", render));
+      $("base").addEventListener("input", render);
+      $("print").addEventListener("click", () => window.print());
+    })();
+  </script>
+</body>
+</html>
