@@ -137,6 +137,9 @@
     if (ctx) {
       $("m-where").hidden = false;
       $("m-where").textContent = readable(ctx.order, ctx.item);
+    } else if (m.source && m.source.format === "basis") {
+      $("m-where").hidden = false;
+      $("m-where").textContent = `Импорт из Базис-Мебельщика ${m.source.version} · черновик: имена деталей и шаги определены автоматически`;
     }
     $("m-meta").textContent = `${ov.size[0]}×${ov.size[1]}×${ov.size[2]} мм · модулей: ${m.blocks.length} · деталей: ${count}`;
     $("tabs").hidden = false;
@@ -194,7 +197,8 @@
       $("asm-hw").innerHTML = (s.step.hardware || []).map(h => `<li>${esc(h.name)} — <b>${h.qty} шт</b></li>`).join("");
       note("asm-tool", "Инструмент:", s.step.tool);
       note("asm-check", "Проверьте:", s.step.check);
-      note("asm-warn", "Внимание:", s.step.warn);
+      if (s.step.draft && !s.step.warn) note("asm-warn", "Черновик:", "порядок и текст шага сформированы автоматически по геометрии. Конструктор должен проверить его перед выпуском.");
+      else note("asm-warn", "Внимание:", s.step.warn);
       $("asm-bar").style.width = Math.round(((cur + 1) / steps.length) * 100) + "%";
       $("asm-prev").disabled = cur === 0;
       $("asm-next").disabled = cur === steps.length - 1;
@@ -448,6 +452,7 @@
           <p class="muted">${esc(label("деталь " + d.des))}</p>
           <h2>${d.des} · ${esc(p.name)}</h2>
           <p><b>${p.dims[0]} × ${p.dims[1]} × ${p.dims[2]} мм</b> · ${esc(p.material)}</p>
+          ${p.art ? `<p class="muted">Позиция в чертежах Базис: ${esc(p.art)}${p.srcName ? " · имя в проекте: " + esc(p.srcName) : ""}${p.edgeMat ? " · кромка: " + esc(p.edgeMat) : ""}</p>` : ""}
           ${uid ? `<p class="muted">Идентификатор экземпляра: <code>${esc(uid)}</code></p>` : ""}
           ${d.block.ready ? `<p class="note">Деталь входит в готовый узел «${esc(d.block.name)}». Его внутренняя сборка в инструкции пропущена.</p>` : ""}
           <div class="orient">
@@ -478,13 +483,14 @@
     }
 
     // ---------- Состав ----------
+    const hasArt = allParts.some(p => p.art);
     $("tab-spec").innerHTML = m.blocks.map((b, bi) => `
       <div class="block">
         <h2>Модуль ${bi + 1} · ${esc(b.name)}</h2>
         ${b.ready ? '<p class="note">Готовый узел: приходит в сборе и считается одним местом. Детали ниже — справочный состав, отдельно их не комплектуют.</p>' : ""}
         <div class="table-wrap"><table class="parts">
-          <thead><tr><th>Обозн.</th><th>Название</th><th>Материал</th><th>Длина</th><th>Шир.</th><th>Толщ.</th><th>Кромка</th><th>Примечание</th></tr></thead>
-          <tbody>${b.parts.map(p => `<tr data-part="${p.pos}" class="row-link"><td>${desOf[p.pos].des}</td><td>${esc(p.name)}</td><td>${esc(p.material)}</td>
+          <thead><tr><th>Обозн.</th>${hasArt ? "<th>Поз. Базис</th>" : ""}<th>Название</th><th>Материал</th><th>Длина</th><th>Шир.</th><th>Толщ.</th><th>Кромка</th><th>Примечание</th></tr></thead>
+          <tbody>${b.parts.map(p => `<tr data-part="${p.pos}" class="row-link"><td>${desOf[p.pos].des}</td>${hasArt ? `<td>${esc(p.art || "")}</td>` : ""}<td>${esc(p.name)}</td><td>${esc(p.material)}</td>
             <td>${p.dims[0]}</td><td>${p.dims[1]}</td><td>${p.dims[2]}</td><td>${edgeText(p)}</td><td>${esc(p.grooves || "")}</td></tr>`).join("")}</tbody>
         </table></div>
         ${hwTable(b.hardware)}

@@ -22,10 +22,11 @@
         <li><a href="packing.html">Упаковка и загрузка контейнера</a></li>
         <li><a href="qr.html">Печать этикеток (деталь, упаковка)</a></li>
       </ul>
-      <p class="muted">Открыть свой файл модели (JSON) без загрузки на сайт — просмотр только на этом устройстве.</p>
-      <label class="btn btn-ghost file-btn">Открыть файл модели
-        <input type="file" id="file" accept="application/json,.json" hidden>
+      <p class="muted">Открыть файл из Базис-Мебельщика (.b3d, .fr3d) или готовую модель (.json) без загрузки на сайт. Просмотр только на этом устройстве, файл никуда не отправляется.</p>
+      <label class="btn btn-ghost file-btn">Открыть файл Базис или модель
+        <input type="file" id="file" accept=".b3d,.fr3d,.json,application/json" hidden>
       </label>
+      <div id="import-out"></div>
     </div>
   </main>
 
@@ -73,14 +74,48 @@
       });
     }
 
-    document.getElementById("file").addEventListener("change", e => {
+    const out = document.getElementById("import-out");
+    const say = (html, cls) => { out.innerHTML = `<div class="msg ${cls || ""}">${html}</div>`; };
+
+    function openModel(m) {
+      try { sessionStorage.setItem("localModel", JSON.stringify(m)); } catch (err) { return say("Модель слишком большая для просмотра в браузере.", "bad"); }
+      location.href = "model.html?local=1";
+    }
+
+    function loadScript(src) {
+      return new Promise((res, rej) => {
+        if (window.BasisImport) return res();
+        const s = document.createElement("script");
+        s.src = src; s.onload = res; s.onerror = () => rej(new Error("Не удалось загрузить модуль импорта."));
+        document.head.appendChild(s);
+      });
+    }
+
+    document.getElementById("file").addEventListener("change", async e => {
       const f = e.target.files[0];
+      e.target.value = "";
       if (!f) return;
-      f.text().then(t => {
-        JSON.parse(t); // проверка, что это JSON
-        try { sessionStorage.setItem("localModel", t); } catch (err) { return alert("Файл слишком большой для просмотра."); }
-        location.href = "model.html?local=1";
-      }).catch(() => alert("Это не корректный файл модели (JSON)."));
+      const ext = (f.name.split(".").pop() || "").toLowerCase();
+      try {
+        if (ext === "json") {
+          const m = JSON.parse(await f.text());
+          return openModel(m);
+        }
+        if (ext !== "b3d" && ext !== "fr3d") return say("Поддерживаются файлы .b3d, .fr3d и .json.", "bad");
+        say("Читаем файл…");
+        await loadScript("assets/basis.js");
+        const r = await BasisImport.importFile(await f.arrayBuffer(), { idPrefix: "p" });
+        if (!r.products.length) return say("В файле не найдено ни одного изделия.", "bad");
+        const list = r.products.map((p, i) => {
+          const n = p.blocks.reduce((s, b) => s + b.parts.length, 0);
+          return `<li class="card"><a href="#" data-i="${i}"><strong>${esc(p.name)}</strong><span class="muted">${p.bounds.join(" × ")} мм · деталей: ${n} · модулей: ${p.blocks.length}</span></a></li>`;
+        }).join("");
+        out.innerHTML = `<div class="msg">Файл прочитан (Базис ${esc(r.version)}): изделий ${r.stats.products}, деталей ${r.stats.panels}${r.warnings.length ? ", пропущено " + r.warnings.length : ""}. Выберите изделие:</div><ul class="kit-list">${list}</ul>` +
+          (r.warnings.length ? `<details><summary class="muted">Что пропущено</summary><ul class="hw-list">${r.warnings.slice(0, 30).map(w => `<li>${esc(w)}</li>`).join("")}</ul></details>` : "");
+        out.querySelectorAll("[data-i]").forEach(a => a.addEventListener("click", ev => { ev.preventDefault(); openModel(r.products[Number(a.dataset.i)]); }));
+      } catch (err) {
+        say("Не удалось прочитать файл: " + esc(err.message) + ". Если файл из Базис-Мебельщика, отправьте его разработчику.", "bad");
+      }
     });
   </script>
 </body>
