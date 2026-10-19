@@ -3,6 +3,9 @@
     { "source": "/", "destination": "/index.html" },
     { "source": "/projects", "destination": "/index.html" }
   ],
+  "redirects": [
+    { "source": "/assembly", "destination": "/assembly/", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/images/(.*)",
