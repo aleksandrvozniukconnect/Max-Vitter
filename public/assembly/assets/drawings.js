@@ -1,13 +1,13 @@
-// Креслення у вигляді SVG: вигляд блоку спереду з висотами полиць і креслення окремої деталі.
+// Чертежи в виде SVG: вид модуля спереди с высотами полок и чертёж отдельной детали.
 (function () {
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const EDGE_NAMES = { l1: "довга сторона 1", l2: "довга сторона 2", w1: "коротка сторона 1", w2: "коротка сторона 2" };
+  const EDGE_NAMES = { l1: "длинная сторона 1", l2: "длинная сторона 2", w1: "короткая сторона 1", w2: "короткая сторона 2" };
 
   function isHorizontal(p) {
     return p.size[1] <= 30 && p.size[0] > p.size[1] * 5 && p.size[2] > p.size[1] * 5;
   }
 
-  // Вигляд спереду: контури деталей, висоти горизонтальних деталей від низу блоку
+  // Вид спереди: контуры деталей, высоты горизонтальных деталей от низа модуля
   function frontView(block, model) {
     const parts = block.parts;
     const x0 = Math.min(...parts.map(p => p.at[0]));
@@ -35,16 +35,16 @@
               <text x="${padL - 18}" y="${y + 4}" text-anchor="end" font-size="11" fill="currentColor">${Math.round(h)}</text>`;
     }).join("");
 
-    return `<svg class="drawing-svg" viewBox="0 0 ${vw} ${vh}" role="img" aria-label="Вигляд спереду: ${esc(block.name)}">
+    return `<svg class="drawing-svg" viewBox="0 0 ${vw} ${vh}" role="img" aria-label="Вид спереди: ${esc(block.name)}">
       ${rects}${marks}
       <line x1="${X(x0)}" y1="${padT + H * k + 16}" x2="${X(x1)}" y2="${padT + H * k + 16}" stroke="currentColor" stroke-width="1"/>
       <text x="${(X(x0) + X(x1)) / 2}" y="${padT + H * k + 28}" text-anchor="middle" font-size="12" fill="currentColor">${Math.round(W)}</text>
-      <text x="${padL}" y="14" font-size="12" fill="currentColor">Висота від низу, мм</text>
+      <text x="${padL}" y="14" font-size="12" fill="currentColor">Высота от низа, мм</text>
     </svg>`;
   }
 
-  // Креслення деталі: прямокутник довжина × ширина, кромка, отвори.
-  // labels — підписи сторін у виробі, напр. { l1: "спереду", w1: "зверху" }
+  // Чертёж детали: прямоугольник длина × ширина, кромка, отверстия.
+  // labels — подписи сторон в изделии, напр. { l1: "спереди", w1: "сверху" }
   function partDrawing(p, labels) {
     const [L, Wd] = p.dims;
     const box = 260;

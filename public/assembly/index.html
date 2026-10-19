@@ -1,71 +1,87 @@
 <!doctype html>
-<html lang="uk">
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Інструкції зі збирання меблів</title>
+  <title>Инструкции по сборке мебели</title>
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
   <header class="top">
-    <h1>Інструкції зі збирання</h1>
-    <p class="muted">Відскануйте QR-код на упаковці або оберіть виріб нижче.</p>
+    <h1>Инструкции по сборке</h1>
+    <p class="muted">Отсканируйте QR-код на упаковке или детали либо выберите изделие ниже.</p>
   </header>
 
   <main class="container">
-    <ul id="kit-list" class="kit-list"></ul>
+    <div id="orders"></div>
     <p id="list-error" class="error" hidden></p>
 
-    <div class="block">
-      <h2>Спробувати</h2>
+    <div class="block no-print">
+      <h2>Для упаковщика и конструктора</h2>
       <ul class="hw-list">
-        <li><a href="model.html?id=cabinet-01&part=1">Ніби відсканували QR на деталі №1 (бік шафи)</a></li>
-        <li><a href="model.html?id=cabinet-01&part=7">Ніби відсканували QR на дверях</a></li>
-        <li><a href="qr.html?id=cabinet-01&kind=parts">Аркуш QR-наліпок на всі деталі шафи</a></li>
+        <li><a href="packing.html">Упаковка и загрузка контейнера</a></li>
+        <li><a href="qr.html">Печать этикеток (деталь, упаковка)</a></li>
       </ul>
-    </div>
-
-    <div class="block">
-      <h2>Для конструктора</h2>
-      <p class="muted">Відкрийте власний файл моделі (JSON) без завантаження на сайт — перегляд лише на цьому пристрої.</p>
-      <label class="btn btn-ghost file-btn">Відкрити файл моделі
+      <p class="muted">Открыть свой файл модели (JSON) без загрузки на сайт — просмотр только на этом устройстве.</p>
+      <label class="btn btn-ghost file-btn">Открыть файл модели
         <input type="file" id="file" accept="application/json,.json" hidden>
       </label>
-      <p><a href="qr.html">Створити QR-код для наліпки →</a></p>
     </div>
   </main>
 
+  <script src="assets/core.js"></script>
   <script>
-    const list = document.getElementById("kit-list");
-    const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const { esc, loadOrder, loadModel, expected, loadShipment, modelUrl } = AsmCore;
+    const root = document.getElementById("orders");
 
-    fetch("data/models/index.json").then(r => r.json()).then(items => {
-      items.forEach(it => {
-        const li = document.createElement("li");
-        li.className = "card";
-        li.innerHTML = `<a href="model.html?id=${encodeURIComponent(it.id)}"><strong>${esc(it.name)}</strong><span class="muted">Відкрити інструкцію →</span></a>`;
-        list.appendChild(li);
+    function status(order, item, model, ship) {
+      const need = AsmCore.expected(order, item, model).map(e => e.code);
+      const have = new Set(ship.packages.filter(p => p.item === item.id).flatMap(p => p.codes));
+      const n = need.filter(c => have.has(c)).length;
+      const cls = n === need.length ? "ok" : n ? "warn" : "";
+      return `<span class="badge ${cls}">упаковано ${n} из ${need.length}</span>`;
+    }
+
+    fetch("data/orders/index.json").then(r => r.json()).then(list => Promise.all(list.map(o => render(o.id))))
+      .catch(err => {
+        const e = document.getElementById("list-error");
+        e.hidden = false;
+        e.textContent = "Не удалось загрузить список заказов.";
       });
-    }).catch(() => {
-      const e = document.getElementById("list-error");
-      e.hidden = false;
-      e.textContent = "Не вдалося завантажити список виробів.";
-    });
+
+    function render(id) {
+      return Promise.all([loadOrder(id), loadShipment(id)]).then(([order, ship]) => {
+        return Promise.all(order.items.map(i => loadModel(i.model))).then(models => {
+          const byItem = {};
+          order.items.forEach((i, k) => { byItem[i.id] = models[k]; });
+          const html = [`<h2>${esc(order.title)} ${order.demo ? '<span class="demo-tag">демо-данные</span>' : ""}</h2>`];
+          if (order.note) html.push(`<p class="muted">${esc(order.note)}</p>`);
+          order.floors.forEach(f => {
+            html.push(`<p class="floor">Этаж ${f.n}</p>`);
+            f.rooms.forEach(r => {
+              html.push(`<p class="room">${esc(r.name)}</p><ul class="kit-list">`);
+              r.items.forEach(raw => {
+                const it = order.items.find(x => x.id === raw.id);
+                const m = byItem[it.id];
+                html.push(`<li class="card"><a href="${modelUrl(order, it)}"><span class="item-row"><span><span class="code">${esc(it.code)}</span> · ${esc(m.name)}</span>${status(order, it, m, ship)}</span><span class="muted">Открыть инструкцию →</span></a></li>`);
+              });
+              html.push("</ul>");
+            });
+          });
+          root.insertAdjacentHTML("beforeend", html.join(""));
+        });
+      });
+    }
 
     document.getElementById("file").addEventListener("change", e => {
       const f = e.target.files[0];
       if (!f) return;
       f.text().then(t => {
-        JSON.parse(t); // перевірка, що це JSON
-        try { sessionStorage.setItem("localModel", t); } catch (err) { return alert("Файл завеликий для перегляду."); }
+        JSON.parse(t); // проверка, что это JSON
+        try { sessionStorage.setItem("localModel", t); } catch (err) { return alert("Файл слишком большой для просмотра."); }
         location.href = "model.html?local=1";
-      }).catch(() => alert("Це не коректний файл моделі (JSON)."));
+      }).catch(() => alert("Это не корректный файл модели (JSON)."));
     });
-  </script>
-  <script>
-    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-      navigator.serviceWorker.register("sw.js").catch(() => {});
-    }
   </script>
 </body>
 </html>

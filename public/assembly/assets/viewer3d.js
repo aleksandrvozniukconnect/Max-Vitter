@@ -1,10 +1,10 @@
-// 3D-перегляд моделі на three.js. Кожна деталь — паралелепіпед з розмірами й позицією з JSON.
+// 3D-просмотр модели на three.js. Каждая деталь — параллелепипед с размерами и позицией из JSON.
 (function () {
   const ACCENT = 0x3b6e4f;
   const EDGE_COLOR = 0xe0702a;
   const HOLE_COLOR = 0xd62828;
 
-  // Осі деталі: довжина, ширина, товщина — індекси осей x/y/z у size
+  // Оси детали: длина, ширина, толщина — индексы осей x/y/z в size
   function partAxes(p) {
     const idx = [0, 1, 2];
     const la = idx.find(i => Math.abs(p.size[i] - p.dims[0]) < 0.6);
@@ -38,7 +38,8 @@
     const group = new THREE.Group();
     const dimsGroup = new THREE.Group();
     const helpers = new THREE.Group();
-    scene.add(group, dimsGroup, helpers);
+    const rulerGroup = new THREE.Group();
+    scene.add(group, dimsGroup, helpers, rulerGroup);
 
     const entries = {};         // pos -> { mesh, edges, label, base, dir, mat, holes, bands }
     let model = null;
@@ -48,7 +49,10 @@
     let pickHandler = null;
     let transparent = false;
     let explodeK = 0;
-    let anim = [];              // активні анімації появи деталей
+    let anim = [];
+    let rulerOn = false;
+    let rulerPts = [];
+    let measureHandler = null;              // активные анимации появления деталей
 
     function colorOf(m) {
       return new THREE.Color((model.materials && model.materials[m]) || "#cccccc");
@@ -77,7 +81,7 @@
 
     function scaleSprite(sp, s) { sp.scale.set(s * sp.userData.aspect, s, 1); }
 
-    // Отвори — на пласті, поверненій до центру моделі (зазвичай внутрішній бік)
+    // Отверстия — на пласти, обращённой к центру модели (обычно внутренняя сторона)
     function makeHoles(p, base) {
       const g = new THREE.Group();
       if (!p.holes || !p.holes.length) return g;
@@ -100,7 +104,7 @@
       return g;
     }
 
-    // Кромка: l1/l2 — довгі торці (на краях осі ширини), w1/w2 — короткі (на краях осі довжини)
+    // Кромка: l1/l2 — длинные торцы (на краях оси ширины), w1/w2 — короткие (на краях оси длины)
     function makeBands(p) {
       const g = new THREE.Group();
       const ax = partAxes(p);
@@ -201,11 +205,23 @@
       controls.update();
     }
 
+    // Показать группу деталей целиком: камера смотрит на их центр
+    function focusMany(list) {
+      const box = new THREE.Box3();
+      list.forEach(pos => { if (entries[pos]) box.expandByObject(entries[pos].mesh); });
+      if (box.isEmpty()) return;
+      const c = box.getCenter(new THREE.Vector3());
+      const r = Math.max(box.getSize(new THREE.Vector3()).length() * 1.1, 300);
+      camera.position.set(c.x - r * 0.6, c.y + r * 0.5, c.z + r * 1.1);
+      controls.target.copy(c);
+      controls.update();
+    }
+
     function place(e) {
       e.mesh.position.copy(e.base).add(e.dir.clone().multiplyScalar(explodeK * 0.8));
     }
 
-    // k — від 0 до 1, наскільки розсунути деталі від центру моделі
+    // k — от 0 до 1, насколько раздвинуть детали от центра модели
     function explode(k) {
       explodeK = k;
       Object.values(entries).forEach(place);
@@ -246,7 +262,7 @@
       });
     }
 
-    // Стрілки «вгору» і «вперед» біля деталі
+    // Стрелки «вверх» и «вперёд» у детали
     function showArrows(pos) {
       while (helpers.children.length) helpers.remove(helpers.children[0]);
       if (pos == null || !entries[pos]) return;
@@ -257,7 +273,7 @@
       const front = c.clone().add(new THREE.Vector3(0, 0, e.part.size[2] / 2));
       helpers.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), top, len, 0x2563eb, len * 0.22, len * 0.12));
       helpers.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), front, len, 0x16a34a, len * 0.22, len * 0.12));
-      const up = textSprite("ВГОРУ", "#2563eb", "#ffffff");
+      const up = textSprite("ВВЕРХ", "#2563eb", "#ffffff");
       scaleSprite(up, radius * 0.04);
       up.position.copy(top).add(new THREE.Vector3(0, len * 1.12, 0));
       const fr = textSprite("ПЕРЕД", "#16a34a", "#ffffff");
@@ -266,7 +282,7 @@
       helpers.add(up, fr);
     }
 
-    // Деталі прилітають на своє місце: зверху й ззовні моделі
+    // Детали «прилетают» на своё место: сверху и снаружи модели
     function animateIn(list, ms) {
       return new Promise(resolve => {
         const items = list.map(pos => entries[pos]).filter(Boolean);
@@ -292,14 +308,54 @@
     let down = null;
     renderer.domElement.addEventListener("pointerdown", ev => { down = [ev.clientX, ev.clientY]; });
     renderer.domElement.addEventListener("pointerup", ev => {
-      if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 5 || !pickHandler) return;
+      if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 5) return;
       const r = renderer.domElement.getBoundingClientRect();
       ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
       ray.setFromCamera(ndc, camera);
+      if (rulerOn) { measure(); return; }
+      if (!pickHandler) return;
       const meshes = group.children.filter(m => m.visible && entries[m.userData.pos].state !== "ghost");
       const hit = ray.intersectObjects(meshes, false)[0];
       pickHandler(hit ? hit.object.userData.pos : null);
     });
+
+    // Рулетка: две точки на поверхности деталей, расстояние в миллиметрах
+    function clearRuler() {
+      rulerPts = [];
+      while (rulerGroup.children.length) rulerGroup.remove(rulerGroup.children[0]);
+      if (measureHandler) measureHandler(null);
+    }
+
+    function measure() {
+      const meshes = group.children.filter(m => m.visible && entries[m.userData.pos].state !== "ghost");
+      const hit = ray.intersectObjects(meshes, false)[0];
+      if (!hit) return;
+      if (rulerPts.length >= 2) clearRuler();
+      rulerPts.push(hit.point.clone());
+      const dot = new THREE.Mesh(new THREE.SphereGeometry(Math.max(3, radius * 0.012), 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0xd62828, depthTest: false }));
+      dot.position.copy(hit.point);
+      dot.renderOrder = 9;
+      rulerGroup.add(dot);
+      if (rulerPts.length === 2) {
+        const [a, b] = rulerPts;
+        const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, b]),
+          new THREE.LineBasicMaterial({ color: 0xd62828, depthTest: false }));
+        line.renderOrder = 9;
+        rulerGroup.add(line);
+        const d = a.distanceTo(b);
+        const sp = textSprite(Math.round(d) + " мм", "#d62828", "#ffffff");
+        scaleSprite(sp, radius * 0.05);
+        sp.position.copy(a).add(b).multiplyScalar(0.5);
+        rulerGroup.add(sp);
+        if (measureHandler) measureHandler(d, { dx: Math.abs(a.x - b.x), dy: Math.abs(a.y - b.y), dz: Math.abs(a.z - b.z) });
+      } else if (measureHandler) measureHandler(undefined);
+    }
+
+    function setRuler(on) {
+      rulerOn = on;
+      clearRuler();
+    }
 
     function resize() {
       renderer.setSize(w(), h());
@@ -325,9 +381,11 @@
     })(performance.now());
 
     return {
-      load, resize, resetCamera, focus, explode, setStates, setTransparent,
+      load, resize, resetCamera, focus, focusMany, explode, setStates, setTransparent,
       showDims, showHoles, showBands, showArrows, animateIn, stopAnimation,
       onPick(fn) { pickHandler = fn; },
+      onMeasure(fn) { measureHandler = fn; },
+      setRuler,
       snapshot() { renderer.render(scene, camera); return renderer.domElement.toDataURL("image/png"); }
     };
   }

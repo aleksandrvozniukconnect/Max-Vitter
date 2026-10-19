@@ -1,0 +1,60 @@
+{
+ "id": "670",
+ "title": "Заказ 670",
+ "demo": true,
+ "note": "Демонстрационные данные для проверки сценария. Это не реальный проект БАЗИС.",
+ "floors": [
+  {
+   "n": 1,
+   "rooms": [
+    {
+     "id": "kitchen",
+     "name": "Кухня",
+     "items": [
+      {
+       "id": "st01",
+       "code": "СТ01",
+       "model": "shelf-02"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "n": 2,
+   "rooms": [
+    {
+     "id": "bedroom-1",
+     "name": "Спальня 1",
+     "items": [
+      {
+       "id": "sk03",
+       "code": "ШК03",
+       "model": "cabinet-01"
+      },
+      {
+       "id": "tm04",
+       "code": "ТМ04",
+       "model": "nightstand-03"
+      }
+     ]
+    },
+    {
+     "id": "hall",
+     "name": "Холл",
+     "items": [
+      {
+       "id": "sk05",
+       "code": "ШК05",
+       "model": "cabinet-01"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "commonKit": {
+  "id": "common",
+  "name": "Общий комплект крепежа"
+ }
+}
