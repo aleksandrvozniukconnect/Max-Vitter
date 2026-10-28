@@ -366,6 +366,8 @@
 
     (function loop(now) {
       requestAnimationFrame(loop);
+      // Окно на скрытой вкладке не рисуем: на планшете это лишний нагрев и расход батареи
+      if (!container.offsetParent && !anim.length) return;
       if (anim.length) {
         anim = anim.filter(a => {
           const k = Math.min(1, (now - a.t0) / a.ms);

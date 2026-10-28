@@ -173,6 +173,7 @@
         $("draft-title").textContent = (d.n ? "Упаковка №" + d.n + " (открыта заново)" : "Новая упаковка") + " · " + (it ? itemLabel(it) : "общий комплект");
         $("draft-list").innerHTML = d.codes.map((c, i) => `<li><span>${esc(titleOf(c))}</span><button type="button" class="btn btn-ghost" data-rm="${i}" aria-label="Убрать">✕</button></li>`).join("") || '<li><span class="muted">Пока ничего не отсканировано</span></li>';
         $("close-pack").disabled = !d.codes.length;
+        $("cancel-pack").textContent = d.n ? "Отменить изменения" : "Отменить упаковку";
         const todo = it ? exp[it.id].filter(e => !packOfCode(e.code) && !d.codes.includes(e.code)) : [];
         $("draft-left").textContent = it ? "Осталось упаковать по изделию: " + todo.length : "";
         const sim = (it ? todo : [common()].filter(e => !packOfCode(e.code) && !d.codes.includes(e.code)));
@@ -267,14 +268,18 @@
           render();
           $("packs").insertAdjacentHTML("afterbegin", `<div class="msg">Упаковка №${n} закрыта. <a href="qr.html?o=${encodeURIComponent(order.id)}&kind=pack&p=${n}">Напечатать этикетку</a></div>`);
         });
-        $("cancel-pack").addEventListener("click", () => { ship.draft = null; save(); msg("msg-pack", ""); render(); });
+        $("cancel-pack").addEventListener("click", () => {
+          // Отмена повторно открытой упаковки возвращает её в прежнем виде, номер и этикетка остаются в силе
+          if (ship.draft && ship.draft.orig) ship.packages.push(ship.draft.orig);
+          ship.draft = null; save(); msg("msg-pack", ""); render();
+        });
 
         $("packs").addEventListener("click", e => {
           const r = e.target.dataset.reopen, u = e.target.dataset.unload;
           if (r) {
             const p = ship.packages.find(x => x.n === Number(r));
             ship.packages = ship.packages.filter(x => x !== p);
-            ship.draft = { item: p.item || "common", codes: p.codes.slice(), n: p.n };
+            ship.draft = { item: p.item || "common", codes: p.codes.slice(), n: p.n, orig: p };
             save();
             render();
           }
