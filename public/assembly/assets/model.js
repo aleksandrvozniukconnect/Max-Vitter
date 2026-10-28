@@ -95,7 +95,7 @@
   }
 
   function neighbours(p, all) {
-    const gap = 1.5;
+    const gap = 3; // учитываем монтажный зазор фасадов (обычно 2 мм)
     return all.filter(q => q !== p && [0, 1, 2].every(i =>
       q.at[i] <= p.at[i] + p.size[i] + gap && p.at[i] <= q.at[i] + q.size[i] + gap));
   }
@@ -211,10 +211,12 @@
       playing = true;
       $("asm-play").textContent = "■ Остановить";
       asm.setStates(() => "hidden");
-      for (cur = 0; cur < steps.length && playing; cur++) {
+      for (cur = 0; cur < steps.length; cur++) {
         renderStep(false);
         await asm.animateIn(steps[cur].step.parts, 1100 / speed());
-        if (playing) await wait(500 / speed());
+        if (!playing) break;
+        await wait(500 / speed());
+        if (!playing) break;
       }
       cur = Math.min(cur, steps.length - 1);
       playing = false;
@@ -364,7 +366,7 @@
     });
 
     free.onMeasure((d, axes) => {
-      if (d == null) { $("pick-info").innerHTML = rulerHint(); return; }
+      if (d === null) { $("pick-info").innerHTML = rulerHint(); return; }
       if (axes) {
         $("pick-info").innerHTML = `<h3>${Math.round(d)} мм</h3>
           <p>По осям: ширина ${Math.round(axes.dx)} · высота ${Math.round(axes.dy)} · глубина ${Math.round(axes.dz)} мм</p>

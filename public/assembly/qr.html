@@ -19,6 +19,7 @@
       <select id="kind">
         <option value="parts">Этикетки деталей и узлов изделия</option>
         <option value="pack">Этикетки упаковок</option>
+        <option value="common">Этикетка общего комплекта крепежа</option>
       </select>
       <div id="item-wrap">
         <label for="sel">Изделие</label>
@@ -96,11 +97,16 @@
         });
       }
 
+      function renderCommon() {
+        $("out").innerHTML = `<div class="tz-label-sheet">${label(`Заказ ${order.id}`, "Общий комплект", order.commonKit.name, commonUid(order))}</div>`;
+      }
+
       function render() {
-        const parts = $("kind").value === "parts";
-        $("item-wrap").hidden = !parts;
-        $("pack-wrap").hidden = parts;
-        return parts ? renderParts() : renderPack();
+        const kind = $("kind").value;
+        $("item-wrap").hidden = kind !== "parts";
+        $("pack-wrap").hidden = kind !== "pack";
+        if (kind === "common") return renderCommon();
+        return kind === "parts" ? renderParts() : renderPack();
       }
 
       Promise.all([loadOrder(orderId), loadShipment(orderId)]).then(([o, s]) => {

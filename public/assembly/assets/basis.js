@@ -59,7 +59,7 @@
       else if (t === 5) { v = dv.getFloat64(p, true); p += 8; }
       else if (t === 6) { const L = dv.getUint32(p, true); v = dec16.decode(u8.subarray(p + 4, p + 4 + 2 * L)); p += 4 + 2 * L; }
       else if (t === 7) { const L = dv.getUint32(p, true); v = u8.subarray(p + 4, p + 4 + L); p += 4 + L; }
-      else throw new Error("Невідомий тип даних " + t + " на позиції " + (p - 9));
+      else throw new Error("Неизвестный тип данных " + t + " на позиции " + (p - 9));
       return { name, v };
     }
 
@@ -73,14 +73,14 @@
 
   async function parseFile(buffer) {
     const u8 = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
-    if (String.fromCharCode(u8[0], u8[1], u8[2], u8[3]) !== "BZ85") throw new Error("Це не файл Базис-Мебельщик (немає підпису BZ85).");
+    if (String.fromCharCode(u8[0], u8[1], u8[2], u8[3]) !== "BZ85") throw new Error("Это не файл Базис-Мебельщика (нет подписи BZ85)");
     const at = findMarker(u8, 4);
-    if (at < 0) throw new Error("Не знайдено основний блок моделі. Можливо, версія формату інша.");
+    if (at < 0) throw new Error("Не найден основной блок модели. Возможно, другая версия формата");
     const body = await inflate(u8.subarray(at + 5));
     const r = reader(body);
     r.readDict();
     const doc = r.item();
-    if (doc.name !== "Document") throw new Error("Неочікувана структура файлу.");
+    if (doc.name !== "Document") throw new Error("Неожиданная структура файла");
     // мініатюра з заголовка (необов'язково)
     let thumb = null;
     for (let i = 0; i < Math.min(at, u8.length) - 8; i++) {
@@ -147,7 +147,7 @@
     const { doc } = parsed;
     const warnings = [];
     const model = kid(doc, "Model");
-    if (!model) throw new Error("У файлі немає моделі (Model).");
+    if (!model) throw new Error("В файле нет модели (Model)");
 
     const furn = {};
     ((kid(doc, "FurnList") || { kids: [] }).kids).forEach(f => {
@@ -157,7 +157,7 @@
 
     function makePanel(objNode, m) {
       const segs = contourSegments(val(objNode, "Contour"));
-      if (!segs.length) { stats.skipped++; warnings.push(`Панель ID ${val(objNode, "ID", "?")} («${val(objNode, "Name", "")}»): контур із дугами або вирізами, пропущено.`); return null; }
+      if (!segs.length) { stats.skipped++; warnings.push(`Панель ID ${val(objNode, "ID", "?")} («${val(objNode, "Name", "")}»): контур с дугами или вырезами, пропущена.`); return null; }
       const xs = segs.flatMap(s => [s[0], s[2]]), ys = segs.flatMap(s => [s[1], s[3]]);
       const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
       const thick = val(objNode, "Thick", 0);

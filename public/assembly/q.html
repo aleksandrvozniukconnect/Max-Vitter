@@ -19,7 +19,9 @@
     (function () {
       const { parseCode, normalizeCode, loadOrder, loadModel, designations, modelUrl, esc } = AsmCore;
       const qs = new URLSearchParams(location.search);
-      const raw = qs.get("c") || decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "");
+      const last = location.pathname.split("/").filter(Boolean).pop() || "";
+      let raw = qs.get("c");
+      if (!raw) { try { raw = decodeURIComponent(last); } catch { raw = last; } }
       const code = normalizeCode(raw);
 
       function fail(msg) {
