@@ -1,79 +1,56 @@
-.track {
-  margin: 0;
-  padding: 18px 14px 12px;
-  border-radius: var(--radius);
-  background: var(--paper-deep);
-}
-
-.title {
-  margin: 0 0 8px;
-  font-family: var(--display);
-  font-size: 1rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-.svg {
-  display: block;
-  width: 100%;
-  height: min(calc(100svh - 190px), 620px);
+.overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
   overflow: visible;
 }
 
-.stop {
-  cursor: pointer;
+.bay,
+.bayOn {
+  fill: #3a3c43;
+  stroke: #111318;
+  stroke-width: 2.5;
+  transition: fill 200ms ease;
 }
 
-.box {
+.bayOn {
+  fill: #4a2824;
+}
+
+.badge,
+.badgeOn {
   fill: var(--white);
   stroke: #111318;
   stroke-width: 2;
-  transition: fill 160ms ease;
 }
 
-.stop[data-passed='true'] .box {
-  fill: #e9e1d8;
-}
-
-.stop[data-on='true'] .box {
+.badgeOn {
   fill: #c4271d;
 }
 
-.label {
-  font-family: var(--display);
-  font-size: 15px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  fill: var(--ink-soft);
-  transition: fill 160ms ease;
-  pointer-events: none;
-}
-
 .num {
+  font-family: var(--display);
+  font-size: 14px;
   font-weight: 700;
   fill: var(--ink);
 }
 
-.stop[data-passed='true'] .label,
-.stop[data-passed='true'] .num {
-  fill: var(--ink);
-}
-
-.stop[data-on='true'] .label,
-.stop[data-on='true'] .num {
+.badgeOn + .num {
   fill: #fff;
 }
 
-.stop:hover .box {
-  stroke-width: 3;
+.name {
+  font-family: var(--display);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  fill: #eee7e1;
 }
 
-.stop:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-
-.car {
-  pointer-events: none;
+@media (min-width: 1000px) {
+  .overlay {
+    display: block;
+  }
 }

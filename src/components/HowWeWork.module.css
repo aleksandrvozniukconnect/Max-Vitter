@@ -16,6 +16,7 @@
 }
 
 .band {
+  position: relative;
   padding: 16px 20px 80px;
 }
 
@@ -60,10 +61,6 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 28px;
-}
-
-.rail {
-  display: none;
 }
 
 .points {
@@ -283,22 +280,6 @@ html:lang(ru) .chapter h3 {
     padding: 16px 48px 104px;
   }
 
-  .stage {
-    grid-template-columns: 260px 1fr;
-    gap: 40px;
-    align-items: start;
-  }
-
-  .rail {
-    display: block;
-    position: sticky;
-    top: 96px;
-  }
-
-  .pitIn {
-    display: none;
-  }
-
   .chapters {
     gap: 36px;
   }
@@ -363,5 +344,12 @@ html:lang(ru) .chapter h3 {
   html:lang(uk) .chapter h3,
   html:lang(ru) .chapter h3 {
     font-size: 1.85rem;
+  }
+}
+
+/* room for the pit lane that runs down the left edge, in line with the logo */
+@media (min-width: 1000px) {
+  .chapters {
+    margin-left: max(0px, calc(214px - max(0px, (100vw - 1276px) / 2)));
   }
 }

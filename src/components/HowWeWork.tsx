@@ -137,6 +137,7 @@ export function HowWeWork() {
   const { howWeWork } = copy
   const reduce = useReducedMotion()
   const laneRef = useRef<HTMLOListElement>(null)
+  const bandRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: laneRef, offset: ['start 75%', 'end 45%'] })
   const [current, setCurrent] = useState(reduce ? steps.length - 1 : -1)
 
@@ -157,7 +158,8 @@ export function HowWeWork() {
         <p className="lede">{howWeWork.lede}</p>
       </Reveal>
 
-      <div className={styles.band}>
+      <div className={styles.band} ref={bandRef}>
+        <PitTrack band={bandRef} current={current} reduce={reduce} />
         <div className={styles.bandInner}>
           <div className={styles.lead}>
             <p className={styles.pitIn}>
@@ -170,10 +172,6 @@ export function HowWeWork() {
           </div>
 
           <div className={styles.stage}>
-            <div className={styles.rail}>
-              <PitTrack progress={scrollYProgress} current={current} reduce={reduce} />
-            </div>
-
             <ol className={styles.chapters} ref={laneRef} aria-label={howWeWork.rail}>
               {steps.map((step, index) => (
                 <Chapter
