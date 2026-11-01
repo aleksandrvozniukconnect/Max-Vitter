@@ -27,7 +27,7 @@ function measure(band: HTMLElement): Layout | null {
   return {
     width: box.width,
     height: box.height,
-    top: Math.max(0, rects[0].top - 36),
+    top: 0,
     bottom: Math.min(box.height, rects[rects.length - 1].bottom + 36),
     cards: rects,
   }
@@ -105,35 +105,53 @@ export function PitTrack({ band, current, reduce }: Props) {
   const bayLeft = ROAD_X + ROAD_WIDTH / 2
   const road = `M${ROAD_X} ${layout.top} C ${ROAD_X - 7} ${layout.top + (layout.bottom - layout.top) * 0.3}, ${ROAD_X + 7} ${layout.top + (layout.bottom - layout.top) * 0.7}, ${ROAD_X} ${layout.bottom}`
 
+  const bays = layout.cards.map((card, i) => {
+    const h = BAY_HEIGHT
+    const x = bayLeft - 6
+    return {
+      key: steps[i].key,
+      on: current === i,
+      x,
+      y: (card.top + card.bottom) / 2 - h / 2,
+      w: Math.max(40, card.left - 12 - x),
+      h,
+    }
+  })
+
   return (
     <svg className={styles.overlay} width={layout.width} height={layout.height} aria-hidden="true" focusable="false">
       <defs>
         <filter id="track-sketch" filterUnits="userSpaceOnUse" x="0" y="0" width={layout.width} height={layout.height}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="7" result="n" />
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="4" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.5" />
         </filter>
       </defs>
       <g filter="url(#track-sketch)">
+        {/* outline pass first, fill pass second: road and bays read as one shape */}
         <path d={road} fill="none" stroke="#111318" strokeWidth={ROAD_WIDTH + 6} strokeLinecap="round" />
+        {bays.map((bay) => (
+          <rect key={`o-${bay.key}`} x={bay.x - 3} y={bay.y - 3} width={bay.w + 6} height={bay.h + 6} rx="11" fill="#111318" />
+        ))}
         <path d={road} fill="none" stroke="#3a3c43" strokeWidth={ROAD_WIDTH} strokeLinecap="round" />
+        {bays.map((bay) => (
+          <rect key={`f-${bay.key}`} x={bay.x} y={bay.y} width={bay.w} height={bay.h} rx="8" fill="#3a3c43" />
+        ))}
         <path d={road} fill="none" stroke="#eee7e1" strokeWidth="2" strokeDasharray="14 12" />
-        {layout.cards.map((card, i) => {
-          const on = current === i
-          const right = card.left - 10
-          const height = BAY_HEIGHT
-          const top = (card.top + card.bottom) / 2 - height / 2
-          return (
-            <rect
-              key={steps[i].key}
-              x={bayLeft - 2}
-              y={top}
-              width={Math.max(40, right - bayLeft + 2)}
-              height={height}
-              rx="8"
-              className={on ? styles.bayOn : styles.bay}
-            />
-          )
-        })}
+        {bays.map((bay) => (
+          <rect
+            key={`m-${bay.key}`}
+            x={bay.x + 5}
+            y={bay.y + 5}
+            width={bay.w - 10}
+            height={bay.h - 10}
+            rx="5"
+            fill="none"
+            stroke={bay.on ? '#c4271d' : '#eee7e1'}
+            strokeWidth="1.6"
+            strokeDasharray="6 6"
+            opacity={bay.on ? 1 : 0.45}
+          />
+        ))}
       </g>
       {layout.cards.map((card, i) => {
         const on = current === i
@@ -153,7 +171,7 @@ export function PitTrack({ band, current, reduce }: Props) {
         )
       })}
       <g ref={car} className={styles.car}>
-        <g transform="scale(1.35)">
+        <g transform="scale(1.35) rotate(180)">
           <Car />
         </g>
       </g>

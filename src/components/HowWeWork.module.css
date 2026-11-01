@@ -349,7 +349,8 @@ html:lang(ru) .chapter h3 {
 
 /* room for the pit lane that runs down the left edge, in line with the logo */
 @media (min-width: 1000px) {
-  .chapters {
+  .chapters,
+  .lead {
     margin-left: max(0px, calc(214px - max(0px, (100vw - 1276px) / 2)));
   }
 }
