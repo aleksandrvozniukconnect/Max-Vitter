@@ -1,0 +1,79 @@
+.track {
+  margin: 0;
+  padding: 18px 14px 12px;
+  border-radius: var(--radius);
+  background: var(--paper-deep);
+}
+
+.title {
+  margin: 0 0 8px;
+  font-family: var(--display);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: min(calc(100svh - 190px), 620px);
+  overflow: visible;
+}
+
+.stop {
+  cursor: pointer;
+}
+
+.box {
+  fill: var(--white);
+  stroke: #111318;
+  stroke-width: 2;
+  transition: fill 160ms ease;
+}
+
+.stop[data-passed='true'] .box {
+  fill: #e9e1d8;
+}
+
+.stop[data-on='true'] .box {
+  fill: #c4271d;
+}
+
+.label {
+  font-family: var(--display);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  fill: var(--ink-soft);
+  transition: fill 160ms ease;
+  pointer-events: none;
+}
+
+.num {
+  font-weight: 700;
+  fill: var(--ink);
+}
+
+.stop[data-passed='true'] .label,
+.stop[data-passed='true'] .num {
+  fill: var(--ink);
+}
+
+.stop[data-on='true'] .label,
+.stop[data-on='true'] .num {
+  fill: #fff;
+}
+
+.stop:hover .box {
+  stroke-width: 3;
+}
+
+.stop:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.car {
+  pointer-events: none;
+}

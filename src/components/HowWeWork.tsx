@@ -11,6 +11,8 @@ import { steps, type Step, type StepKey } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
 import type { LocaleId } from '../i18n/locale'
 import { CabinetIcon, MetronomeIcon, StationIcon, TrafficLight } from './PitIcons'
+import { PitCrewEgg } from './PitCrewEgg'
+import { PitTrack } from './PitTrack'
 import { Reveal } from './Reveal'
 import styles from './HowWeWork.module.css'
 
@@ -105,7 +107,15 @@ function Chapter({
           </span>
           <h3>{text.title}</h3>
         </div>
-        <p className={styles.body}>{text.body}</p>
+        {text.points ? (
+          <ol className={styles.points}>
+            {text.points.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ol>
+        ) : (
+          <p className={styles.body}>{text.body}</p>
+        )}
         <p className={styles.deliverable}>
           <span>{howWeWork.youReceive}</span>
           {text.deliverable}
@@ -139,7 +149,10 @@ export function HowWeWork() {
   return (
     <section className={styles.section} id="how">
       <Reveal className={styles.intro}>
-        <p className="eyebrow">{howWeWork.eyebrow}</p>
+        <p className="eyebrow">
+          {howWeWork.eyebrow}
+          <PitCrewEgg />
+        </p>
         <h2 className="section-title">{howWeWork.title}</h2>
         <p className="lede">{howWeWork.lede}</p>
       </Reveal>
@@ -157,15 +170,9 @@ export function HowWeWork() {
           </div>
 
           <div className={styles.stage}>
-            <ol className={styles.rail} aria-label={howWeWork.rail}>
-              {steps.map((step, index) => (
-                <li key={step.key} className={current >= index ? styles.railOn : ''}>
-                  <a href={`#step-${step.key}`}>
-                    <span>{step.n}</span> {copy.steps[step.key].title}
-                  </a>
-                </li>
-              ))}
-            </ol>
+            <div className={styles.rail}>
+              <PitTrack progress={scrollYProgress} current={current} reduce={reduce} />
+            </div>
 
             <ol className={styles.chapters} ref={laneRef} aria-label={howWeWork.rail}>
               {steps.map((step, index) => (

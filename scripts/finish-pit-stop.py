@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """Turn the localized pit-stop PNGs into the site's WebP art.
 
-Recolors the storyboards into the site palette (red -> brass, green -> muted
-go, signal lamp -> stop) and crops off the baked caption strip: the step
-title and body are rendered in HTML instead. Requires Pillow and numpy.
+By default the storyboards keep their original red crew and red car, and the
+baked caption strip is cropped off: the step title and body are rendered in
+HTML instead. Pass --site-palette to recolor into the site palette (red ->
+brass, green -> muted go, signal lamp -> stop, car -> gold). Requires Pillow
+and numpy.
 """
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -155,10 +158,13 @@ def recolor(
 
 
 def main() -> None:
+    site_palette = "--site-palette" in sys.argv
     for locale in LOCALES:
         for step in STEPS:
             src = ART_DIR / locale / f"{step}.png"
-            art = recolor(Image.open(src), LAMPS.get(step), CARS.get(step), room=step == "support", holes=CAR_HOLES.get(step))
+            art = Image.open(src).convert("RGB")
+            if site_palette:
+                art = recolor(art, LAMPS.get(step), CARS.get(step), room=step == "support", holes=CAR_HOLES.get(step))
             art = art.crop((0, 0, art.width, CROP_HEIGHT))
             art.save(ART_DIR / locale / f"{step}-1152.webp", "WEBP", quality=84, method=6)
             for width in SMALL_WIDTHS:

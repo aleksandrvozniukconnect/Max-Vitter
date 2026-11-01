@@ -85,9 +85,9 @@ describe('Design Choice content model', () => {
   })
 
   it('uses the brief headline in the hero in every language', () => {
-    expect(en.hero.title).toBe('Complex intent. Precise result.')
-    expect(dictionaries.uk.hero.title).toBe('Складний задум. Точний результат.')
-    expect(dictionaries.ru.hero.title).toBe('Сложный замысел. Точный результат.')
+    expect(en.hero.title).toBe('Complex solutions. Precise result.')
+    expect(dictionaries.uk.hero.title).toBe('Складні рішення. Точний результат.')
+    expect(dictionaries.ru.hero.title).toBe('Сложные решения. Точный результат.')
   })
 
   it('keeps every pit-stop station to one short line', () => {
@@ -116,8 +116,8 @@ describe('Design Choice content model', () => {
     }
   })
 
-  it('has four audiences, four capabilities and three projects with photos', () => {
-    expect(audienceKeys).toHaveLength(4)
+  it('has two audiences, four capabilities and three projects with photos', () => {
+    expect(audienceKeys).toHaveLength(2)
     expect(capabilityKeys).toHaveLength(4)
     expect(photos.capabilities).toHaveLength(4)
     expect(projectKeys).toHaveLength(3)

@@ -58,7 +58,7 @@ a.seeAll:hover::after {
   margin: 0 auto;
 }
 
-/* audiences: four quiet columns */
+/* audiences: two columns */
 .audiences {
   display: grid;
   grid-template-columns: 1fr;
@@ -81,6 +81,21 @@ a.seeAll:hover::after {
   color: var(--ink-soft);
   line-height: 1.6;
   font-size: 0.95rem;
+}
+
+.audienceNote {
+  width: min(var(--wrap), 100%);
+  margin: 28px auto 0;
+}
+
+.audienceNote p {
+  display: inline-block;
+  margin: 0;
+  padding: 10px 16px;
+  border-left: 3px solid var(--brass);
+  background: var(--white);
+  font-size: 0.95rem;
+  color: var(--ink);
 }
 
 /* plant: photo left, copy right */
@@ -291,7 +306,7 @@ a.seeAll:hover::after {
   }
 
   .audiences {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 28px;
   }
 

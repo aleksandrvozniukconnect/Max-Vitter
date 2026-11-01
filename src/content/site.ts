@@ -38,7 +38,7 @@ export const nav = [
 
 export type NavKey = (typeof nav)[number]['key']
 
-export const audienceKeys = ['designers', 'architects', 'developers', 'partners'] as const
+export const audienceKeys = ['developers', 'designers'] as const
 export type AudienceKey = (typeof audienceKeys)[number]
 
 export const capabilityKeys = ['kitchens', 'wardrobes', 'walls', 'millwork'] as const

@@ -26,6 +26,9 @@ export function Audiences() {
           )
         })}
       </div>
+      <Reveal className={styles.audienceNote}>
+        <p>{audiences.note}</p>
+      </Reveal>
     </section>
   )
 }

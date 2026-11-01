@@ -75,7 +75,7 @@ describe('locale dictionaries', () => {
   it('keeps Design Choice as a brand token in every language', () => {
     for (const locale of localeIds) {
       expect(dictionaries[locale].footer.legal).toBe('Design Choice')
-      expect(dictionaries[locale].hero.lede).toContain('Design Choice')
+      expect(dictionaries[locale].meta.title).toContain('Design Choice')
     }
   })
 

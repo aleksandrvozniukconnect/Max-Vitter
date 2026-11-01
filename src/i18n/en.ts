@@ -8,6 +8,7 @@ import type {
   ProjectKey,
   StepKey,
 } from '../content/site'
+import type { CrewRole } from '../content/crew'
 import type { FormErrorMessages } from '../lib/form'
 
 type StepCopy = {
@@ -15,6 +16,8 @@ type StepCopy = {
   body: string
   deliverable: string
   gate?: string
+  /** Optional checklist shown instead of the body text. */
+  points?: string[]
 }
 
 export type SiteCopy = {
@@ -41,6 +44,7 @@ export type SiteCopy = {
     eyebrow: string
     title: string
     items: Record<AudienceKey, { title: string; body: string }>
+    note: string
   }
   howWeWork: {
     eyebrow: string
@@ -52,6 +56,7 @@ export type SiteCopy = {
     pace: string
     pitIn: string
     pitOut: string
+    egg: { label: string; glyph: string; title: string; close: string; caption: string; roles: Record<CrewRole, string> }
   }
   steps: Record<StepKey, StepCopy>
   plant: {
@@ -161,8 +166,8 @@ export const en: SiteCopy = {
   },
   hero: {
     eyebrow: 'B2B furniture and architectural millwork · Made in Ukraine',
-    title: 'Complex intent. Precise result.',
-    lede: 'Design Choice builds furniture and millwork for designers, architects, developers and general contractors, from engineering drawings to handover on site.',
+    title: 'Complex solutions. Precise result.',
+    lede: 'We build bespoke furniture and complex joinery from your design projects and drawings. We combine veneer, stone, metal, glass and HPL for commercial and residential projects.',
     primary: 'How we work',
     secondary: 'Send your project',
   },
@@ -170,23 +175,16 @@ export const en: SiteCopy = {
     eyebrow: 'Who we work with',
     title: 'We work for the people who draw and deliver the interior.',
     items: {
-      designers: {
-        title: 'Interior designers',
-        body: 'We keep your design and work out the engineering to build it.',
-      },
-      architects: {
-        title: 'Architects',
-        body: 'You approve shop drawings, joints and tolerances before anything is cut.',
-      },
       developers: {
         title: 'Developers and general contractors',
         body: 'One contract and one schedule for all the furniture and millwork on site.',
       },
-      partners: {
-        title: 'Millwork partners',
-        body: 'We produce to your drawings in our plant. The project stays under your name.',
+      designers: {
+        title: 'Architects and designers',
+        body: 'You approve shop drawings, joints and tolerances before anything is cut.',
       },
     },
+    note: 'At every stage you can bring in our own designer.',
   },
   howWeWork: {
     eyebrow: 'How we work',
@@ -198,11 +196,31 @@ export const en: SiteCopy = {
     pace: 'The project manager sets the pace for every team',
     pitIn: 'Your project comes in',
     pitOut: 'It leaves as a finished interior: installed, adjusted and handed over',
+    egg: {
+      label: 'Who works on your project',
+      glyph: 'i',
+      title: 'Your pit-stop crew',
+      close: 'Close',
+      caption: 'Everyone around the car owns one stage of your project.',
+      roles: {
+        manager: 'Project manager',
+        estimator: 'Estimator',
+        engineer: 'Design engineer',
+        designer: 'Our designer',
+        contracts: 'Contracts manager',
+        cnc: 'CNC operator',
+        finishing: 'Finishing',
+        qc: 'Quality control',
+        logistics: 'Logistics',
+        installer: 'Installer',
+      },
+    },
   },
   steps: {
     consult: {
       title: 'Analysis',
       body: 'We study the drawings, specifications and measurements, then estimate.',
+      points: ['We receive the drawings', 'We run a detailed analysis', 'We clarify the details', 'We prepare the estimate'],
       deliverable: 'Estimate and a list of open questions',
     },
     design: {

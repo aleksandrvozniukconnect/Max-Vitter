@@ -64,32 +64,41 @@
 
 .rail {
   display: none;
+}
+
+.points {
+  display: grid;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.rail li + li {
-  margin-top: 10px;
-}
-
-.rail a {
-  display: flex;
-  gap: 10px;
-  font-size: 13px;
+  counter-reset: point;
   color: var(--ink-soft);
-  transition: color 120ms ease;
+  font-size: 0.98rem;
+  line-height: 1.5;
 }
 
-.rail a:hover,
-.railOn a {
-  color: var(--ink);
+.points li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  counter-increment: point;
 }
 
-.rail span {
+.points li::before {
+  content: counter(point);
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--brass);
+  border-radius: 50%;
   font-family: var(--display);
-  font-size: 13px;
-  color: var(--ink);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--brass-ink);
+  transform: translateY(2px);
 }
 
 .chapters {
@@ -275,7 +284,7 @@ html:lang(ru) .chapter h3 {
   }
 
   .stage {
-    grid-template-columns: 220px 1fr;
+    grid-template-columns: 260px 1fr;
     gap: 40px;
     align-items: start;
   }
@@ -283,8 +292,11 @@ html:lang(ru) .chapter h3 {
   .rail {
     display: block;
     position: sticky;
-    top: 108px;
-    padding-top: 6px;
+    top: 96px;
+  }
+
+  .pitIn {
+    display: none;
   }
 
   .chapters {
