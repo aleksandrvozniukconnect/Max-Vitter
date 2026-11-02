@@ -93,7 +93,7 @@ export function PitTrack({ band }: Props) {
       return
     }
     const distance = Math.abs(target - from)
-    const duration = 900 + 350 * (distance - 1)
+    const duration = 2600 + 900 * (distance - 1)
     const start = performance.now()
     const step = (now: number) => {
       const t = (now - start) / duration

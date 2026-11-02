@@ -75,7 +75,7 @@ export function carPlacement(
   const y = stops[lo].y + (stops[hi].y - stops[lo].y) * t
   const nearest = t < 0.5 ? lo : hi
   const distance = Math.abs(index - nearest)
-  const parked = 1 - smooth(Math.min(1, distance / 0.2))
+  const parked = 1 - smooth(Math.min(1, distance / 0.3))
   const x = roadX + (stops[nearest].bayX - roadX) * parked
   return { x, y, angle: -90 * parked }
 }
