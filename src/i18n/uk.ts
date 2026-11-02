@@ -69,6 +69,7 @@ export const uk: SiteCopy = {
         cnc: 'Оператор ЧПК',
         finishing: 'Оздоблення',
         qc: 'Контроль якості',
+        packing: 'Пакування',
         logistics: 'Логіст',
         installer: 'Монтажник',
       },

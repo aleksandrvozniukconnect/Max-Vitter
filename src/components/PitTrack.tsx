@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { steps } from '../content/site'
-import { useLocale } from '../context/LocaleContext'
 import { ROAD_WIDTH, ROAD_X, carPlacement, carStopIndex, type Stop } from '../lib/pitTrack'
 import styles from './PitTrack.module.css'
 
-const BAY_HEIGHT = 140
+const BAY_HEIGHT = 112
+const BAY_MAX_WIDTH = 170
+const ROAD_TILE_W = 76
+const ROAD_TILE_H = 230
+const CAR_W = 54
+const CAR_H = 73
 
 type Layout = {
   width: number
@@ -33,21 +37,6 @@ function measure(band: HTMLElement): Layout | null {
   }
 }
 
-function Car() {
-  return (
-    <g>
-      <rect x="-15" y="-19" width="8" height="13" rx="2" fill="#111318" />
-      <rect x="7" y="-19" width="8" height="13" rx="2" fill="#111318" />
-      <rect x="-16" y="7" width="9" height="16" rx="2" fill="#111318" />
-      <rect x="7" y="7" width="9" height="16" rx="2" fill="#111318" />
-      <rect x="-14" y="-27" width="28" height="5" rx="1" fill="#c4271d" stroke="#111318" strokeWidth="1.3" />
-      <path d="M-6 -22 L6 -22 L10 9 L6 25 L-6 25 L-10 9 Z" fill="#c4271d" stroke="#111318" strokeWidth="1.5" />
-      <rect x="-13" y="25" width="26" height="6" rx="1" fill="#c4271d" stroke="#111318" strokeWidth="1.3" />
-      <circle cx="0" cy="5" r="3.6" fill="#f4efe9" stroke="#111318" strokeWidth="1.1" />
-    </g>
-  )
-}
-
 type Props = {
   band: RefObject<HTMLDivElement | null>
   current: number
@@ -60,7 +49,6 @@ type Props = {
  * pulls into the bay of the card on screen.
  */
 export function PitTrack({ band, current, reduce }: Props) {
-  const { copy } = useLocale()
   const [layout, setLayout] = useState<Layout | null>(null)
   const car = useRef<SVGGElement>(null)
   const stopsRef = useRef<Stop[]>([])
@@ -93,7 +81,10 @@ export function PitTrack({ band, current, reduce }: Props) {
 
   useEffect(() => {
     if (!layout) return
-    const bayX = (card: Layout['cards'][number]) => (ROAD_X + ROAD_WIDTH / 2 + card.left - 8) / 2 + 4
+    const bayX = (card: Layout['cards'][number]) => {
+      const x = ROAD_X + ROAD_WIDTH / 2 - 16
+      return x + Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - x)) / 2 + 12
+    }
     stopsRef.current = layout.cards.map((card) => ({ y: (card.top + card.bottom) / 2, bayX: bayX(card) }))
     centersRef.current = stopsRef.current.map((stop) => stop.y)
     place()
@@ -103,59 +94,42 @@ export function PitTrack({ band, current, reduce }: Props) {
 
   if (!layout) return null
   const bayLeft = ROAD_X + ROAD_WIDTH / 2
-  const road = `M${ROAD_X} ${layout.top} C ${ROAD_X - 7} ${layout.top + (layout.bottom - layout.top) * 0.3}, ${ROAD_X + 7} ${layout.top + (layout.bottom - layout.top) * 0.7}, ${ROAD_X} ${layout.bottom}`
 
   const bays = layout.cards.map((card, i) => {
-    const h = BAY_HEIGHT
-    const x = bayLeft - 6
+    const x = bayLeft - 16
     return {
       key: steps[i].key,
       on: current === i,
       x,
-      y: (card.top + card.bottom) / 2 - h / 2,
-      w: Math.max(40, card.left - 12 - x),
-      h,
+      y: (card.top + card.bottom) / 2 - BAY_HEIGHT / 2,
+      w: Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - x)),
+      h: BAY_HEIGHT,
     }
   })
 
   return (
     <svg className={styles.overlay} width={layout.width} height={layout.height} aria-hidden="true" focusable="false">
       <defs>
-        <filter id="track-sketch" filterUnits="userSpaceOnUse" x="0" y="0" width={layout.width} height={layout.height}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="n" />
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.5" />
-        </filter>
+        <pattern id="road-tile" patternUnits="userSpaceOnUse" x={ROAD_X - ROAD_TILE_W / 2} y="0" width={ROAD_TILE_W} height={ROAD_TILE_H}>
+          <image href="/images/track/road.webp" width={ROAD_TILE_W} height={ROAD_TILE_H} preserveAspectRatio="none" />
+        </pattern>
       </defs>
-      <g filter="url(#track-sketch)">
-        {/* outline pass first, fill pass second: road and bays read as one shape */}
-        <path d={road} fill="none" stroke="#111318" strokeWidth={ROAD_WIDTH + 6} strokeLinecap="round" />
-        {bays.map((bay) => (
-          <rect key={`o-${bay.key}`} x={bay.x - 3} y={bay.y - 3} width={bay.w + 6} height={bay.h + 6} rx="11" fill="#111318" />
-        ))}
-        <path d={road} fill="none" stroke="#3a3c43" strokeWidth={ROAD_WIDTH} strokeLinecap="round" />
-        {bays.map((bay) => (
-          <rect key={`f-${bay.key}`} x={bay.x} y={bay.y} width={bay.w} height={bay.h} rx="8" fill="#3a3c43" />
-        ))}
-        <path d={road} fill="none" stroke="#eee7e1" strokeWidth="2" strokeDasharray="14 12" />
-        {bays.map((bay) => (
-          <rect
-            key={`m-${bay.key}`}
-            x={bay.x + 5}
-            y={bay.y + 5}
-            width={bay.w - 10}
-            height={bay.h - 10}
-            rx="5"
-            fill="none"
-            stroke={bay.on ? '#c4271d' : '#eee7e1'}
-            strokeWidth="1.6"
-            strokeDasharray="6 6"
-            opacity={bay.on ? 1 : 0.45}
-          />
-        ))}
-      </g>
+      {bays.map((bay) => (
+        <image
+          key={bay.key}
+          href="/images/track/bay.webp"
+          x={bay.x}
+          y={bay.y}
+          width={bay.w}
+          height={bay.h}
+          preserveAspectRatio="none"
+        />
+      ))}
+      <rect x={ROAD_X - ROAD_TILE_W / 2} y={layout.top} width={ROAD_TILE_W} height={layout.bottom - layout.top} fill="url(#road-tile)" />
       {layout.cards.map((card, i) => {
         const on = current === i
-        const cx = (bayLeft + card.left - 10) / 2 + 2
+        const bayW = Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - (bayLeft - 16)))
+        const cx = bayLeft - 16 + bayW / 2 + 12
         const mid = (card.top + card.bottom) / 2
         const cy = mid - BAY_HEIGHT / 2 + 24
         return (
@@ -164,16 +138,11 @@ export function PitTrack({ band, current, reduce }: Props) {
             <text x={cx} y={cy + 5} textAnchor="middle" className={styles.num}>
               {steps[i].n}
             </text>
-            <text x={cx} y={mid + BAY_HEIGHT / 2 - 14} textAnchor="middle" className={styles.name}>
-              {copy.steps[steps[i].key].title}
-            </text>
           </g>
         )
       })}
       <g ref={car} className={styles.car}>
-        <g transform="scale(1.35) rotate(180)">
-          <Car />
-        </g>
+        <image href="/images/track/car.webp" x={-CAR_W / 2} y={-CAR_H / 2} width={CAR_W} height={CAR_H} />
       </g>
     </svg>
   )

@@ -1,7 +1,7 @@
 /** Geometry of the pit-lane road that runs beside the "How we work" cards. */
 
 export const ROAD_X = 113
-export const ROAD_WIDTH = 40
+export const ROAD_WIDTH = 56
 
 function smooth(t: number): number {
   return t * t * (3 - 2 * t)

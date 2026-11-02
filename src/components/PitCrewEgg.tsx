@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useLocale } from '../context/LocaleContext'
-import { PitCrewArt } from './PitCrewArt'
+import { crewSpots } from '../content/crew'
 import styles from './PitCrewEgg.module.css'
 
 /** The red "i" next to the section eyebrow; opens the pit-crew picture. */
@@ -74,8 +74,20 @@ export function PitCrewEgg() {
                 </svg>
               </button>
               <h3 className={styles.title}>{egg.title}</h3>
-              <div className={styles.art}>
-                <PitCrewArt roles={egg.roles} />
+              <div className={styles.body}>
+                <div className={styles.art}>
+                  <img src="/images/egg/pitcrew.webp" alt="" width={765} height={1024} draggable={false} />
+                  {crewSpots.map((spot, i) => (
+                    <span key={spot.role} className={styles.marker} style={{ left: `${spot.x}%`, top: `${spot.y}%` }}>
+                      {i + 1}
+                    </span>
+                  ))}
+                </div>
+                <ol className={styles.legend}>
+                  {crewSpots.map((spot) => (
+                    <li key={spot.role}>{egg.roles[spot.role]}</li>
+                  ))}
+                </ol>
               </div>
               <p className={styles.caption}>{egg.caption}</p>
             </motion.div>

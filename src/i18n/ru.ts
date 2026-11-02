@@ -69,6 +69,7 @@ export const ru: SiteCopy = {
         cnc: 'Оператор ЧПУ',
         finishing: 'Отделка',
         qc: 'Контроль качества',
+        packing: 'Упаковка',
         logistics: 'Логист',
         installer: 'Монтажник',
       },
