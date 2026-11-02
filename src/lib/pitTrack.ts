@@ -27,19 +27,39 @@ export type Stop = {
   bayX: number
 }
 
+export type Span = { top: number; bottom: number }
+
 /**
- * Fractional stop index for a scroll line. The car parks at a stop while the
- * line is near the middle of its card and drives on in between.
+ * The stop the car should be at: the card that sits fully inside the viewport
+ * (nearest to its middle if several do). When no card fits entirely, such as
+ * tall cards on a small screen, the card closest to the middle of the
+ * viewport wins. `current` keeps the car where it is while nothing changes.
  */
-export function carStopIndex(line: number, centers: readonly number[]): number {
-  if (centers.length === 0) return 0
-  if (line <= centers[0]) return 0
-  const last = centers.length - 1
-  if (line >= centers[last]) return last
-  let k = 0
-  while (k < last - 1 && line >= centers[k + 1]) k += 1
-  const frac = (line - centers[k]) / (centers[k + 1] - centers[k])
-  return k + smooth(Math.min(1, Math.max(0, (frac - 0.15) / 0.7)))
+export function targetStop(cards: readonly Span[], viewTop: number, viewBottom: number, current = 0): number {
+  if (cards.length === 0) return 0
+  const middle = (viewTop + viewBottom) / 2
+  const distance = (card: Span) => Math.abs((card.top + card.bottom) / 2 - middle)
+  let best = -1
+  cards.forEach((card, i) => {
+    if (card.top >= viewTop && card.bottom <= viewBottom && (best < 0 || distance(card) < distance(cards[best]))) {
+      best = i
+    }
+  })
+  if (best >= 0) return best
+  // Between cards: keep the current stop until another card is fully visible,
+  // unless the current one has left the screen altogether.
+  const cur = cards[Math.min(current, cards.length - 1)]
+  if (cur.bottom > viewTop && cur.top < viewBottom) return Math.min(current, cards.length - 1)
+  let nearest = 0
+  cards.forEach((card, i) => {
+    if (distance(card) < distance(cards[nearest])) nearest = i
+  })
+  return nearest
+}
+
+/** Smooth ease for the drive between two stops, 0..1. */
+export function driveEase(t: number): number {
+  return smooth(Math.min(1, Math.max(0, t)))
 }
 
 /** Where the car is for a fractional stop index: on the road, or pulled into a bay. */

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion'
 import { steps } from '../content/site'
-import { ROAD_WIDTH, ROAD_X, carPlacement, carStopIndex, roadFromLogo, type Stop } from '../lib/pitTrack'
+import { ROAD_WIDTH, ROAD_X, carPlacement, driveEase, roadFromLogo, targetStop, type Stop } from '../lib/pitTrack'
 import styles from './PitTrack.module.css'
 
 const BAY_HEIGHT = 110
@@ -64,26 +64,58 @@ export function PitTrack({ band }: Props) {
   const [layout, setLayout] = useState<Layout | null>(null)
   const [current, setCurrent] = useState(0)
   const car = useRef<SVGGElement>(null)
-  const stopsRef = useRef<Stop[]>([])
-  const centersRef = useRef<number[]>([])
+  const stopsRef = useRef<(Stop & { top: number; bottom: number })[]>([])
   const roadXRef = useRef(ROAD_X)
+  const posRef = useRef(0)
+  const targetRef = useRef(-1)
+  const frame = useRef(0)
+  const reduce = useReducedMotion()
   const { scrollY } = useScroll()
 
-  const place = () => {
-    const el = band.current
+  const apply = () => {
     const node = car.current
-    if (!el || !node || stopsRef.current.length === 0) return
-    const top = el.getBoundingClientRect().top
-    const line = window.innerHeight * 0.45 - top
-    // The car follows the reader's own scroll, so it keeps moving even with
-    // reduced motion on; nothing here animates by itself.
-    const index = carStopIndex(line, centersRef.current)
-    setCurrent(Math.round(index))
-    const pose = carPlacement(index, stopsRef.current, roadXRef.current)
+    if (!node || stopsRef.current.length === 0) return
+    const pos = posRef.current
+    setCurrent(Math.round(pos))
+    const pose = carPlacement(pos, stopsRef.current, roadXRef.current)
     node.setAttribute(
       'transform',
       `translate(${pose.x.toFixed(1)} ${pose.y.toFixed(1)}) rotate(${pose.angle.toFixed(1)})`,
     )
+  }
+
+  const driveTo = (target: number) => {
+    cancelAnimationFrame(frame.current)
+    const from = posRef.current
+    if (reduce || targetRef.current < 0 || from === target) {
+      posRef.current = target
+      apply()
+      return
+    }
+    const distance = Math.abs(target - from)
+    const duration = 900 + 350 * (distance - 1)
+    const start = performance.now()
+    const step = (now: number) => {
+      const t = (now - start) / duration
+      posRef.current = from + (target - from) * driveEase(t)
+      apply()
+      if (t < 1) frame.current = requestAnimationFrame(step)
+    }
+    frame.current = requestAnimationFrame(step)
+  }
+
+  // The car stays put while the reader scrolls. Once the next card sits fully
+  // in the window it drives there by itself and pulls into that card's bay.
+  const watch = () => {
+    const el = band.current
+    if (!el || stopsRef.current.length === 0) return
+    const top = el.getBoundingClientRect().top
+    const inset = (document.querySelector('header')?.getBoundingClientRect().bottom ?? 0) | 0
+    const spans = stopsRef.current.map((stop) => ({ top: stop.top + top, bottom: stop.bottom + top }))
+    const target = targetStop(spans, inset, window.innerHeight, Math.max(0, targetRef.current))
+    if (target === targetRef.current) return
+    targetRef.current = target
+    driveTo(target)
   }
 
   useEffect(() => {
@@ -103,13 +135,20 @@ export function PitTrack({ band }: Props) {
       const x = lay.roadX + lay.roadW / 2 - 6
       return x + Math.min(BAY_MAX_WIDTH * lay.scale, Math.max(60, card.left - 12 - x)) / 2 + 8
     }
-    stopsRef.current = layout.cards.map((card) => ({ y: (card.top + card.bottom) / 2, bayX: bayX(card) }))
-    centersRef.current = stopsRef.current.map((stop) => stop.y)
+    stopsRef.current = layout.cards.map((card) => ({
+      y: (card.top + card.bottom) / 2,
+      top: card.top,
+      bottom: card.bottom,
+      bayX: bayX(card),
+    }))
     roadXRef.current = layout.roadX
-    place()
+    if (targetRef.current < 0) watch()
+    else apply()
   })
 
-  useMotionValueEvent(scrollY, 'change', place)
+  useEffect(() => () => cancelAnimationFrame(frame.current), [])
+
+  useMotionValueEvent(scrollY, 'change', watch)
 
   if (!layout) return null
   const { roadX, roadW, scale } = layout
