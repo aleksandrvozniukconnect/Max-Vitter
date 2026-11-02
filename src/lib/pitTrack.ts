@@ -59,7 +59,9 @@ export function targetStop(cards: readonly Span[], viewTop: number, viewBottom: 
 
 /** Smooth ease for the drive between two stops, 0..1. */
 export function driveEase(t: number): number {
-  return smooth(Math.min(1, Math.max(0, t)))
+  const x = Math.min(1, Math.max(0, t))
+  // Mostly even speed so the drive reads as one steady movement.
+  return 0.6 * x + 0.4 * smooth(x)
 }
 
 /** Where the car is for a fractional stop index: on the road, or pulled into a bay. */
@@ -75,7 +77,7 @@ export function carPlacement(
   const y = stops[lo].y + (stops[hi].y - stops[lo].y) * t
   const nearest = t < 0.5 ? lo : hi
   const distance = Math.abs(index - nearest)
-  const parked = 1 - smooth(Math.min(1, distance / 0.3))
+  const parked = 1 - smooth(Math.min(1, distance / 0.18))
   const x = roadX + (stops[nearest].bayX - roadX) * parked
   return { x, y, angle: -90 * parked }
 }
