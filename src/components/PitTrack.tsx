@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
-import { useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { steps } from '../content/site'
 import { ROAD_WIDTH, ROAD_X, carPlacement, driveEase, roadFromLogo, targetStop, type Stop } from '../lib/pitTrack'
 import styles from './PitTrack.module.css'
@@ -69,7 +69,7 @@ export function PitTrack({ band }: Props) {
   const posRef = useRef(0)
   const targetRef = useRef(-1)
   const frame = useRef(0)
-  const reduce = useReducedMotion()
+  const placed = useRef(false)
   const { scrollY } = useScroll()
 
   const apply = () => {
@@ -87,7 +87,8 @@ export function PitTrack({ band }: Props) {
   const driveTo = (target: number) => {
     cancelAnimationFrame(frame.current)
     const from = posRef.current
-    if (reduce || targetRef.current < 0 || from === target) {
+    if (!placed.current || from === target) {
+      placed.current = true
       posRef.current = target
       apply()
       return
