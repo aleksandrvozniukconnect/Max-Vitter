@@ -10,7 +10,7 @@ import { pitStopCaption, stepArtFor, stepArtSrcSet } from '../content/pitStopArt
 import { steps, type Step, type StepKey } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
 import type { LocaleId } from '../i18n/locale'
-import { CabinetIcon, MetronomeIcon, StationIcon, TrafficLight } from './PitIcons'
+import { StationIcon, TrafficLight } from './PitIcons'
 import { PitCrewEgg } from './PitCrewEgg'
 import { PitTrack } from './PitTrack'
 import { Reveal } from './Reveal'
@@ -107,24 +107,34 @@ function Chapter({
           </span>
           <h3>{text.title}</h3>
         </div>
+        {!text.points || text.showBody ? <p className={styles.body}>{text.body}</p> : null}
         {text.points ? (
-          <ol className={styles.points}>
-            {text.points.map((point) => (
-              <li key={point}>{point}</li>
-            ))}
-          </ol>
-        ) : (
-          <p className={styles.body}>{text.body}</p>
-        )}
-        <p className={styles.deliverable}>
+          <>
+            {text.pointsTitle ? <p className={styles.listTitle}>{text.pointsTitle}</p> : null}
+            <ol className={styles.points}>
+              {text.points.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ol>
+          </>
+        ) : null}
+        <div className={styles.deliverable}>
           <span>{howWeWork.youReceive}</span>
-          {text.deliverable}
-        </p>
+          {text.deliverablePoints ? (
+            <ol className={styles.points}>
+              {text.deliverablePoints.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ol>
+          ) : (
+            text.deliverable
+          )}
+        </div>
         {step.gate ? (
           <p className={`${styles.gate} ${done ? styles.gateGo : ''}`}>
-            <TrafficLight go={done} />
+            {text.gateLight === false ? null : <TrafficLight go={done} />}
             <span className={styles.stamp}>{text.gate}</span>
-            {done ? null : <span className={styles.gateNote}>{howWeWork.gateNote}</span>}
+            {done || text.gateLight === false ? null : <span className={styles.gateNote}>{howWeWork.gateNote}</span>}
           </p>
         ) : null}
       </div>
@@ -165,10 +175,6 @@ export function HowWeWork() {
             <p className={styles.pitIn}>
               <span>{howWeWork.pitIn}</span>
             </p>
-            <p className={styles.pace}>
-              <MetronomeIcon />
-              <span>{howWeWork.pace}</span>
-            </p>
           </div>
 
           <div className={styles.stage}>
@@ -188,10 +194,6 @@ export function HowWeWork() {
             </ol>
           </div>
 
-          <p className={`${styles.pitOut} ${current >= steps.length - 1 ? styles.pitOutOn : ''}`}>
-            <CabinetIcon />
-            <span>{howWeWork.pitOut}</span>
-          </p>
         </div>
       </div>
     </section>

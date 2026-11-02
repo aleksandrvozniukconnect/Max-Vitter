@@ -66,7 +66,7 @@ describe('Design Choice content model', () => {
     expect(steps[5].gate).toBeUndefined()
     expect(en.steps.confirm.gate).toBe('Approved for Production')
     expect(en.steps.manufacture.gate).toBe('QC Approved')
-    expect(en.steps.deliver.gate).toBe('Approved for Shipment')
+    expect(en.steps.deliver.gate).toBe('FOB, CIF, DAP, EXW')
     expect(en.steps.consult.gate).toBeUndefined()
     expect(en.steps.support.gate).toBeUndefined()
     for (const locale of localeIds) {

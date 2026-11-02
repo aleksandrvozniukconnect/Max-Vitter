@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useLocale } from '../context/LocaleContext'
+import { MetronomeIcon } from './PitIcons'
 import { crewSpots } from '../content/crew'
 import styles from './PitCrewEgg.module.css'
 
@@ -92,6 +93,10 @@ export function PitCrewEgg() {
                 </ol>
               </div>
               <p className={styles.caption}>{egg.caption}</p>
+              <p className={styles.pace}>
+                <MetronomeIcon />
+                <span>{copy.howWeWork.pace}</span>
+              </p>
             </motion.div>
           </motion.div>
         ) : null}

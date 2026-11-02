@@ -18,6 +18,12 @@ type StepCopy = {
   gate?: string
   /** Optional checklist shown instead of the body text. */
   points?: string[]
+  /** Keep the body text above the checklist. */
+  showBody?: boolean
+  pointsTitle?: string
+  deliverablePoints?: string[]
+  /** false hides the traffic light next to the stamp. */
+  gateLight?: boolean
 }
 
 export type SiteCopy = {
@@ -55,7 +61,6 @@ export type SiteCopy = {
     gateNote: string
     pace: string
     pitIn: string
-    pitOut: string
     egg: { label: string; glyph: string; title: string; close: string; caption: string; roles: Record<CrewRole, string> }
   }
   steps: Record<StepKey, StepCopy>
@@ -195,7 +200,6 @@ export const en: SiteCopy = {
     gateNote: 'Red light until signed',
     pace: 'The project manager sets the pace for every team',
     pitIn: 'Your project comes in',
-    pitOut: 'It leaves as a finished interior: installed, adjusted and handed over',
     egg: {
       label: 'Who works on your project',
       glyph: 'i',
@@ -242,9 +246,14 @@ export const en: SiteCopy = {
     },
     deliver: {
       title: 'Delivery',
-      body: 'Every crate is labeled with its item and room. Sea, road or air.',
-      deliverable: 'Packing list and export documents',
-      gate: 'Approved for Shipment',
+      body: 'Every item is marked and comes with an electronic interactive instruction.',
+      showBody: true,
+      pointsTitle: 'Delivery',
+      points: ['Sea', 'Air', 'Road'],
+      deliverable: 'Cleared goods, documents, support',
+      deliverablePoints: ['Goods cleared through customs', 'Documents', 'Support'],
+      gate: 'FOB, CIF, DAP, EXW',
+      gateLight: false,
     },
     support: {
       title: 'Installation',

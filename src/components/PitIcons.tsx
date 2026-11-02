@@ -19,15 +19,6 @@ function Icon({ children }: { children: ReactNode }) {
   )
 }
 
-export function CabinetIcon() {
-  return (
-    <Icon>
-      <rect x="8" y="6" width="24" height="26" rx="1" />
-      <path d="M20 6v26M17 18v4M23 18v4M10 32v2M30 32v2" />
-    </Icon>
-  )
-}
-
 export function MetronomeIcon() {
   return (
     <Icon>
@@ -77,9 +68,9 @@ const stationIcons: Record<StepKey, ReactNode> = {
   ),
   support: (
     <>
-      <rect x="4" y="16" width="32" height="9" rx="1" />
-      <rect x="16" y="18" width="8" height="5" rx="2.5" />
-      <path d="M8 16v-3M32 16v-3M20 30v4M16 34h8" />
+      <circle cx="12" cy="20" r="7" />
+      <circle cx="12" cy="20" r="2.5" />
+      <path d="M19 20h16M29 20v7M35 20v5" />
     </>
   ),
 }
