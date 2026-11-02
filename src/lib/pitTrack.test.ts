@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ROAD_X, carPlacement, carStopIndex } from './pitTrack'
+import { LOGO_BAR, ROAD_X, carPlacement, carStopIndex, roadFromLogo } from './pitTrack'
 
 const centers = [100, 400, 700, 1000]
 const stops = centers.map((y) => ({ y, bayX: 200 }))
@@ -27,5 +27,11 @@ describe('pit track car', () => {
     expect(driving.x).toBe(ROAD_X)
     expect(driving.angle).toBeCloseTo(0, 5)
     expect(driving.y).toBe(550)
+  })
+
+  it('keeps the right edge of the road on the bar of the logo', () => {
+    const road = roadFromLogo(55, 235)
+    expect(road.x + road.width / 2).toBeCloseTo(55 + LOGO_BAR * 235, 5)
+    expect(road.x - road.width / 2).toBeCloseTo(55, 5)
   })
 })

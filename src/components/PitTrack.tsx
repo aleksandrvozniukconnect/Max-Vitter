@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { steps } from '../content/site'
-import { ROAD_WIDTH, ROAD_X, carPlacement, carStopIndex, type Stop } from '../lib/pitTrack'
+import { ROAD_WIDTH, ROAD_X, carPlacement, carStopIndex, roadFromLogo, type Stop } from '../lib/pitTrack'
 import styles from './PitTrack.module.css'
 
 const BAY_HEIGHT = 110
 const BAY_MAX_WIDTH = 170
-const ROAD_TILE_W = 60
-const ROAD_TILE_H = 262
+/** Height of a road tile for a given road width (tile art is 249 x 1086). */
+const tileHeight = (width: number) => (width * 1086) / 249
 const CAR_W = 53
 const CAR_H = 84
 
@@ -16,6 +16,10 @@ type Layout = {
   height: number
   top: number
   bottom: number
+  roadX: number
+  roadW: number
+  /** Size of bays and car relative to the 1366px design. */
+  scale: number
   /** Card edges, relative to the band. */
   cards: { top: number; bottom: number; left: number }[]
 }
@@ -28,7 +32,17 @@ function measure(band: HTMLElement): Layout | null {
     const r = card!.getBoundingClientRect()
     return { top: r.top - box.top, bottom: r.bottom - box.top, left: r.left - box.left }
   })
+  // The header logo is scaled by the intro, so use its layout width (which
+  // ignores transforms); its left edge is the scale origin and does not move.
+  const logo = document.querySelector<HTMLElement>('header img[alt="DSGN Choice"]')
+  const road =
+    logo && logo.offsetWidth > 0
+      ? roadFromLogo(logo.getBoundingClientRect().left - box.left, logo.offsetWidth)
+      : { x: ROAD_X, width: ROAD_WIDTH }
   return {
+    roadX: road.x,
+    roadW: road.width,
+    scale: road.width / ROAD_WIDTH,
     width: box.width,
     height: box.height,
     top: 0,
@@ -52,6 +66,7 @@ export function PitTrack({ band }: Props) {
   const car = useRef<SVGGElement>(null)
   const stopsRef = useRef<Stop[]>([])
   const centersRef = useRef<number[]>([])
+  const roadXRef = useRef(ROAD_X)
   const { scrollY } = useScroll()
 
   const place = () => {
@@ -64,7 +79,7 @@ export function PitTrack({ band }: Props) {
     // reduced motion on; nothing here animates by itself.
     const index = carStopIndex(line, centersRef.current)
     setCurrent(Math.round(index))
-    const pose = carPlacement(index, stopsRef.current)
+    const pose = carPlacement(index, stopsRef.current, roadXRef.current)
     node.setAttribute(
       'transform',
       `translate(${pose.x.toFixed(1)} ${pose.y.toFixed(1)}) rotate(${pose.angle.toFixed(1)})`,
@@ -83,19 +98,23 @@ export function PitTrack({ band }: Props) {
 
   useEffect(() => {
     if (!layout) return
+    const lay = layout
     const bayX = (card: Layout['cards'][number]) => {
-      const x = ROAD_X + ROAD_WIDTH / 2 - 6
-      return x + Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - x)) / 2 + 8
+      const x = lay.roadX + lay.roadW / 2 - 6
+      return x + Math.min(BAY_MAX_WIDTH * lay.scale, Math.max(60, card.left - 12 - x)) / 2 + 8
     }
     stopsRef.current = layout.cards.map((card) => ({ y: (card.top + card.bottom) / 2, bayX: bayX(card) }))
     centersRef.current = stopsRef.current.map((stop) => stop.y)
+    roadXRef.current = layout.roadX
     place()
   })
 
   useMotionValueEvent(scrollY, 'change', place)
 
   if (!layout) return null
-  const bayLeft = ROAD_X + ROAD_WIDTH / 2
+  const { roadX, roadW, scale } = layout
+  const tileH = tileHeight(roadW)
+  const bayLeft = roadX + roadW / 2
 
   const bays = layout.cards.map((card, i) => {
     const x = bayLeft - 6
@@ -103,17 +122,17 @@ export function PitTrack({ band }: Props) {
       key: steps[i].key,
       on: current === i,
       x,
-      y: (card.top + card.bottom) / 2 - BAY_HEIGHT / 2,
-      w: Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - x)),
-      h: BAY_HEIGHT,
+      y: (card.top + card.bottom) / 2 - (BAY_HEIGHT * scale) / 2,
+      w: Math.min(BAY_MAX_WIDTH * scale, Math.max(60, card.left - 12 - x)),
+      h: BAY_HEIGHT * scale,
     }
   })
 
   return (
     <svg className={styles.overlay} width={layout.width} height={layout.height} aria-hidden="true" focusable="false">
       <defs>
-        <pattern id="road-tile" patternUnits="userSpaceOnUse" x={ROAD_X - ROAD_TILE_W / 2} y="0" width={ROAD_TILE_W} height={ROAD_TILE_H}>
-          <image href="/images/track/road.webp" width={ROAD_TILE_W} height={ROAD_TILE_H} preserveAspectRatio="none" />
+        <pattern id="road-tile" patternUnits="userSpaceOnUse" x={roadX - roadW / 2} y="0" width={roadW} height={tileH}>
+          <image href="/images/track/road.webp" width={roadW} height={tileH} preserveAspectRatio="none" />
         </pattern>
       </defs>
       {bays.map((bay) => (
@@ -127,24 +146,24 @@ export function PitTrack({ band }: Props) {
           preserveAspectRatio="none"
         />
       ))}
-      <rect x={ROAD_X - ROAD_TILE_W / 2} y={layout.top} width={ROAD_TILE_W} height={layout.bottom - layout.top} fill="url(#road-tile)" />
+      <rect x={roadX - roadW / 2} y={layout.top} width={roadW} height={layout.bottom - layout.top} fill="url(#road-tile)" />
       {layout.cards.map((card, i) => {
         const on = current === i
-        const bayW = Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - (bayLeft - 6)))
+        const bayW = Math.min(BAY_MAX_WIDTH * scale, Math.max(60, card.left - 12 - (bayLeft - 6)))
         const cx = bayLeft - 6 + bayW / 2 + 8
         const mid = (card.top + card.bottom) / 2
-        const cy = mid - BAY_HEIGHT / 2 + 24
+        const cy = mid - (BAY_HEIGHT * scale) / 2 + 15 * scale
         return (
           <g key={steps[i].key}>
-            <circle cx={cx} cy={cy} r="15" className={on ? styles.badgeOn : styles.badge} />
-            <text x={cx} y={cy + 5} textAnchor="middle" className={styles.num}>
+            <circle cx={cx} cy={cy} r={12 * scale} className={on ? styles.badgeOn : styles.badge} />
+            <text x={cx} y={cy + 4.5 * scale} textAnchor="middle" className={styles.num} fontSize={12 * scale}>
               {steps[i].n}
             </text>
           </g>
         )
       })}
       <g ref={car} className={styles.car}>
-        <image href="/images/track/car.webp" x={-CAR_W / 2} y={-CAR_H / 2} width={CAR_W} height={CAR_H} />
+        <image href="/images/track/car.webp" x={(-CAR_W * scale) / 2} y={(-CAR_H * scale) / 2} width={CAR_W * scale} height={CAR_H * scale} />
       </g>
     </svg>
   )

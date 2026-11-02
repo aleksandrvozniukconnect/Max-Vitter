@@ -1,7 +1,20 @@
 /** Geometry of the pit-lane road that runs beside the "How we work" cards. */
 
+/** Fallback road geometry, used when the header logo cannot be measured. */
 export const ROAD_X = 113
 export const ROAD_WIDTH = 60
+
+/**
+ * The road runs from the left edge of the logo to the vertical bar in it, so
+ * its right edge meets that bar. The bar sits at this share of the logo width.
+ */
+export const LOGO_BAR = 0.367
+
+export function roadFromLogo(logoLeft: number, logoWidth: number): { x: number; width: number } {
+  const bar = logoLeft + LOGO_BAR * logoWidth
+  const width = Math.max(40, bar - logoLeft)
+  return { x: bar - width / 2, width }
+}
 
 function smooth(t: number): number {
   return t * t * (3 - 2 * t)
@@ -30,8 +43,12 @@ export function carStopIndex(line: number, centers: readonly number[]): number {
 }
 
 /** Where the car is for a fractional stop index: on the road, or pulled into a bay. */
-export function carPlacement(index: number, stops: readonly Stop[]): { x: number; y: number; angle: number } {
-  if (stops.length === 0) return { x: ROAD_X, y: 0, angle: 0 }
+export function carPlacement(
+  index: number,
+  stops: readonly Stop[],
+  roadX: number = ROAD_X,
+): { x: number; y: number; angle: number } {
+  if (stops.length === 0) return { x: roadX, y: 0, angle: 0 }
   const lo = Math.min(stops.length - 1, Math.max(0, Math.floor(index)))
   const hi = Math.min(stops.length - 1, lo + 1)
   const t = index - lo
@@ -39,6 +56,6 @@ export function carPlacement(index: number, stops: readonly Stop[]): { x: number
   const nearest = t < 0.5 ? lo : hi
   const distance = Math.abs(index - nearest)
   const parked = 1 - smooth(Math.min(1, distance / 0.2))
-  const x = ROAD_X + (stops[nearest].bayX - ROAD_X) * parked
+  const x = roadX + (stops[nearest].bayX - roadX) * parked
   return { x, y, angle: -90 * parked }
 }
