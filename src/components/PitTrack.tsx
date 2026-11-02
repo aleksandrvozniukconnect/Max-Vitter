@@ -39,8 +39,6 @@ function measure(band: HTMLElement): Layout | null {
 
 type Props = {
   band: RefObject<HTMLDivElement | null>
-  current: number
-  reduce: boolean | null
 }
 
 /**
@@ -48,8 +46,9 @@ type Props = {
  * with the logo. Every card gets its own pit bay beside the road, and the car
  * pulls into the bay of the card on screen.
  */
-export function PitTrack({ band, current, reduce }: Props) {
+export function PitTrack({ band }: Props) {
   const [layout, setLayout] = useState<Layout | null>(null)
+  const [current, setCurrent] = useState(0)
   const car = useRef<SVGGElement>(null)
   const stopsRef = useRef<Stop[]>([])
   const centersRef = useRef<number[]>([])
@@ -61,7 +60,10 @@ export function PitTrack({ band, current, reduce }: Props) {
     if (!el || !node || stopsRef.current.length === 0) return
     const top = el.getBoundingClientRect().top
     const line = window.innerHeight * 0.45 - top
-    const index = reduce ? stopsRef.current.length - 1 : carStopIndex(line, centersRef.current)
+    // The car follows the reader's own scroll, so it keeps moving even with
+    // reduced motion on; nothing here animates by itself.
+    const index = carStopIndex(line, centersRef.current)
+    setCurrent(Math.round(index))
     const pose = carPlacement(index, stopsRef.current)
     node.setAttribute(
       'transform',

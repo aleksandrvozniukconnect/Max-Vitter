@@ -159,7 +159,7 @@ export function HowWeWork() {
       </Reveal>
 
       <div className={styles.band} ref={bandRef}>
-        <PitTrack band={bandRef} current={current} reduce={reduce} />
+        <PitTrack band={bandRef} />
         <div className={styles.bandInner}>
           <div className={styles.lead}>
             <p className={styles.pitIn}>
