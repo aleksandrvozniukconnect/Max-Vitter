@@ -68,12 +68,10 @@ const stationIcons: Record<StepKey, ReactNode> = {
   ),
   support: (
     <>
-      <path d="M4 7h17a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H4z" />
-      <path d="M23 9h4v5h-4M27 11.5h8" />
-      <path d="M9 16l-2 11h7l1.5-11M6 27h9v3H6z" />
-      <g transform="translate(18 18) scale(0.85)" strokeWidth="1.2">
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-      </g>
+      <path d="M4 8h20a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4z" />
+      <path d="M26 10.5h4v5h-4M30 13h7" />
+      <path d="M10 18l-2.5 13h8.5l2-13M7 31h9v3H7z" />
+      <path d="M10 12h8" />
     </>
   ),
 }
