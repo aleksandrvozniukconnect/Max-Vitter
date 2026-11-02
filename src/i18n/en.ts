@@ -224,9 +224,9 @@ export const en: SiteCopy = {
       deliverable: 'Estimate and a list of open questions',
     },
     design: {
-      title: 'Engineering',
-      body: 'Engineers turn the design into production drawings and samples.',
-      deliverable: 'Shop drawings, samples, hardware list',
+      title: 'Technical part',
+      body: 'Engineers prepare production drawings and samples from your design.',
+      deliverable: 'Shop drawings, samples, specification',
     },
     confirm: {
       title: 'Contract',
@@ -236,7 +236,7 @@ export const en: SiteCopy = {
     },
     manufacture: {
       title: 'Production',
-      body: 'Cutting, CNC, veneer, assembly and finishing, then a test assembly in the plant.',
+      body: 'Cutting, CNC, veneer, assembly and finishing, then a test assembly on the production stand.',
       deliverable: 'A signed QC sheet for every item',
       gate: 'QC Approved',
     },
