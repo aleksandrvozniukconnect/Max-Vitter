@@ -111,7 +111,7 @@ function Chapter({
         {text.points ? (
           <>
             {text.pointsTitle ? <p className={styles.listTitle}>{text.pointsTitle}</p> : null}
-            <ol className={styles.points}>
+            <ol className={`${styles.points} ${text.pointsTitle ? styles.checks : ''}`}>
               {text.points.map((point) => (
                 <li key={point}>{point}</li>
               ))}
@@ -121,7 +121,7 @@ function Chapter({
         <div className={styles.deliverable}>
           <span>{howWeWork.youReceive}</span>
           {text.deliverablePoints ? (
-            <ol className={styles.points}>
+            <ol className={`${styles.points} ${styles.checks}`}>
               {text.deliverablePoints.map((point) => (
                 <li key={point}>{point}</li>
               ))}
