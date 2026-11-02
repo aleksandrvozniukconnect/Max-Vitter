@@ -18,8 +18,7 @@ import styles from './HowWeWork.module.css'
 
 type Copy = ReturnType<typeof useLocale>['copy']
 
-function chapterLayout(index: number): 'left' | 'right' | 'wide' {
-  if (index === 5) return 'wide'
+function chapterLayout(index: number): 'left' | 'right' {
   if (index % 2 === 1) return 'right'
   return 'left'
 }
@@ -32,7 +31,7 @@ function ChapterArt({
 }: {
   locale: LocaleId
   stepKey: StepKey
-  layout: 'left' | 'right' | 'wide'
+  layout: 'left' | 'right'
   reduce: boolean | null
 }) {
   const caption = pitStopCaption(locale, stepKey)

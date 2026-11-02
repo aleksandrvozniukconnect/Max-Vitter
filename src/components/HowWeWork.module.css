@@ -307,29 +307,6 @@ html:lang(ru) .chapter h3 {
     order: 1;
   }
 
-  .wide {
-    grid-template-columns: 1fr;
-    gap: 28px;
-  }
-
-  .wide .artWrap {
-    order: 0;
-  }
-
-  .wide .artFrame {
-    aspect-ratio: 16 / 8;
-    max-height: 420px;
-  }
-
-  .wide .art {
-    object-fit: contain;
-  }
-
-  .wide .copy {
-    order: 1;
-    max-width: 640px;
-  }
-
   .chapter h3 {
     font-size: 2.2rem;
   }
