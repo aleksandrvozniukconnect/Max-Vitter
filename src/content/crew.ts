@@ -12,7 +12,6 @@ export const crewRoles = [
   'cnc',
   'finishing',
   'qc',
-  'packing',
   'logistics',
   'installer',
 ] as const
@@ -27,15 +26,14 @@ export type CrewSpot = {
 }
 
 export const crewSpots: readonly CrewSpot[] = [
-  { role: 'manager', x: 52, y: 7 },
-  { role: 'estimator', x: 17, y: 18 },
-  { role: 'engineer', x: 85, y: 18 },
-  { role: 'designer', x: 14, y: 33 },
-  { role: 'contracts', x: 88, y: 32 },
-  { role: 'cnc', x: 14, y: 50 },
-  { role: 'finishing', x: 93, y: 47 },
-  { role: 'qc', x: 14, y: 68 },
-  { role: 'packing', x: 86, y: 62 },
-  { role: 'logistics', x: 87, y: 79 },
-  { role: 'installer', x: 50, y: 92 },
+  { role: 'manager', x: 50, y: 6 },
+  { role: 'estimator', x: 21, y: 12 },
+  { role: 'engineer', x: 75, y: 14 },
+  { role: 'designer', x: 19, y: 30 },
+  { role: 'contracts', x: 85, y: 32 },
+  { role: 'cnc', x: 12, y: 47 },
+  { role: 'finishing', x: 17, y: 64 },
+  { role: 'qc', x: 84, y: 64 },
+  { role: 'logistics', x: 75, y: 79 },
+  { role: 'installer', x: 49, y: 89 },
 ]

@@ -211,7 +211,6 @@ export const en: SiteCopy = {
         cnc: 'CNC operator',
         finishing: 'Finishing',
         qc: 'Quality control',
-        packing: 'Packing',
         logistics: 'Logistics',
         installer: 'Installer',
       },

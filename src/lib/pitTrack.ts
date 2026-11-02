@@ -1,7 +1,7 @@
 /** Geometry of the pit-lane road that runs beside the "How we work" cards. */
 
 export const ROAD_X = 113
-export const ROAD_WIDTH = 56
+export const ROAD_WIDTH = 60
 
 function smooth(t: number): number {
   return t * t * (3 - 2 * t)
@@ -26,7 +26,7 @@ export function carStopIndex(line: number, centers: readonly number[]): number {
   let k = 0
   while (k < last - 1 && line >= centers[k + 1]) k += 1
   const frac = (line - centers[k]) / (centers[k + 1] - centers[k])
-  return k + smooth(Math.min(1, Math.max(0, (frac - 0.25) / 0.5)))
+  return k + smooth(Math.min(1, Math.max(0, (frac - 0.15) / 0.7)))
 }
 
 /** Where the car is for a fractional stop index: on the road, or pulled into a bay. */

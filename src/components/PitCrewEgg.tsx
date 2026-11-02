@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useLocale } from '../context/LocaleContext'
 import { crewSpots } from '../content/crew'
@@ -41,6 +42,7 @@ export function PitCrewEgg() {
       >
         <span aria-hidden="true">{egg.glyph}</span>
       </button>
+      {createPortal(
       <AnimatePresence>
         {open ? (
           <motion.div
@@ -76,7 +78,7 @@ export function PitCrewEgg() {
               <h3 className={styles.title}>{egg.title}</h3>
               <div className={styles.body}>
                 <div className={styles.art}>
-                  <img src="/images/egg/pitcrew.webp" alt="" width={765} height={1024} draggable={false} />
+                  <img src="/images/egg/pitcrew.webp" alt="" width={900} height={1200} draggable={false} />
                   {crewSpots.map((spot, i) => (
                     <span key={spot.role} className={styles.marker} style={{ left: `${spot.x}%`, top: `${spot.y}%` }}>
                       {i + 1}
@@ -93,7 +95,9 @@ export function PitCrewEgg() {
             </motion.div>
           </motion.div>
         ) : null}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body,
+      )}
     </>
   )
 }

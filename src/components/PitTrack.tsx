@@ -4,12 +4,12 @@ import { steps } from '../content/site'
 import { ROAD_WIDTH, ROAD_X, carPlacement, carStopIndex, type Stop } from '../lib/pitTrack'
 import styles from './PitTrack.module.css'
 
-const BAY_HEIGHT = 112
+const BAY_HEIGHT = 110
 const BAY_MAX_WIDTH = 170
-const ROAD_TILE_W = 76
-const ROAD_TILE_H = 230
-const CAR_W = 54
-const CAR_H = 73
+const ROAD_TILE_W = 60
+const ROAD_TILE_H = 262
+const CAR_W = 53
+const CAR_H = 84
 
 type Layout = {
   width: number
@@ -82,8 +82,8 @@ export function PitTrack({ band, current, reduce }: Props) {
   useEffect(() => {
     if (!layout) return
     const bayX = (card: Layout['cards'][number]) => {
-      const x = ROAD_X + ROAD_WIDTH / 2 - 16
-      return x + Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - x)) / 2 + 12
+      const x = ROAD_X + ROAD_WIDTH / 2 - 6
+      return x + Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - x)) / 2 + 8
     }
     stopsRef.current = layout.cards.map((card) => ({ y: (card.top + card.bottom) / 2, bayX: bayX(card) }))
     centersRef.current = stopsRef.current.map((stop) => stop.y)
@@ -96,7 +96,7 @@ export function PitTrack({ band, current, reduce }: Props) {
   const bayLeft = ROAD_X + ROAD_WIDTH / 2
 
   const bays = layout.cards.map((card, i) => {
-    const x = bayLeft - 16
+    const x = bayLeft - 6
     return {
       key: steps[i].key,
       on: current === i,
@@ -128,8 +128,8 @@ export function PitTrack({ band, current, reduce }: Props) {
       <rect x={ROAD_X - ROAD_TILE_W / 2} y={layout.top} width={ROAD_TILE_W} height={layout.bottom - layout.top} fill="url(#road-tile)" />
       {layout.cards.map((card, i) => {
         const on = current === i
-        const bayW = Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - (bayLeft - 16)))
-        const cx = bayLeft - 16 + bayW / 2 + 12
+        const bayW = Math.min(BAY_MAX_WIDTH, Math.max(60, card.left - 12 - (bayLeft - 6)))
+        const cx = bayLeft - 6 + bayW / 2 + 8
         const mid = (card.top + card.bottom) / 2
         const cy = mid - BAY_HEIGHT / 2 + 24
         return (
