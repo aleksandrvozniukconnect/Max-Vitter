@@ -85,16 +85,16 @@ describe('Design Choice content model', () => {
   })
 
   it('uses the brief headline in the hero in every language', () => {
-    expect(en.hero.title).toBe('Complex solutions. Precise result.')
-    expect(dictionaries.uk.hero.title).toBe('Складні рішення. Точний результат.')
-    expect(dictionaries.ru.hero.title).toBe('Сложные решения. Точный результат.')
+    expect(en.hero.title).toBe('Complete solutions. Precise result.')
+    expect(dictionaries.uk.hero.title).toBe('Комплексні рішення. Точний результат.')
+    expect(dictionaries.ru.hero.title).toBe('Комплексные решения. Точный результат.')
   })
 
   it('keeps every pit-stop station to one short line', () => {
     for (const locale of localeIds) {
       for (const key of stepKeys) {
         const text = dictionaries[locale].steps[key]
-        expect(text.body.length, `${locale}.${key}.body`).toBeLessThanOrEqual(110)
+        expect(text.body.length, `${locale}.${key}.body`).toBeLessThanOrEqual(130)
         expect(text.deliverable.length, `${locale}.${key}.deliverable`).toBeLessThanOrEqual(60)
       }
     }

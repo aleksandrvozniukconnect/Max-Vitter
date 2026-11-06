@@ -11,6 +11,7 @@ import { steps, type Step, type StepKey } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
 import type { LocaleId } from '../i18n/locale'
 import { StationIcon, TrafficLight } from './PitIcons'
+import { Eyebrow } from './Eyebrow'
 import { PitCrewEgg } from './PitCrewEgg'
 import { PitTrack } from './PitTrack'
 import { Reveal } from './Reveal'
@@ -120,7 +121,7 @@ function Chapter({
         <div className={styles.deliverable}>
           <span>{howWeWork.youReceive}</span>
           {text.deliverablePoints ? (
-            <ol className={`${styles.points} ${styles.checks}`}>
+            <ol className={styles.points}>
               {text.deliverablePoints.map((point) => (
                 <li key={point}>{point}</li>
               ))}
@@ -159,10 +160,7 @@ export function HowWeWork() {
   return (
     <section className={styles.section} id="how">
       <Reveal className={styles.intro}>
-        <p className="eyebrow">
-          {howWeWork.eyebrow}
-          <PitCrewEgg />
-        </p>
+        <Eyebrow after={<PitCrewEgg />}>{howWeWork.eyebrow}</Eyebrow>
         <h2 className="section-title">{howWeWork.title}</h2>
         <p className="lede">{howWeWork.lede}</p>
       </Reveal>

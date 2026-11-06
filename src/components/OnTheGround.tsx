@@ -1,5 +1,6 @@
 import { marketFacts, marketIds } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
+import { Eyebrow } from './Eyebrow'
 import { Reveal } from './Reveal'
 import styles from './Proof.module.css'
 
@@ -9,7 +10,7 @@ export function OnTheGround() {
   return (
     <section className={`${styles.section} ${styles.sectionPaper}`} id="ground">
       <Reveal className={styles.head}>
-        <p className="eyebrow">{copy.ground.eyebrow}</p>
+        <Eyebrow>{copy.ground.eyebrow}</Eyebrow>
         <h2 className="section-title">{copy.ground.title}</h2>
         <p className="lede">{copy.ground.lede}</p>
       </Reveal>

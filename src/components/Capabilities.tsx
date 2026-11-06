@@ -1,5 +1,6 @@
 import { capabilityKeys, photos } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
+import { Eyebrow } from './Eyebrow'
 import { Reveal } from './Reveal'
 import styles from './Proof.module.css'
 
@@ -10,7 +11,7 @@ export function Capabilities() {
   return (
     <section className={`${styles.section} ${styles.sectionPaper}`} id="capabilities">
       <Reveal className={styles.head}>
-        <p className="eyebrow">{capabilities.eyebrow}</p>
+        <Eyebrow>{capabilities.eyebrow}</Eyebrow>
         <h2 className="section-title">{capabilities.title}</h2>
       </Reveal>
       <div className={`${styles.wrap} ${styles.tiles}`}>

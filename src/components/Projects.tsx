@@ -2,6 +2,7 @@ import { photos, projectKeys } from '../content/site'
 import { PROJECTS_PATH } from '../lib/routes'
 import { useLocale } from '../context/LocaleContext'
 import { AppLink } from './AppLink'
+import { Eyebrow } from './Eyebrow'
 import { Reveal } from './Reveal'
 import styles from './Proof.module.css'
 
@@ -12,7 +13,7 @@ export function Projects() {
   return (
     <section className={styles.section} id="projects">
       <Reveal className={styles.head}>
-        <p className="eyebrow">{projects.eyebrow}</p>
+        <Eyebrow>{projects.eyebrow}</Eyebrow>
         <h2 className="section-title">{projects.title}</h2>
         <p className="lede">{projects.lede}</p>
         <AppLink className={`pill ${styles.seeAll}`} href={PROJECTS_PATH}>

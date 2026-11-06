@@ -58,20 +58,43 @@ a.seeAll:hover::after {
   margin: 0 auto;
 }
 
-/* audiences: two columns */
+/* audiences: two cards joined by one designer note */
 .audiences {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 20px;
+}
+
+.audienceSlot {
+  display: flex;
 }
 
 .audience {
-  padding-top: 18px;
-  border-top: 1px solid var(--ink);
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 26px 26px 28px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
+.audienceIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--brass-ink);
+  box-shadow: 0 0 0 1px var(--rule);
 }
 
 .audience h3 {
-  margin: 0 0 8px;
+  margin: 4px 0 8px;
   font-size: 1.25rem;
   text-transform: uppercase;
 }
@@ -83,19 +106,38 @@ a.seeAll:hover::after {
   font-size: 0.95rem;
 }
 
-.audienceNote {
-  width: min(var(--wrap), 100%);
-  margin: 28px auto 0;
+.audienceBridge {
+  display: flex;
+  justify-content: center;
 }
 
-.audienceNote p {
-  display: inline-block;
+.audienceNote {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
   margin: 0;
-  padding: 10px 16px;
-  border-left: 3px solid var(--brass);
+  padding: 12px 22px 12px 14px;
+  border: 1.5px solid var(--brass);
+  border-radius: 999px;
   background: var(--white);
-  font-size: 0.95rem;
   color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  box-shadow: 0 6px 18px rgba(138, 106, 58, 0.14);
+}
+
+.audienceNoteIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--brass-ink);
+  color: var(--white);
 }
 
 /* plant: photo left, copy right */
@@ -129,6 +171,40 @@ a.seeAll:hover::after {
   margin: 0 0 22px;
   color: var(--ink-soft);
   line-height: 1.7;
+}
+
+.steps {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+  counter-reset: plant;
+}
+
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  counter-increment: plant;
+  font-family: var(--display);
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.steps li::before {
+  content: counter(plant);
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid var(--brass);
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--brass-ink);
 }
 
 .facts {
@@ -307,7 +383,25 @@ a.seeAll:hover::after {
 
   .audiences {
     grid-template-columns: repeat(2, 1fr);
-    gap: 28px;
+    gap: 28px 28px;
+  }
+
+  /* The designer note sits centred under both cards, tied to each by a rail. */
+  .audienceBridge {
+    grid-column: 1 / -1;
+    position: relative;
+  }
+
+  .audienceBridge::before {
+    content: '';
+    position: absolute;
+    top: -28px;
+    bottom: 50%;
+    left: calc(25% - 7px);
+    right: calc(25% - 7px);
+    border: 2px solid var(--brass);
+    border-top: 0;
+    border-radius: 0 0 16px 16px;
   }
 
   .plant {

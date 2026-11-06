@@ -67,6 +67,8 @@ export type SiteCopy = {
   plant: {
     eyebrow: string
     title: string
+    lead: string
+    steps: [string, string, string, string]
     body: string
     facts: [string, string, string]
   }
@@ -171,8 +173,8 @@ export const en: SiteCopy = {
   },
   hero: {
     eyebrow: 'B2B furniture and architectural millwork · Made in Ukraine',
-    title: 'Complex solutions. Precise result.',
-    lede: 'We build bespoke furniture and complex joinery from your design projects and drawings. We combine veneer, stone, metal, glass and HPL for commercial and residential projects.',
+    title: 'Complete solutions. Precise result.',
+    lede: 'We build bespoke furniture and custom joinery from your design projects and drawings. We combine veneer, stone, metal, glass and HPL for commercial and residential projects.',
     primary: 'How we work',
     secondary: 'Send your project',
   },
@@ -186,7 +188,7 @@ export const en: SiteCopy = {
       },
       designers: {
         title: 'Architects and designers',
-        body: 'You approve shop drawings, joints and tolerances before anything is cut.',
+        body: 'You approve shop drawings, joints and tolerances before anything is made.',
       },
     },
     note: 'At every stage you can bring in our own designer.',
@@ -240,7 +242,7 @@ export const en: SiteCopy = {
     },
     manufacture: {
       title: 'Production',
-      body: 'Cutting, CNC, veneer, assembly and finishing, then a test assembly on the production stand.',
+      body: 'Cutting, CNC, veneer, assembly and finishing, then a test assembly on the production stand. Every stage is recorded on video.',
       deliverable: 'A signed QC sheet for every item',
       gate: 'QC Approved',
     },
@@ -264,7 +266,9 @@ export const en: SiteCopy = {
   plant: {
     eyebrow: 'Made in our own plant',
     title: 'Engineering, production and QC in one building.',
-    body: 'Machining, veneer, finishing, assembly, quality control and packing all happen in one plant in the Kyiv region. Come and see it, or we can walk you through it on a video call.',
+    lead: 'The whole cycle under one roof in the Kyiv region.',
+    steps: ['Management', 'Design', 'Engineering office', 'Full-cycle production'],
+    body: 'Come and see it, or we can walk you through the plant on a video call.',
     facts: ['Own engineering office', 'Own production floor', 'Independent QC'],
   },
   capabilities: {

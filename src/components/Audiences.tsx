@@ -1,5 +1,7 @@
 import { audienceKeys } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
+import { AudienceIcon, DesignerIcon } from './AudienceIcons'
+import { Eyebrow } from './Eyebrow'
 import { Reveal } from './Reveal'
 import styles from './Proof.module.css'
 
@@ -10,7 +12,7 @@ export function Audiences() {
   return (
     <section className={styles.section} aria-labelledby="audiences-title">
       <Reveal className={styles.head}>
-        <p className="eyebrow">{audiences.eyebrow}</p>
+        <Eyebrow>{audiences.eyebrow}</Eyebrow>
         <h2 id="audiences-title" className="section-title">
           {audiences.title}
         </h2>
@@ -19,16 +21,28 @@ export function Audiences() {
         {audienceKeys.map((key, index) => {
           const item = audiences.items[key]
           return (
-            <Reveal key={key} delay={index * 0.05} className={styles.audience}>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
+            <Reveal key={key} delay={index * 0.05} className={styles.audienceSlot}>
+              <article className={styles.audience}>
+                <span className={styles.audienceIcon}>
+                  <AudienceIcon audience={key} />
+                </span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                </div>
+              </article>
             </Reveal>
           )
         })}
+        <Reveal className={styles.audienceBridge}>
+          <p className={styles.audienceNote}>
+            <span className={styles.audienceNoteIcon}>
+              <DesignerIcon />
+            </span>
+            <span>{audiences.note}</span>
+          </p>
+        </Reveal>
       </div>
-      <Reveal className={styles.audienceNote}>
-        <p>{audiences.note}</p>
-      </Reveal>
     </section>
   )
 }

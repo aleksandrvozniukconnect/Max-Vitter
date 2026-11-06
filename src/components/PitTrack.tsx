@@ -94,7 +94,7 @@ export function PitTrack({ band }: Props) {
       return
     }
     const distance = Math.abs(target - from)
-    const duration = 3400 + 850 * (distance - 1)
+    const duration = 2400 + 600 * (distance - 1)
     const start = performance.now()
     const step = (now: number) => {
       const t = (now - start) / duration
@@ -171,6 +171,11 @@ export function PitTrack({ band }: Props) {
   return (
     <svg className={styles.overlay} width={layout.width} height={layout.height} aria-hidden="true" focusable="false">
       <defs>
+        <pattern id="finish-check" patternUnits="userSpaceOnUse" x={roadX - roadW / 2} y={layout.bottom - 4 * (roadW / 6)} width={roadW / 3} height={roadW / 3}>
+          <rect width={roadW / 3} height={roadW / 3} fill="#fcfbfa" />
+          <rect width={roadW / 6} height={roadW / 6} fill="#111318" />
+          <rect x={roadW / 6} y={roadW / 6} width={roadW / 6} height={roadW / 6} fill="#111318" />
+        </pattern>
         <pattern id="road-tile" patternUnits="userSpaceOnUse" x={roadX - roadW / 2} y="0" width={roadW} height={tileH}>
           <image href="/images/track/road.webp" width={roadW} height={tileH} preserveAspectRatio="none" />
         </pattern>
@@ -187,6 +192,15 @@ export function PitTrack({ band }: Props) {
         />
       ))}
       <rect x={roadX - roadW / 2} y={layout.top} width={roadW} height={layout.bottom - layout.top} fill="url(#road-tile)" />
+      <rect
+        x={roadX - roadW / 2}
+        y={layout.bottom - 4 * (roadW / 6)}
+        width={roadW}
+        height={4 * (roadW / 6)}
+        fill="url(#finish-check)"
+        stroke="#111318"
+        strokeWidth="1"
+      />
       {layout.cards.map((card, i) => {
         const on = current === i
         const bayW = Math.min(BAY_MAX_WIDTH * scale, Math.max(60, card.left - 12 - (bayLeft - 6)))
