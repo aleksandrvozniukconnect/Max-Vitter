@@ -6,8 +6,10 @@ import styles from './PitTrack.module.css'
 
 const BAY_HEIGHT = 110
 const BAY_MAX_WIDTH = 170
-/** Height of a road tile for a given road width (tile art is 249 x 1086). */
-const tileHeight = (width: number) => (width * 1086) / 249
+/** Height of a road tile for a given road width (tile art is 193 x 537, kerbs included). */
+const tileHeight = (width: number) => (width * 537) / 193
+/** Height of the finish-line piece for a given road width (art is 270 x 250). */
+const finishHeight = (width: number) => (width * 250) / 270
 const CAR_W = 53
 const CAR_H = 84
 
@@ -154,6 +156,7 @@ export function PitTrack({ band }: Props) {
   if (!layout) return null
   const { roadX, roadW, scale } = layout
   const tileH = tileHeight(roadW)
+  const finishH = finishHeight(roadW)
   const bayLeft = roadX + roadW / 2
 
   const bays = layout.cards.map((card, i) => {
@@ -171,11 +174,6 @@ export function PitTrack({ band }: Props) {
   return (
     <svg className={styles.overlay} width={layout.width} height={layout.height} aria-hidden="true" focusable="false">
       <defs>
-        <pattern id="finish-check" patternUnits="userSpaceOnUse" x={roadX - roadW / 2} y={layout.bottom - 4 * (roadW / 6)} width={roadW / 3} height={roadW / 3}>
-          <rect width={roadW / 3} height={roadW / 3} fill="#fcfbfa" />
-          <rect width={roadW / 6} height={roadW / 6} fill="#111318" />
-          <rect x={roadW / 6} y={roadW / 6} width={roadW / 6} height={roadW / 6} fill="#111318" />
-        </pattern>
         <pattern id="road-tile" patternUnits="userSpaceOnUse" x={roadX - roadW / 2} y="0" width={roadW} height={tileH}>
           <image href="/images/track/road.webp" width={roadW} height={tileH} preserveAspectRatio="none" />
         </pattern>
@@ -191,15 +189,14 @@ export function PitTrack({ band }: Props) {
           preserveAspectRatio="none"
         />
       ))}
-      <rect x={roadX - roadW / 2} y={layout.top} width={roadW} height={layout.bottom - layout.top} fill="url(#road-tile)" />
-      <rect
+      <rect x={roadX - roadW / 2} y={layout.top} width={roadW} height={layout.bottom - layout.top - finishH + 1} fill="url(#road-tile)" />
+      <image
+        href="/images/track/finish.webp"
         x={roadX - roadW / 2}
-        y={layout.bottom - 4 * (roadW / 6)}
+        y={layout.bottom - finishH}
         width={roadW}
-        height={4 * (roadW / 6)}
-        fill="url(#finish-check)"
-        stroke="#111318"
-        strokeWidth="1"
+        height={finishH}
+        preserveAspectRatio="none"
       />
       {layout.cards.map((card, i) => {
         const on = current === i
