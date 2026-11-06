@@ -1,11 +1,10 @@
-import { QUERY_KEY } from '../i18n/locale'
-import { NAVIGATE_EVENT, normalizePathname } from './routes'
+import { NAVIGATE_EVENT, normalizePathname, stripLocalePrefix } from './routes'
 
 export function withLang(href: string, lang: string | null | undefined): string {
   const url = new URL(href.startsWith('#') ? `/${href}` : href, 'https://designchoice.work')
-  if (lang) url.searchParams.set(QUERY_KEY, lang)
-  const search = url.searchParams.toString() ? `?${url.searchParams.toString()}` : ''
-  return `${url.pathname}${search}${url.hash}`
+  const path = stripLocalePrefix(url.pathname)
+  const prefixed = lang ? `/${lang}${path === '/' ? '' : path}` : path
+  return `${prefixed}${url.search}${url.hash}`
 }
 
 export function scrollToHash(hash: string) {
@@ -22,9 +21,6 @@ export function scrollToHash(hash: string) {
 export function navigate(to: string) {
   const next = new URL(to, window.location.origin)
   const current = new URL(window.location.href)
-  const lang = current.searchParams.get(QUERY_KEY)
-  if (lang && !next.searchParams.has(QUERY_KEY)) next.searchParams.set(QUERY_KEY, lang)
-
   const nextHref = `${next.pathname}${next.search}${next.hash}`
   const samePath = normalizePathname(current.pathname) === normalizePathname(next.pathname)
   const sameHref =

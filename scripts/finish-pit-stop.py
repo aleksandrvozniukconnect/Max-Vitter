@@ -161,7 +161,7 @@ def main() -> None:
     site_palette = "--site-palette" in sys.argv
     for locale in LOCALES:
         for step in STEPS:
-            src = ART_DIR / locale / f"{step}.png"
+            src = ROOT / "scripts" / "pit-stop-source" / locale / f"{step}.png"
             art = Image.open(src).convert("RGB")
             if site_palette:
                 art = recolor(art, LAMPS.get(step), CARS.get(step), room=step == "support", holes=CAR_HOLES.get(step))

@@ -18,6 +18,11 @@ export function PitCrewEgg() {
     if (!open) return
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false)
+      // The dialog holds a single control, so Tab stays on it.
+      if (event.key === 'Tab') {
+        event.preventDefault()
+        closer.current?.focus()
+      }
     }
     const overflow = document.body.style.overflow
     const trigger = opener.current

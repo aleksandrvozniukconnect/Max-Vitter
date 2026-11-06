@@ -3,6 +3,7 @@ import {
   HOME_PATH,
   isHomePath,
   isInternalHref,
+  localeFromPath,
   isProjectsPath,
   normalizePathname,
   PROJECTS_PATH,
@@ -47,8 +48,18 @@ describe('site routes', () => {
   })
 
   it('keeps language on internal hrefs', () => {
-    expect(withLang('/projects', 'uk')).toBe('/projects?lang=uk')
-    expect(withLang('/#start', 'ru')).toBe('/?lang=ru#start')
-    expect(withLang('#how', 'en')).toBe('/?lang=en#how')
+    expect(withLang('/projects', 'uk')).toBe('/uk/projects')
+    expect(withLang('/#start', 'ru')).toBe('/ru#start')
+    expect(withLang('#how', 'en')).toBe('/en#how')
+    expect(withLang('/uk/projects', 'ru')).toBe('/ru/projects')
+  })
+
+  it('reads the language from the path prefix', () => {
+    expect(localeFromPath('/uk')).toBe('uk')
+    expect(localeFromPath('/ru/projects')).toBe('ru')
+    expect(localeFromPath('/ukraine')).toBeNull()
+    expect(normalizePathname('/uk/projects/')).toBe('/projects')
+    expect(isHomePath('/ru')).toBe(true)
+    expect(isProjectsPath('/en/projects')).toBe(true)
   })
 })

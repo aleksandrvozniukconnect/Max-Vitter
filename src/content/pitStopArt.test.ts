@@ -45,7 +45,7 @@ function readPngItxt(bytes: Uint8Array, keyword: string): string | null {
 
 /** Read the source PNG (the generation pipeline output, kept alongside the WebP). */
 function artPngFile(locale: LocaleId, key: StepKey): Uint8Array {
-  return readFileSync(resolve('public', `images/pit-stop/${locale}/${key}.png`))
+  return readFileSync(resolve('scripts', `pit-stop-source/${locale}/${key}.png`))
 }
 
 describe('pit-stop storyboard art', () => {

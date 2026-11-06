@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import { localeFromPath } from '../lib/routes'
 import { dictionaries, type SiteCopy } from '../i18n/dictionaries'
 import {
   persistLocale,
@@ -31,9 +32,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const copy = dictionaries[locale]
     applyDocumentLocale(locale, copy.meta)
-    if (localeFromSearch(window.location.search)) {
+    if (localeFromSearch(window.location.search) || localeFromPath(window.location.pathname)) {
       window.localStorage.setItem(STORAGE_KEY, locale)
     }
+    // old ?lang=uk links, and unprefixed paths, settle on the /uk form
+    if (localeFromPath(window.location.pathname) !== locale) persistLocale(locale)
   }, [locale])
 
   const setLocale = useCallback((id: LocaleId) => {

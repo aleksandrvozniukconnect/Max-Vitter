@@ -266,7 +266,6 @@
 
 .compactFromStart .brandMark {
   transform: none;
-  will-change: auto;
   opacity: 1;
 }
 

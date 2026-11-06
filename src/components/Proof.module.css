@@ -374,6 +374,9 @@ a.seeAll:hover::after {
 
 .placeContact a {
   color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--brass);
+  text-underline-offset: 3px;
 }
 
 @media (min-width: 800px) {
@@ -389,7 +392,6 @@ a.seeAll:hover::after {
   /* The designer note sits centred under both cards, tied to each by a rail. */
   .audienceBridge {
     grid-column: 1 / -1;
-    position: relative;
   }
 
 

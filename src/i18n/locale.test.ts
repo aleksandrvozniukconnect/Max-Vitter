@@ -27,6 +27,10 @@ describe('locale resolution', () => {
     expect(resolveLocale({ stored: 'nope', search: '' })).toBe('en')
   })
 
+  it('prefers the path prefix over everything else', () => {
+    expect(resolveLocale({ pathname: '/ru/projects', search: '?lang=uk', stored: 'en' })).toBe('ru')
+  })
+
   it('prefers ?lang= over a stored choice', () => {
     expect(resolveLocale({ search: '?lang=uk', stored: 'ru' })).toBe('uk')
     expect(resolveLocale({ search: 'lang=ru', stored: 'en' })).toBe('ru')

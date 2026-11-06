@@ -1,3 +1,5 @@
+import { localeFromPath, stripLocalePrefix } from '../lib/routes'
+
 export const localeIds = ['en', 'uk', 'ru'] as const
 export type LocaleId = (typeof localeIds)[number]
 
@@ -13,6 +15,14 @@ export const localeHtmlLang: Record<LocaleId, string> = {
   ru: 'ru',
 }
 
+/** `/projects` in a language: `/uk/projects`; the home page is just `/uk`. */
+export function localizedPath(pathname: string, id: LocaleId): string {
+  const path = stripLocalePrefix(pathname)
+  return `/${id}${path === '/' ? '' : path}`
+}
+
+export const SITE_URL = 'https://designchoice.work'
+
 export const STORAGE_KEY = 'design-choice-lang'
 export const QUERY_KEY = 'lang'
 
@@ -26,7 +36,11 @@ export function localeFromSearch(search: string): LocaleId | null {
   return isLocaleId(raw) ? raw : null
 }
 
-export function resolveLocale(input: { search?: string; stored?: string | null } = {}): LocaleId {
+export function resolveLocale(
+  input: { pathname?: string; search?: string; stored?: string | null } = {},
+): LocaleId {
+  const fromPath = localeFromPath(input.pathname ?? '')
+  if (fromPath) return fromPath
   const fromQuery = localeFromSearch(input.search ?? '')
   if (fromQuery) return fromQuery
   if (isLocaleId(input.stored)) return input.stored
@@ -36,6 +50,7 @@ export function resolveLocale(input: { search?: string; stored?: string | null }
 export function resolveBrowserLocale(): LocaleId {
   if (typeof window === 'undefined') return 'en'
   return resolveLocale({
+    pathname: window.location.pathname,
     search: window.location.search,
     stored: window.localStorage.getItem(STORAGE_KEY),
   })
@@ -43,9 +58,11 @@ export function resolveBrowserLocale(): LocaleId {
 
 export function persistLocale(id: LocaleId) {
   window.localStorage.setItem(STORAGE_KEY, id)
-  const url = new URL(window.location.href)
-  url.searchParams.set(QUERY_KEY, id)
-  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`)
+  const { pathname, search, hash } = window.location
+  const params = new URLSearchParams(search)
+  params.delete(QUERY_KEY)
+  const rest = params.toString() ? `?${params.toString()}` : ''
+  window.history.replaceState({}, '', `${localizedPath(pathname, id)}${rest}${hash}`)
 }
 
 export function applyDocumentLocale(
@@ -53,6 +70,10 @@ export function applyDocumentLocale(
   meta: { title: string; description: string },
 ) {
   document.documentElement.lang = localeHtmlLang[id]
+  const canonical = document.querySelector('link[rel="canonical"]')
+  const here = `${SITE_URL}${localizedPath(window.location.pathname, id)}`
+  if (canonical) canonical.setAttribute('href', here)
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', here)
   document.title = meta.title
   const description = document.querySelector('meta[name="description"]')
   if (description) description.setAttribute('content', meta.description)

@@ -294,7 +294,7 @@ def main() -> None:
         deliver.save(deliver_path)
         print("repaired deliver crate labels in source")
     for locale, stations in captions.items():
-        dest_dir = OUT_DIR / locale
+        dest_dir = ROOT / "scripts" / "pit-stop-source" / locale
         dest_dir.mkdir(parents=True, exist_ok=True)
         for key, caption in stations.items():
             source = Image.open(SOURCE_DIR / f"{key}.png")

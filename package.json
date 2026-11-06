@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/prerender-meta.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",
     "pit-stop:art": "node scripts/localize-pit-stop.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/mulish": "^5.3.0",
+    "@fontsource-variable/oswald": "^5.3.0",
     "framer-motion": "^12.23.12",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
@@ -22,6 +24,7 @@
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
+    "rolldown": "^1.2.16",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.1.0"

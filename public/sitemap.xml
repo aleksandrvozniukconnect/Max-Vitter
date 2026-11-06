@@ -2,18 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://designchoice.work/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://designchoice.work/?lang=en" />
-    <xhtml:link rel="alternate" hreflang="uk" href="https://designchoice.work/?lang=uk" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://designchoice.work/?lang=ru" />
+    <loc>https://designchoice.work/en</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://designchoice.work/en" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://designchoice.work/uk" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://designchoice.work/ru" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://designchoice.work/" />
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://designchoice.work/projects</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://designchoice.work/projects?lang=en" />
-    <xhtml:link rel="alternate" hreflang="uk" href="https://designchoice.work/projects?lang=uk" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://designchoice.work/projects?lang=ru" />
+    <loc>https://designchoice.work/uk</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://designchoice.work/en" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://designchoice.work/uk" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://designchoice.work/ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://designchoice.work/" />
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://designchoice.work/ru</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://designchoice.work/en" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://designchoice.work/uk" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://designchoice.work/ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://designchoice.work/" />
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://designchoice.work/en/projects</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://designchoice.work/en/projects" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://designchoice.work/uk/projects" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://designchoice.work/ru/projects" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://designchoice.work/projects" />
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://designchoice.work/uk/projects</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://designchoice.work/en/projects" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://designchoice.work/uk/projects" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://designchoice.work/ru/projects" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://designchoice.work/projects" />
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://designchoice.work/ru/projects</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://designchoice.work/en/projects" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://designchoice.work/uk/projects" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://designchoice.work/ru/projects" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://designchoice.work/projects" />
     <priority>0.8</priority>
   </url>

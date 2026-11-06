@@ -26,7 +26,7 @@ def main() -> None:
         lang = locale
         caption_title = f"{STAGE[locale]} {index} • {title.upper()}"
         caption_body = body.rstrip(".").upper()
-        path = ROOT / "public" / "images" / "pit-stop" / locale / f"{step}.png"
+        path = ROOT / "scripts" / "pit-stop-source" / locale / f"{step}.png"
         image = Image.open(path)
         info = PngInfo()
         for key, value in image.info.items():
