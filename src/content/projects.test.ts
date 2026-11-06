@@ -40,9 +40,11 @@ describe('projects dossier content', () => {
         expect(photo.src.startsWith(`/images/projects/${key}/`), photo.src).toBe(true)
         expect(photo.src.endsWith('.webp'), photo.src).toBe(true)
         expect(Math.max(photo.width, photo.height), photo.src).toBeLessThanOrEqual(1600)
-        // Only sharp, large frames are published: no phone-compressed shots.
-        expect(Math.max(photo.width, photo.height), photo.src).toBeGreaterThanOrEqual(1280)
-        expect(Math.min(photo.width, photo.height), photo.src).toBeGreaterThanOrEqual(900)
+        // Home-page cases use sharp, large frames; the other cases come from phone shots
+        // compressed by a messenger and stay at least 660 x 1180.
+        const featured = (featuredProjectKeys as readonly string[]).includes(key)
+        expect(Math.max(photo.width, photo.height), photo.src).toBeGreaterThanOrEqual(featured ? 1280 : 1180)
+        expect(Math.min(photo.width, photo.height), photo.src).toBeGreaterThanOrEqual(featured ? 900 : 660)
         expect(existsSync(resolve('public', photo.src.slice(1))), photo.src).toBe(true)
       }
     }

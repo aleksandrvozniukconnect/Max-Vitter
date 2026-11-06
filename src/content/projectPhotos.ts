@@ -1,5 +1,6 @@
 // Photos for the project cases, resized to at most 1600 px (public/images/projects/<case>/).
-// Only sharp frames of at least 960 px on the short side are published; the first photo is the cover.
+// The home-page cases use sharp frames of at least 900 px on the short side. The last three cases (moss wall,
+// round mirrors, concrete) come from phone shots compressed by a messenger and are shown in small sizes only.
 export type ProjectPhoto = { src: string; width: number; height: number }
 
 export const projectPhotos = {
@@ -51,5 +52,30 @@ export const projectPhotos = {
     { src: '/images/projects/ceiling/01.webp', width: 960, height: 1280 },
     { src: '/images/projects/ceiling/02.webp', width: 960, height: 1280 },
     { src: '/images/projects/ceiling/03.webp', width: 960, height: 1280 },
+  ],
+  moss: [
+    { src: '/images/projects/moss/01.webp', width: 720, height: 1280 },
+    { src: '/images/projects/moss/02.webp', width: 664, height: 1181 },
+    { src: '/images/projects/moss/03.webp', width: 720, height: 1280 },
+    { src: '/images/projects/moss/04.webp', width: 720, height: 1280 },
+    { src: '/images/projects/moss/05.webp', width: 720, height: 1280 },
+  ],
+  washroom: [
+    { src: '/images/projects/washroom/01.webp', width: 720, height: 1280 },
+    { src: '/images/projects/washroom/02.webp', width: 720, height: 1280 },
+    { src: '/images/projects/washroom/03.webp', width: 720, height: 1280 },
+    { src: '/images/projects/washroom/04.webp', width: 720, height: 1280 },
+    { src: '/images/projects/washroom/05.webp', width: 1280, height: 960 },
+  ],
+  concrete: [
+    { src: '/images/projects/concrete/01.webp', width: 720, height: 1280 },
+    { src: '/images/projects/concrete/02.webp', width: 720, height: 1280 },
+    { src: '/images/projects/concrete/03.webp', width: 720, height: 1280 },
+    { src: '/images/projects/concrete/04.webp', width: 1280, height: 960 },
+    { src: '/images/projects/concrete/05.webp', width: 1280, height: 720 },
+    { src: '/images/projects/concrete/06.webp', width: 720, height: 1280 },
+    { src: '/images/projects/concrete/07.webp', width: 720, height: 1280 },
+    { src: '/images/projects/concrete/08.webp', width: 720, height: 1280 },
+    { src: '/images/projects/concrete/09.webp', width: 720, height: 1280 },
   ],
 } as const satisfies Record<string, readonly ProjectPhoto[]>
