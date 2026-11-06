@@ -14,6 +14,7 @@ import {
   stepKeys,
   steps,
 } from './site'
+import { projectPhotos } from './projectPhotos'
 import { dictionaries } from '../i18n/dictionaries'
 import { en } from '../i18n/en'
 import { localeIds, localeLabels } from '../i18n/locale'
@@ -116,13 +117,13 @@ describe('Design Choice content model', () => {
     }
   })
 
-  it('has two audiences, four capabilities and three projects with photos', () => {
+  it('has two audiences, four capabilities and real projects with photos', () => {
     expect(audienceKeys).toHaveLength(2)
     expect(capabilityKeys).toHaveLength(4)
     expect(photos.capabilities).toHaveLength(4)
-    expect(projectKeys).toHaveLength(3)
+    expect(projectKeys.length).toBeGreaterThanOrEqual(3)
     expect(projectCases.map((item) => item.key)).toEqual([...projectKeys])
-    expect(photos.projects).toHaveLength(3)
+    expect(Object.keys(projectPhotos).sort()).toEqual([...projectKeys].sort())
   })
 
   it('does not publish unverified numbers', () => {

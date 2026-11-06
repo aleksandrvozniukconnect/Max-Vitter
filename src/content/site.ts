@@ -44,14 +44,32 @@ export type AudienceKey = (typeof audienceKeys)[number]
 export const capabilityKeys = ['kitchens', 'wardrobes', 'walls', 'millwork'] as const
 export type CapabilityKey = (typeof capabilityKeys)[number]
 
-export const projectKeys = ['hospitality', 'residential', 'villa'] as const
+/** Real projects, in the order shown on the Projects page. The first three are featured on the home page. */
+export const projectKeys = [
+  'house',
+  'restaurant',
+  'apartment',
+  'moss',
+  'washroom',
+  'concrete',
+  'sculpture',
+  'ceiling',
+] as const
 export type ProjectKey = (typeof projectKeys)[number]
 
+export const FEATURED_PROJECT_COUNT = 3
+export const featuredProjectKeys: readonly ProjectKey[] = projectKeys.slice(0, FEATURED_PROJECT_COUNT)
+
 export const projectCases = [
-  { key: 'hospitality', n: '01', market: 'UA' },
-  { key: 'residential', n: '02', market: 'US' },
-  { key: 'villa', n: '03', market: 'ME' },
-] as const satisfies readonly { key: ProjectKey; n: string; market: MarketId }[]
+  { key: 'house', n: '01' },
+  { key: 'restaurant', n: '02' },
+  { key: 'apartment', n: '03' },
+  { key: 'moss', n: '04' },
+  { key: 'washroom', n: '05' },
+  { key: 'concrete', n: '06' },
+  { key: 'sculpture', n: '07' },
+  { key: 'ceiling', n: '08' },
+] as const satisfies readonly { key: ProjectKey; n: string }[]
 
 export const stepKeys = ['consult', 'design', 'confirm', 'manufacture', 'deliver', 'support'] as const
 export type StepKey = (typeof stepKeys)[number]
@@ -106,7 +124,6 @@ export const photos = {
     '/images/mosaic-geometry.webp',
     '/images/mosaic-drawing.webp',
   ],
-  projects: ['/images/project-a.webp', '/images/project-b.webp', '/images/mosaic-interior.webp'],
   cta: '/images/cta-floor.webp',
 }
 

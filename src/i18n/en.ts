@@ -81,8 +81,6 @@ export type SiteCopy = {
     eyebrow: string
     title: string
     lede: string
-    challenge: string
-    result: string
     seeAll: string
     items: Record<
       ProjectKey,
@@ -90,10 +88,9 @@ export type SiteCopy = {
         title: string
         shortTitle: string
         sector: string
-        challenge: string
-        result: string
+        /** What the photos show: object type and visible materials only. */
+        summary: string
         tags: [string, string, string]
-        placeholder: string
       }
     >
   }
@@ -295,37 +292,67 @@ export const en: SiteCopy = {
   projects: {
     eyebrow: 'Projects',
     title: 'Selected projects',
-    lede: 'Each case covers the task, the engineering, the delivery and the result.',
-    challenge: 'Task.',
-    result: 'Result.',
+    lede: 'Real work from our plant: kitchens, bathrooms, restaurant details, wall panels and objects.',
     seeAll: 'See all projects',
     items: {
-      hospitality: {
-        title: 'Hotel, 64 keys',
-        shortTitle: 'Hotel',
-        sector: 'Hospitality',
-        challenge: 'One architectural set repeated across rooms, with a fixed install window.',
-        result: 'We approved one assembly for every room and installed inside the window.',
-        tags: ['Repeating set', 'Guest rooms', 'Veneer'],
-        placeholder: 'Project photos coming soon',
-      },
-      residential: {
-        title: 'Residential tower kitchens',
-        shortTitle: 'Tower kitchens',
+      house: {
+        title: 'Private house',
+        shortTitle: 'House',
         sector: 'Residential',
-        challenge: 'The developer sent layouts and finish notes, not production drawings.',
-        result: 'We completed the drawings before production and delivered the kitchens floor by floor.',
-        tags: ['Kitchens', 'By floor', 'Developer set'],
-        placeholder: 'Project photos coming soon',
+        summary:
+          'A kitchen with an island, glass and brass display cabinets, sliding wardrobe doors, two bathrooms and a living and dining area.',
+        tags: ['Wood fronts', 'Stone-look worktops', 'Brass and glass'],
       },
-      villa: {
-        title: 'Villa, Boka Bay',
-        shortTitle: 'Boka Bay',
-        sector: 'Private residence',
-        challenge: 'A full interior for an Adriatic site with seasonal access.',
-        result: 'Two shipments by road and sea, installed by our crew on the agreed dates.',
-        tags: ['Full interior', 'Road + sea', 'Seasonal access'],
-        placeholder: 'Project photos coming soon',
+      restaurant: {
+        title: 'Restaurant',
+        shortTitle: 'Restaurant',
+        sector: 'Hospitality',
+        summary:
+          'A green marble washbasin on a brass base, a bar front with a rock-like relief, vertical metal profiles and the 3D models of the counter.',
+        tags: ['Marble and brass', 'Relief bar front', '3D models'],
+      },
+      apartment: {
+        title: 'Apartment: kitchen and hallway',
+        shortTitle: 'Apartment',
+        sector: 'Residential',
+        summary:
+          'A kitchen and a hallway wardrobe, from assembly on site to the finished rooms: wood-effect upper units, concrete-effect fronts and a marble-effect worktop.',
+        tags: ['Wood-effect fronts', 'Concrete-effect fronts', 'Marble-effect worktop'],
+      },
+      moss: {
+        title: 'Moss wall',
+        shortTitle: 'Moss wall',
+        sector: 'Commercial interior',
+        summary: 'Backlit panels of moss and plants set into a dark wood wall in a lobby.',
+        tags: ['Moss and plants', 'Backlit panels', 'Dark wood'],
+      },
+      washroom: {
+        title: 'Washroom with round mirrors',
+        shortTitle: 'Round mirrors',
+        sector: 'Interior',
+        summary: 'A floating dark vanity with two vessel basins under backlit round mirrors, against stone-look walls.',
+        tags: ['Backlit mirrors', 'Floating vanity', 'Vessel basins'],
+      },
+      concrete: {
+        title: 'Concrete decor and lamps',
+        shortTitle: 'Concrete decor',
+        sector: 'Objects',
+        summary: 'Pendant lamps, vases, planters and a bench in concrete, and sets of small cast tiles.',
+        tags: ['Pendant lamps', 'Vases and planters', 'Cast tiles'],
+      },
+      sculpture: {
+        title: 'Wood sculpture',
+        shortTitle: 'Sculpture',
+        sector: 'Art object',
+        summary: 'A tall carved wooden figure, photographed in the workshop.',
+        tags: ['Carved surface', 'Solid wood', 'Workshop'],
+      },
+      ceiling: {
+        title: 'Suspended ceiling ring',
+        shortTitle: 'Ceiling ring',
+        sector: 'Construction',
+        summary: 'A circular ceiling element around a column during construction: the board-clad ring and its inner frame.',
+        tags: ['Circular form', 'Board cladding', 'Inner frame'],
       },
     },
   },
@@ -333,11 +360,11 @@ export const en: SiteCopy = {
     meta: {
       title: 'Projects — Design Choice',
       description:
-        'Design Choice projects: a hotel, residential tower kitchens and a private villa on the Adriatic. Task, engineering, delivery, result.',
+        'Design Choice projects: a private house, a restaurant, an apartment kitchen and hallway, a moss wall, concrete objects and more.',
     },
     eyebrow: 'Portfolio',
     title: 'Our projects',
-    lede: 'Three projects, each told from the first drawing to handover.',
+    lede: 'Selected work, from kitchens and bathrooms to restaurant details and objects.',
     indexLabel: 'Case',
     indexAria: 'Case index',
     next: 'Next case',

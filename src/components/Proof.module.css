@@ -286,7 +286,7 @@ a.seeAll:hover::after {
 .case img {
   display: block;
   width: 100%;
-  height: 220px;
+  height: 320px;
   object-fit: cover;
 }
 

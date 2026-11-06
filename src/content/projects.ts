@@ -1,37 +1,40 @@
 import type { SiteCopy } from '../i18n/en'
-import { photos, projectCases, type ProjectKey } from './site'
+import { projectPhotos, type ProjectPhoto } from './projectPhotos'
+import { featuredProjectKeys, projectCases, type ProjectKey } from './site'
 
 export type ProjectChapter = {
   key: ProjectKey
   n: string
-  market: (typeof projectCases)[number]['market']
-  photo: string
-  marketLabel: string
+  /** First photo of the case. */
+  cover: ProjectPhoto
+  /** All photos of the case, cover first. */
+  photos: readonly ProjectPhoto[]
   title: string
   shortTitle: string
   sector: string
-  challenge: string
-  result: string
+  summary: string
   tags: readonly string[]
-  placeholder: string
 }
 
 export function chaptersFrom(copy: SiteCopy): ProjectChapter[] {
-  return projectCases.map((item, index) => {
+  return projectCases.map((item) => {
     const text = copy.projects.items[item.key]
+    const photos = projectPhotos[item.key]
     return {
       key: item.key,
       n: item.n,
-      market: item.market,
-      photo: photos.projects[index] ?? photos.projects[0],
-      marketLabel: copy.markets[item.market].label,
+      cover: photos[0],
+      photos,
       title: text.title,
       shortTitle: text.shortTitle,
       sector: text.sector,
-      challenge: text.challenge,
-      result: text.result,
+      summary: text.summary,
       tags: text.tags,
-      placeholder: text.placeholder,
     }
   })
+}
+
+/** The cases shown on the home page. */
+export function featuredChapters(chapters: readonly ProjectChapter[]): ProjectChapter[] {
+  return featuredProjectKeys.flatMap((key) => chapters.filter((chapter) => chapter.key === key))
 }
