@@ -81,6 +81,8 @@ export type SiteCopy = {
     eyebrow: string
     title: string
     lede: string
+    challenge: string
+    result: string
     seeAll: string
     items: Record<
       ProjectKey,
@@ -88,8 +90,9 @@ export type SiteCopy = {
         title: string
         shortTitle: string
         sector: string
-        /** What the photos show: object type and visible materials only. */
-        summary: string
+        /** Task and result describe only what the photos show: object type and visible materials. */
+        challenge: string
+        result: string
         tags: [string, string, string]
       }
     >
@@ -99,6 +102,7 @@ export type SiteCopy = {
     eyebrow: string
     title: string
     lede: string
+    lightbox: { open: string; close: string; prev: string; next: string; of: string; photos: string }
     indexLabel: string
     indexAria: string
     next: string
@@ -292,66 +296,52 @@ export const en: SiteCopy = {
   projects: {
     eyebrow: 'Projects',
     title: 'Selected projects',
-    lede: 'Real work from our plant: kitchens, bathrooms, restaurant details, wall panels and objects.',
+    lede: 'Real work from our plant: kitchens, bathrooms, restaurant details and objects.',
+    challenge: 'Task.',
+    result: 'Result.',
     seeAll: 'See all projects',
     items: {
       house: {
         title: 'Private house',
         shortTitle: 'House',
         sector: 'Residential',
-        summary:
-          'A kitchen with an island, glass and brass display cabinets, sliding wardrobe doors, two bathrooms and a living and dining area.',
+        challenge: 'A kitchen, wardrobes and bathrooms for one house, in one material language.',
+        result:
+          'A kitchen with wood fronts and an island, glass and brass display cabinets, sliding wardrobe doors and two bathrooms with fitted vanities.',
         tags: ['Wood fronts', 'Stone-look worktops', 'Brass and glass'],
       },
       restaurant: {
         title: 'Restaurant',
         shortTitle: 'Restaurant',
         sector: 'Hospitality',
-        summary:
-          'A green marble washbasin on a brass base, a bar front with a rock-like relief, vertical metal profiles and the 3D models of the counter.',
-        tags: ['Marble and brass', 'Relief bar front', '3D models'],
+        challenge: 'Interior details for a restaurant, in stone, brass and metal: a washbasin area and a bar.',
+        result:
+          'A green marble washbasin on a brass base, a bar front with a rock-like relief and vertical metal profiles.',
+        tags: ['Marble and brass', 'Relief bar front', 'Metal profiles'],
       },
       apartment: {
         title: 'Apartment: kitchen and hallway',
         shortTitle: 'Apartment',
         sector: 'Residential',
-        summary:
-          'A kitchen and a hallway wardrobe, from assembly on site to the finished rooms: wood-effect upper units, concrete-effect fronts and a marble-effect worktop.',
+        challenge: 'A kitchen and a hallway wardrobe for one apartment.',
+        result:
+          'Wood-effect upper units, concrete-effect fronts, a marble-effect worktop and splashback, and a wardrobe with a ribbed wood niche and coat hooks.',
         tags: ['Wood-effect fronts', 'Concrete-effect fronts', 'Marble-effect worktop'],
-      },
-      moss: {
-        title: 'Moss wall',
-        shortTitle: 'Moss wall',
-        sector: 'Commercial interior',
-        summary: 'Backlit panels of moss and plants set into a dark wood wall in a lobby.',
-        tags: ['Moss and plants', 'Backlit panels', 'Dark wood'],
-      },
-      washroom: {
-        title: 'Washroom with round mirrors',
-        shortTitle: 'Round mirrors',
-        sector: 'Interior',
-        summary: 'A floating dark vanity with two vessel basins under backlit round mirrors, against stone-look walls.',
-        tags: ['Backlit mirrors', 'Floating vanity', 'Vessel basins'],
-      },
-      concrete: {
-        title: 'Concrete decor and lamps',
-        shortTitle: 'Concrete decor',
-        sector: 'Objects',
-        summary: 'Pendant lamps, vases, planters and a bench in concrete, and sets of small cast tiles.',
-        tags: ['Pendant lamps', 'Vases and planters', 'Cast tiles'],
       },
       sculpture: {
         title: 'Wood sculpture',
         shortTitle: 'Sculpture',
         sector: 'Art object',
-        summary: 'A tall carved wooden figure, photographed in the workshop.',
+        challenge: 'A tall figure carved in wood as an art object.',
+        result: 'A figure with a carved, textured surface, photographed in the workshop.',
         tags: ['Carved surface', 'Solid wood', 'Workshop'],
       },
       ceiling: {
         title: 'Suspended ceiling ring',
         shortTitle: 'Ceiling ring',
         sector: 'Construction',
-        summary: 'A circular ceiling element around a column during construction: the board-clad ring and its inner frame.',
+        challenge: 'A circular ceiling element around a column, built on site.',
+        result: 'A board-clad ring with an inner frame, shown during construction.',
         tags: ['Circular form', 'Board cladding', 'Inner frame'],
       },
     },
@@ -360,12 +350,19 @@ export const en: SiteCopy = {
     meta: {
       title: 'Projects — Design Choice',
       description:
-        'Design Choice projects: a private house, a restaurant, an apartment kitchen and hallway, a moss wall, concrete objects and more.',
+        'Design Choice projects: a private house, a restaurant, an apartment kitchen and hallway, a wood sculpture and a ceiling ring.',
     },
     eyebrow: 'Portfolio',
     title: 'Our projects',
     lede: 'Selected work, from kitchens and bathrooms to restaurant details and objects.',
-    indexLabel: 'Case',
+    lightbox: {
+      open: 'Open photo',
+      close: 'Close',
+      prev: 'Previous photo',
+      next: 'Next photo',
+      of: 'of',
+      photos: 'Photos',
+    },    indexLabel: 'Case',
     indexAria: 'Case index',
     next: 'Next case',
     empty: 'No cases published yet.',

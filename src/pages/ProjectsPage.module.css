@@ -222,6 +222,57 @@
   line-height: 1.55;
 }
 
+.media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(176, 141, 87, 0.12), transparent 42%),
+    repeating-linear-gradient(-18deg, transparent, transparent 14px, rgba(17, 19, 24, 0.035) 14px, rgba(17, 19, 24, 0.035) 15px),
+    var(--paper-deep);
+  height: min(52vh, 420px);
+}
+
+.media::after {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(176, 141, 87, 0.28);
+  pointer-events: none;
+}
+
+.media img {
+  position: absolute;
+  inset: -12% 0;
+  width: 100%;
+  height: 124%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+.notes {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.notes p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.notes strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
 .filmstrip {
   display: flex;
   align-items: center;
@@ -327,7 +378,17 @@ html:lang(ru) .chapterTitle {
     max-width: 11ch;
   }
 
-.filmstripImg {
+  .media {
+    height: min(58vh, 560px);
+  }
+
+  .notes {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    max-width: 52rem;
+  }
+
+  .filmstripImg {
     width: 168px;
     height: 92px;
   }
@@ -343,36 +404,94 @@ html:lang(ru) .chapterTitle {
   }
 }
 
-/* Photos keep their own proportions; most are phone shots, so columns stay narrow. */
-.gallery {
-  column-count: 2;
-  column-gap: 10px;
-  margin: 0;
+@media (prefers-reduced-motion: reduce) {
+  .media img {
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
+.media {
+  cursor: zoom-in;
+}
+
+.mediaOpen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
   padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.mediaOpen:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -4px;
+}
+
+/* A row of small photos under the main one. They grow on hover; a click opens the slider. */
+.thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 0;
   list-style: none;
 }
 
-.gallery li {
-  break-inside: avoid;
-  margin: 0 0 10px;
-  overflow: hidden;
-  border-radius: 10px;
-  background: var(--paper-deep);
+.thumbs li {
+  display: block;
 }
 
-.gallery img {
+.thumb {
   display: block;
-  width: 100%;
-  height: auto;
+  height: 72px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--paper-deep);
+  cursor: zoom-in;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.thumb img {
+  display: block;
+  width: auto;
+  height: 100%;
+}
+
+.thumb:hover,
+.thumb:focus-visible {
+  position: relative;
+  z-index: 2;
+  transform: scale(1.12);
+  box-shadow: 0 8px 22px rgba(17, 19, 24, 0.22);
+}
+
+.thumb:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 @media (min-width: 900px) {
-  .gallery {
-    column-count: 3;
-    column-gap: 14px;
+  .thumb {
+    height: 84px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb {
+    transition: none;
   }
 
-  .gallery li {
-    margin-bottom: 14px;
+  .thumb:hover,
+  .thumb:focus-visible {
+    transform: none;
   }
 }

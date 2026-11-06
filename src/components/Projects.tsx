@@ -22,26 +22,27 @@ export function Projects() {
         </AppLink>
       </Reveal>
       <div className={`${styles.wrap} ${styles.cases}`}>
-        {featured.map((item, index) => (
-          <Reveal key={item.key} delay={index * 0.05} className={styles.case}>
-            <AppLink href={`${PROJECTS_PATH}#case-${item.key}`} className={styles.caseLink}>
-              <img
-                src={item.cover.src}
-                alt={item.title}
-                width={item.cover.width}
-                height={item.cover.height}
-                loading="lazy"
-              />
-              <div className={styles.caseBody}>
-                <div className={styles.caseMeta}>
-                  <h3>{item.title}</h3>
-                  <span>{item.sector}</span>
+        {featured.map((item, index) => {
+          return (
+            <Reveal key={item.key} delay={index * 0.05} className={styles.case}>
+              <AppLink href={`${PROJECTS_PATH}#case-${item.key}`} className={styles.caseLink}>
+                <img src={item.photo} alt={item.title} loading="lazy" />
+                <div className={styles.caseBody}>
+                  <div className={styles.caseMeta}>
+                    <h3>{item.title}</h3>
+                    <span>{item.sector}</span>
+                  </div>
+                  <p>
+                    <strong>{projects.challenge}</strong> {item.challenge}
+                  </p>
+                  <p>
+                    <strong>{projects.result}</strong> {item.result}
+                  </p>
                 </div>
-                <p>{item.summary}</p>
-              </div>
-            </AppLink>
-          </Reveal>
-        ))}
+              </AppLink>
+            </Reveal>
+          )
+        })}
       </div>
     </section>
   )

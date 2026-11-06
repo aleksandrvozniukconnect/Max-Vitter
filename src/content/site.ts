@@ -45,16 +45,7 @@ export const capabilityKeys = ['kitchens', 'wardrobes', 'walls', 'millwork'] as 
 export type CapabilityKey = (typeof capabilityKeys)[number]
 
 /** Real projects, in the order shown on the Projects page. The first three are featured on the home page. */
-export const projectKeys = [
-  'house',
-  'restaurant',
-  'apartment',
-  'moss',
-  'washroom',
-  'concrete',
-  'sculpture',
-  'ceiling',
-] as const
+export const projectKeys = ['house', 'restaurant', 'apartment', 'sculpture', 'ceiling'] as const
 export type ProjectKey = (typeof projectKeys)[number]
 
 export const FEATURED_PROJECT_COUNT = 3
@@ -64,11 +55,8 @@ export const projectCases = [
   { key: 'house', n: '01' },
   { key: 'restaurant', n: '02' },
   { key: 'apartment', n: '03' },
-  { key: 'moss', n: '04' },
-  { key: 'washroom', n: '05' },
-  { key: 'concrete', n: '06' },
-  { key: 'sculpture', n: '07' },
-  { key: 'ceiling', n: '08' },
+  { key: 'sculpture', n: '04' },
+  { key: 'ceiling', n: '05' },
 ] as const satisfies readonly { key: ProjectKey; n: string }[]
 
 export const stepKeys = ['consult', 'design', 'confirm', 'manufacture', 'deliver', 'support'] as const

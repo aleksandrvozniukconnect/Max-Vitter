@@ -18,10 +18,11 @@ describe('projects dossier content', () => {
     for (const chapter of chapters) {
       expect(chapter.n).toMatch(/^\d{2}$/)
       expect(chapter.photos.length).toBeGreaterThanOrEqual(3)
-      expect(chapter.cover).toBe(chapter.photos[0])
+      expect(chapter.photo).toBe(chapter.photos[0].src)
       expect(chapter.title.length).toBeGreaterThan(0)
       expect(chapter.shortTitle.length).toBeGreaterThan(0)
-      expect(chapter.summary.length).toBeGreaterThan(20)
+      expect(chapter.challenge.length).toBeGreaterThan(20)
+      expect(chapter.result.length).toBeGreaterThan(20)
       expect(chapter.tags).toHaveLength(3)
     }
   })
@@ -39,6 +40,9 @@ describe('projects dossier content', () => {
         expect(photo.src.startsWith(`/images/projects/${key}/`), photo.src).toBe(true)
         expect(photo.src.endsWith('.webp'), photo.src).toBe(true)
         expect(Math.max(photo.width, photo.height), photo.src).toBeLessThanOrEqual(1600)
+        // Only sharp, large frames are published: no phone-compressed shots.
+        expect(Math.max(photo.width, photo.height), photo.src).toBeGreaterThanOrEqual(1280)
+        expect(Math.min(photo.width, photo.height), photo.src).toBeGreaterThanOrEqual(900)
         expect(existsSync(resolve('public', photo.src.slice(1))), photo.src).toBe(true)
       }
     }
@@ -78,7 +82,8 @@ describe('projects dossier content', () => {
         expect(item.title.length).toBeGreaterThan(0)
         expect(item.shortTitle.length).toBeGreaterThan(0)
         expect(item.sector.length).toBeGreaterThan(0)
-        expect(item.summary.length).toBeGreaterThan(20)
+        expect(item.challenge.length).toBeGreaterThan(20)
+        expect(item.result.length).toBeGreaterThan(20)
         expect(item.tags).toHaveLength(3)
       }
     }

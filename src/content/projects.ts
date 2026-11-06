@@ -5,14 +5,15 @@ import { featuredProjectKeys, projectCases, type ProjectKey } from './site'
 export type ProjectChapter = {
   key: ProjectKey
   n: string
-  /** First photo of the case. */
-  cover: ProjectPhoto
+  /** Cover photo, the first of the case. */
+  photo: string
   /** All photos of the case, cover first. */
   photos: readonly ProjectPhoto[]
   title: string
   shortTitle: string
   sector: string
-  summary: string
+  challenge: string
+  result: string
   tags: readonly string[]
 }
 
@@ -23,12 +24,13 @@ export function chaptersFrom(copy: SiteCopy): ProjectChapter[] {
     return {
       key: item.key,
       n: item.n,
-      cover: photos[0],
+      photo: photos[0].src,
       photos,
       title: text.title,
       shortTitle: text.shortTitle,
       sector: text.sector,
-      summary: text.summary,
+      challenge: text.challenge,
+      result: text.result,
       tags: text.tags,
     }
   })

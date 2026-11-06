@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { chaptersFrom, type ProjectChapter } from '../content/projects'
 import { projectKeys, type ProjectKey } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
@@ -6,11 +7,13 @@ import { applyDocumentLocale } from '../i18n/locale'
 import { nextItem, pickActiveCase } from '../lib/dossier'
 import { scrollToHash } from '../lib/navigate'
 import { ClosingCta } from '../components/ClosingCta'
+import { Lightbox } from '../components/Lightbox'
 import { Reveal } from '../components/Reveal'
 import styles from './ProjectsPage.module.css'
 
 export function ProjectsPage() {
   const { locale, copy } = useLocale()
+  const reduce = useReducedMotion()
   const chapters = chaptersFrom(copy)
   const page = copy.projectsPage
   const [active, setActive] = useState<ProjectKey>(projectKeys[0])
@@ -101,6 +104,8 @@ export function ProjectsPage() {
                     key={item.key}
                     item={item}
                     next={nextItem(chapters, index)}
+                    reduce={reduce}
+                    copy={copy}
                     nextLabel={page.next}
                   />
                 ))}
@@ -115,7 +120,21 @@ export function ProjectsPage() {
   )
 }
 
-function CaseChapter({ item, next, nextLabel }: { item: ProjectChapter; next: ProjectChapter | null; nextLabel: string }) {
+function CaseChapter({
+  item,
+  next,
+  reduce,
+  copy,
+  nextLabel,
+}: {
+  item: ProjectChapter
+  next: ProjectChapter | null
+  reduce: boolean | null
+  copy: ReturnType<typeof useLocale>['copy']
+  nextLabel: string
+}) {
+  const [open, setOpen] = useState<number | null>(null)
+  const labels = copy.projectsPage.lightbox
   return (
     <article
       className={styles.chapter}
@@ -141,27 +160,63 @@ function CaseChapter({ item, next, nextLabel }: { item: ProjectChapter; next: Pr
         ))}
       </ul>
 
-      <p className={styles.outcome}>{item.summary}</p>
+      <p className={styles.outcome}>{item.result}</p>
 
-      <ul className={styles.gallery}>
-        {item.photos.map((photo, index) => (
-          <li key={photo.src}>
-            <img
-              src={photo.src}
-              alt={`${item.title}, ${index + 1}`}
-              width={photo.width}
-              height={photo.height}
-              loading={index === 0 ? 'eager' : 'lazy'}
-              decoding="async"
-            />
-          </li>
-        ))}
-      </ul>
+      <CaseMedia
+        src={item.photo}
+        alt={item.title}
+        openLabel={labels.open}
+        reduce={Boolean(reduce)}
+        onOpen={() => setOpen(0)}
+      />
+
+      {item.photos.length > 1 ? (
+        <ul className={styles.thumbs} aria-label={labels.photos}>
+          {item.photos.map((photo, index) => (
+            <li key={photo.src}>
+              <button
+                type="button"
+                className={styles.thumb}
+                aria-label={`${labels.open} ${index + 1} ${labels.of} ${item.photos.length}`}
+                onClick={() => setOpen(index)}
+              >
+                <img src={photo.src} alt="" width={photo.width} height={photo.height} loading="lazy" decoding="async" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      <Lightbox
+        index={open}
+        photos={item.photos}
+        title={item.title}
+        labels={labels}
+        onChange={setOpen}
+        onClose={() => setOpen(null)}
+      />
+
+      <div className={styles.notes}>
+        <p>
+          <strong>{copy.projects.challenge}</strong>
+          {item.challenge}
+        </p>
+        <p>
+          <strong>{copy.projects.result}</strong>
+          {item.result}
+        </p>
+      </div>
 
       {next ? (
         <a className={styles.filmstrip} href={`#case-${next.key}`}>
           <span className={styles.filmstripImg}>
-            <img src={next.cover.src} alt="" width={next.cover.width} height={next.cover.height} loading="lazy" />
+            <img
+              src={next.photo}
+              alt=""
+              onError={(event) => {
+                event.currentTarget.style.display = 'none'
+              }}
+            />
           </span>
           <span>
             <span className={styles.filmstripLabel}>
@@ -172,5 +227,37 @@ function CaseChapter({ item, next, nextLabel }: { item: ProjectChapter; next: Pr
         </a>
       ) : null}
     </article>
+  )
+}
+
+function CaseMedia({
+  src,
+  alt,
+  openLabel,
+  reduce,
+  onOpen,
+}: {
+  src: string
+  alt: string
+  openLabel: string
+  reduce: boolean
+  onOpen: () => void
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [failed, setFailed] = useState(false)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'end start'],
+  })
+  const y = useTransform(scrollYProgress, [0, 1], reduce ? ['0%', '0%'] : ['-8%', '8%'])
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], reduce ? [1, 1, 1] : [1.12, 1, 1.04])
+
+  return (
+    <div ref={ref} className={styles.media}>
+      {failed ? null : (
+        <motion.img src={src} alt={alt} style={{ y, scale }} onError={() => setFailed(true)} />
+      )}
+      <button type="button" className={styles.mediaOpen} aria-label={`${openLabel}: ${alt}`} onClick={onOpen} />
+    </div>
   )
 }
