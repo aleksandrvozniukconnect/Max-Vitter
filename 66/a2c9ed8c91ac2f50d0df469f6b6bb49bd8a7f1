@@ -1,0 +1,47 @@
+src/pages/ProjectsPage.tsx
+  s_08673d0dfe1d25::t_95427a54ef6670 1-2,10,16,107-108,123-137,163,165-208,213-219,231-262
+src/content/projectPhotos.ts
+  s_08673d0dfe1d25::t_bdac6ceda19552 2,7,17-18,28,38-41
+src/i18n/ru.ts
+  s_08673d0dfe1d25::t_2359a27980cbc2 149-151,158-160,167-170,176-178,185-186,193-194,203,207-215
+src/content/projects.test.ts
+  s_08673d0dfe1d25::t_0b3582696ab2e0 21,24-25,43-45,85-86
+src/components/Lightbox.tsx
+  s_08673d0dfe1d25::t_94d5a803ae37da 1-153
+src/content/site.ts
+  s_08673d0dfe1d25::t_f638787ac73435 48,58-59
+src/content/projects.ts
+  s_08673d0dfe1d25::t_8cef91a069c1de 8-9,15-16,27,32-33
+src/components/Projects.tsx
+  s_08673d0dfe1d25::t_3f4472a166b55c 25-29
+  s_08673d0dfe1d25::t_aea0f5aa59d70e 30-32
+  s_08673d0dfe1d25::t_6a01d5dd5f06df 33-40,42-45
+src/pages/ProjectsPage.module.css
+  s_08673d0dfe1d25::t_75cf467992174e 225-275,381-391,407-423,425-441,445-454,457-460,463,465-479,483-490,493-495
+src/components/Lightbox.module.css
+  s_08673d0dfe1d25::t_f983d2543c6013 1-113
+  s_08673d0dfe1d25::t_b64940b745e4f1 114-116
+  s_08673d0dfe1d25::t_df8afbbed1f69d 117-134
+src/i18n/en.ts
+  s_08673d0dfe1d25::t_c3203e2d00da74 84-85,93-95
+  s_08673d0dfe1d25::t_08c949253890bb 299-301,308-310,317-320,326-328,335-336,343-344,353,358-365
+  s_08673d0dfe1d25::t_162351a96ea641 105
+src/i18n/uk.ts
+  s_08673d0dfe1d25::t_dbace53bfc5aad 149-151,158-160,167-170,176-178,185-186,193-194,203,207-215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "66a2c9ed8c91ac2f50d0df469f6b6bb49bd8a7f1",
+  "prompts": {},
+  "sessions": {
+    "s_08673d0dfe1d25": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fcbdedf9-0c43-471e-a214-1d47ddb2de9f",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "prodavecsladostei <33965284+prodavecsladostei@users.noreply.github.com>"
+    }
+  }
+}
