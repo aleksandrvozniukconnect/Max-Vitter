@@ -1,0 +1,25 @@
+.gitignore
+  s_08673d0dfe1d25::t_98769a5b90332c 26-30
+.mcp.json
+  s_08673d0dfe1d25::t_88da7d9b9bbd2d 1-14
+.serena/.gitignore
+  s_08673d0dfe1d25::t_25c73de343e861 1-2
+.serena/project.yml
+  s_08673d0dfe1d25::t_5968ed2d1bf4e5 1-187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5a542906e686cec1dad5564fe7615ca9a9e92cf4",
+  "prompts": {},
+  "sessions": {
+    "s_08673d0dfe1d25": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fcbdedf9-0c43-471e-a214-1d47ddb2de9f",
+        "model": "unknown"
+      },
+      "human_author": "prodavecsladostei <33965284+prodavecsladostei@users.noreply.github.com>"
+    }
+  }
+}
