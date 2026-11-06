@@ -1,6 +1,6 @@
 import { audienceKeys } from '../content/site'
 import { useLocale } from '../context/LocaleContext'
-import { AudienceIcon, DesignerIcon } from './AudienceIcons'
+import { DesignerIcon } from './AudienceIcons'
 import { Eyebrow } from './Eyebrow'
 import { Reveal } from './Reveal'
 import styles from './Proof.module.css'
@@ -24,7 +24,7 @@ export function Audiences() {
             <Reveal key={key} delay={index * 0.05} className={styles.audienceSlot}>
               <article className={styles.audience}>
                 <span className={styles.audienceIcon}>
-                  <AudienceIcon audience={key} />
+                  <img src={`/images/audiences/${key === 'developers' ? 'developers' : 'architects'}.webp`} alt="" width={96} height={96} loading="lazy" draggable={false} />
                 </span>
                 <div>
                   <h3>{item.title}</h3>

@@ -85,12 +85,15 @@ a.seeAll:hover::after {
   flex: none;
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--white);
-  color: var(--brass-ink);
-  box-shadow: 0 0 0 1px var(--rule);
+  width: 96px;
+  height: 96px;
+}
+
+.audienceIcon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .audience h3 {
