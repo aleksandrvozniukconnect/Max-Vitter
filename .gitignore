@@ -23,3 +23,8 @@ tmp
 *.njsproj
 *.sln
 *.sw?
+
+# Serena local state
+.serena/cache/
+.serena/memories/
+.serena/project.local.yml
