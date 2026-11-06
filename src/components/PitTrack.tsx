@@ -6,42 +6,12 @@ import styles from './PitTrack.module.css'
 
 const BAY_HEIGHT = 110
 const BAY_MAX_WIDTH = 170
-/** Height of a road tile for a given road width (tile art is 193 x 537, kerbs included). */
-const tileHeight = (width: number) => (width * 537) / 193
-/** Height of the finish-line piece for a given road width (art is 270 x 250). */
-const finishHeight = (width: number) => (width * 250) / 270
-/** Share of the road width taken by each kerb (road tile art is 193 px wide). */
-const KERB = 0.17
+/** Height of a road tile for a given road width (tile art is 386 x 201, kerbs included). */
+const tileHeight = (width: number) => (width * 201) / 386
+/** Where the chequered strip sits inside the finish tile (share of its height). */
+const FINISH_AT = 0.7224
 const CAR_W = 53
 const CAR_H = 84
-
-/** The chequered finish strip, drawn between the kerbs so they run on unbroken. */
-function Chequer({ x, width, centerY }: { x: number; width: number; centerY: number }) {
-  const cols = 4
-  const cell = width / cols
-  const top = centerY - cell
-  const cells = []
-  for (let row = 0; row < 2; row++) {
-    for (let col = 0; col < cols; col++) {
-      cells.push(
-        <rect
-          key={`${row}-${col}`}
-          x={x + col * cell}
-          y={top + row * cell}
-          width={cell}
-          height={cell}
-          fill={(row + col) % 2 === 0 ? '#16171b' : '#f4f1ea'}
-        />,
-      )
-    }
-  }
-  return (
-    <g>
-      {cells}
-      <rect x={x} y={top} width={width} height={cell * 2} fill="none" stroke="#16171b" strokeWidth="1.2" />
-    </g>
-  )
-}
 
 type Layout = {
   width: number
@@ -186,8 +156,11 @@ export function PitTrack({ band }: Props) {
   if (!layout) return null
   const { roadX, roadW, scale } = layout
   const tileH = tileHeight(roadW)
-  const finishH = finishHeight(roadW)
   const bayLeft = roadX + roadW / 2
+  const lastBay = layout.cards[layout.cards.length - 1]
+  // The strip sits a little before the last pit bay: the car crosses it, then pulls in.
+  const stripY = (lastBay.top + lastBay.bottom) / 2 - (BAY_HEIGHT * scale) / 2 - 22 * scale
+  const finishTop = stripY - FINISH_AT * tileH
 
   const bays = layout.cards.map((card, i) => {
     const x = bayLeft - 6
@@ -204,9 +177,12 @@ export function PitTrack({ band }: Props) {
   return (
     <svg className={styles.overlay} width={layout.width} height={layout.height} aria-hidden="true" focusable="false">
       <defs>
-        <pattern id="road-tile" patternUnits="userSpaceOnUse" x={roadX - roadW / 2} y="0" width={roadW} height={tileH}>
+        <pattern id="road-tile" patternUnits="userSpaceOnUse" x={roadX - roadW / 2} y={finishTop} width={roadW} height={tileH}>
           <image href="/images/track/road.webp" width={roadW} height={tileH} preserveAspectRatio="none" />
         </pattern>
+        <clipPath id="road-end">
+          <rect x={roadX - roadW / 2} y={layout.top} width={roadW} height={layout.bottom - layout.top} />
+        </clipPath>
       </defs>
       {bays.map((bay) => (
         <image
@@ -220,11 +196,15 @@ export function PitTrack({ band }: Props) {
         />
       ))}
       <rect x={roadX - roadW / 2} y={layout.top} width={roadW} height={layout.bottom - layout.top} fill="url(#road-tile)" />
-      {/* The chequered flag sits just before the last pit bay: the car crosses it, then pulls in. */}
-      <Chequer
-        x={roadX - roadW / 2 + roadW * KERB}
-        width={roadW * (1 - 2 * KERB)}
-        centerY={bays[bays.length - 1].y - finishH * 0.05 - 14 * scale}
+      {/* A full road tile with the chequered strip drawn in: same asphalt, same kerbs, no seam. */}
+      <image
+        clipPath="url(#road-end)"
+        href="/images/track/finish-tile.webp"
+        x={roadX - roadW / 2}
+        y={finishTop}
+        width={roadW}
+        height={tileH}
+        preserveAspectRatio="none"
       />
       {layout.cards.map((card, i) => {
         const on = current === i
