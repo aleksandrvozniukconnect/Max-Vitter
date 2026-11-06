@@ -90,6 +90,8 @@ export type SiteCopy = {
         title: string
         shortTitle: string
         sector: string
+        /** Short description for the home page cards. */
+        summary: string
         /** Task and result describe only what the photos show: object type and visible materials. */
         challenge: string
         result: string
@@ -303,6 +305,7 @@ export const en: SiteCopy = {
     items: {
       house: {
         title: 'Private house',
+        summary: 'A kitchen with an island, glass and brass display cabinets, sliding wardrobe doors, two bathrooms and a living and dining area.',
         shortTitle: 'House',
         sector: 'Residential',
         challenge: 'A kitchen, wardrobes and bathrooms for one house, in one material language.',
@@ -312,6 +315,7 @@ export const en: SiteCopy = {
       },
       restaurant: {
         title: 'Restaurant',
+        summary: 'A green marble washbasin on a brass base, a bar front with a rock-like relief, vertical metal profiles and the 3D models of the counter.',
         shortTitle: 'Restaurant',
         sector: 'Hospitality',
         challenge: 'Interior details for a restaurant, in stone, brass and metal: a washbasin area and a bar.',
@@ -321,6 +325,7 @@ export const en: SiteCopy = {
       },
       apartment: {
         title: 'Apartment: kitchen and hallway',
+        summary: 'A kitchen and a hallway wardrobe, from assembly on site to the finished rooms: wood-effect upper units, concrete-effect fronts and a marble-effect worktop.',
         shortTitle: 'Apartment',
         sector: 'Residential',
         challenge: 'A kitchen and a hallway wardrobe for one apartment.',
@@ -330,6 +335,7 @@ export const en: SiteCopy = {
       },
       sculpture: {
         title: 'Wood sculpture',
+        summary: 'A tall carved wooden figure, photographed in the workshop.',
         shortTitle: 'Sculpture',
         sector: 'Art object',
         challenge: 'A tall figure carved in wood as an art object.',
@@ -338,6 +344,7 @@ export const en: SiteCopy = {
       },
       ceiling: {
         title: 'Suspended ceiling ring',
+        summary: 'A circular ceiling element around a column during construction: the board-clad ring and its inner frame.',
         shortTitle: 'Ceiling ring',
         sector: 'Construction',
         challenge: 'A circular ceiling element around a column, built on site.',
@@ -346,6 +353,7 @@ export const en: SiteCopy = {
       },
       moss: {
         title: 'Moss wall',
+        summary: 'Backlit panels of moss and plants set into a dark wood wall in a lobby.',
         shortTitle: 'Moss wall',
         sector: 'Commercial interior',
         challenge: 'A lobby wall with a living green panel, lit from behind.',
@@ -354,6 +362,7 @@ export const en: SiteCopy = {
       },
       washroom: {
         title: 'Washroom with round mirrors',
+        summary: 'A floating dark vanity with two vessel basins under backlit round mirrors, against stone-look walls.',
         shortTitle: 'Round mirrors',
         sector: 'Interior',
         challenge: 'A vanity zone with round backlit mirrors.',
@@ -362,6 +371,7 @@ export const en: SiteCopy = {
       },
       concrete: {
         title: 'Concrete decor and lamps',
+        summary: 'Pendant lamps, vases, planters and a bench in concrete, and sets of small cast tiles.',
         shortTitle: 'Concrete decor',
         sector: 'Objects',
         challenge: 'Decor and light fittings cast in concrete.',

@@ -12,6 +12,7 @@ export type ProjectChapter = {
   title: string
   shortTitle: string
   sector: string
+  summary: string
   challenge: string
   result: string
   tags: readonly string[]
@@ -29,6 +30,7 @@ export function chaptersFrom(copy: SiteCopy): ProjectChapter[] {
       title: text.title,
       shortTitle: text.shortTitle,
       sector: text.sector,
+      summary: text.summary,
       challenge: text.challenge,
       result: text.result,
       tags: text.tags,

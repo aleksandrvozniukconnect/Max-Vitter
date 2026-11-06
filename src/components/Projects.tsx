@@ -32,12 +32,7 @@ export function Projects() {
                     <h3>{item.title}</h3>
                     <span>{item.sector}</span>
                   </div>
-                  <p>
-                    <strong>{projects.challenge}</strong> {item.challenge}
-                  </p>
-                  <p>
-                    <strong>{projects.result}</strong> {item.result}
-                  </p>
+                  <p>{item.summary}</p>
                 </div>
               </AppLink>
             </Reveal>

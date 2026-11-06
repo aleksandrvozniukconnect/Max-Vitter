@@ -115,6 +115,8 @@ export function PitTrack({ band }: Props) {
     // The car waits at the start of the road until the section is on screen.
     if (rect.top > window.innerHeight * 0.85 || rect.bottom < 0) return
     const top = rect.top
+    // First drive: let the reader see the car on the start of the road before it moves.
+    if (targetRef.current < 0 && top + startYRef.current > window.innerHeight * 0.6) return
     const inset = (document.querySelector('header')?.getBoundingClientRect().bottom ?? 0) | 0
     const spans = stopsRef.current.map((stop) => ({ top: stop.top + top, bottom: stop.bottom + top }))
     const target = targetStop(spans, inset, window.innerHeight, Math.max(0, targetRef.current))
