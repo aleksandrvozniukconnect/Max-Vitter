@@ -1,0 +1,30 @@
+src/components/PitCrewEgg.module.css
+  s_08673d0dfe1d25::t_408f04d8b2db30 40
+  s_08673d0dfe1d25::t_44f3ff7c623e2f 4-6
+src/components/Proof.module.css
+  s_08673d0dfe1d25::t_d1fbc8f7b3193a 389
+src/components/PitCrewEgg.tsx
+  s_08673d0dfe1d25::t_fbac90f4618ff0 44-54
+src/components/Header.module.css
+  s_08673d0dfe1d25::t_c8760918424ab5 54
+src/i18n/en.ts
+  s_08673d0dfe1d25::t_ed61a73a43c987 64
+src/i18n/ru.ts
+  s_08673d0dfe1d25::t_21035ebab83570 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "68bfa87e10c501dc6d8bc027d1f38134d5aaeb39",
+  "prompts": {},
+  "sessions": {
+    "s_08673d0dfe1d25": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fcbdedf9-0c43-471e-a214-1d47ddb2de9f",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "prodavecsladostei <33965284+prodavecsladostei@users.noreply.github.com>"
+    }
+  }
+}
