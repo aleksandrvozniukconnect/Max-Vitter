@@ -1,0 +1,19 @@
+src/components/PitTrack.tsx
+  s_08673d0dfe1d25::t_094b89112f3adc 192-193,197
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f1b6e58a4809821f263ea5c424a0ba40c1e6e9dd",
+  "prompts": {},
+  "sessions": {
+    "s_08673d0dfe1d25": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fcbdedf9-0c43-471e-a214-1d47ddb2de9f",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "prodavecsladostei <33965284+prodavecsladostei@users.noreply.github.com>"
+    }
+  }
+}
