@@ -41,7 +41,10 @@ export function PitCrewEgg() {
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >
-        <span aria-hidden="true">{egg.glyph}</span>
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+          <path d="M12.6 10.2 C11.8 12.6 11 15 10.7 17.2 C10.6 18.2 11.2 18.6 12.1 18.1 C12.7 17.8 13.2 17.3 13.7 16.7" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="13.5" cy="5.9" r="1.5" fill="currentColor" />
+        </svg>
       </button>
       {createPortal(
       <AnimatePresence>

@@ -1,9 +1,9 @@
 .trigger {
   display: inline-grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  margin-left: 12px;
+  width: 22px;
+  height: 22px;
+  margin-left: 10px;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -37,7 +37,7 @@
   }
   70%,
   100% {
-    box-shadow: 0 0 0 12px rgba(196, 39, 29, 0);
+    box-shadow: 0 0 0 9px rgba(196, 39, 29, 0);
   }
 }
 

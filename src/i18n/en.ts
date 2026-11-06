@@ -61,7 +61,7 @@ export type SiteCopy = {
     gateNote: string
     pace: string
     pitIn: string
-    egg: { label: string; glyph: string; title: string; close: string; caption: string; roles: Record<CrewRole, string> }
+    egg: { label: string; title: string; close: string; caption: string; roles: Record<CrewRole, string> }
   }
   steps: Record<StepKey, StepCopy>
   plant: {
@@ -204,7 +204,6 @@ export const en: SiteCopy = {
     pitIn: 'Your project comes in',
     egg: {
       label: 'Who works on your project',
-      glyph: 'i',
       title: 'Your pit-stop crew',
       close: 'Close',
       caption: 'Everyone around the car owns one stage of your project.',

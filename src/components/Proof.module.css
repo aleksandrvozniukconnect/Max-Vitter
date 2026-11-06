@@ -392,17 +392,6 @@ a.seeAll:hover::after {
     position: relative;
   }
 
-  .audienceBridge::before {
-    content: '';
-    position: absolute;
-    top: -28px;
-    bottom: 50%;
-    left: calc(25% - 7px);
-    right: calc(25% - 7px);
-    border: 2px solid var(--brass);
-    border-top: 0;
-    border-radius: 0 0 16px 16px;
-  }
 
   .plant {
     grid-template-columns: 1.1fr 0.9fr;
