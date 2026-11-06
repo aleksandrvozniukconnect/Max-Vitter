@@ -24,7 +24,7 @@ export function Audiences() {
             <Reveal key={key} delay={index * 0.05} className={styles.audienceSlot}>
               <article className={styles.audience}>
                 <span className={styles.audienceIcon}>
-                  <img src={`/images/audiences/${key === 'developers' ? 'developers' : 'architects'}.webp`} alt="" width={96} height={96} loading="lazy" draggable={false} />
+                  <img src={`/images/audiences/${key === 'developers' ? 'developers' : 'architects'}.webp`} alt="" width={128} height={128} loading="lazy" draggable={false} />
                 </span>
                 <div>
                   <h3>{item.title}</h3>

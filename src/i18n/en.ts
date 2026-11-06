@@ -378,9 +378,9 @@ export const en: SiteCopy = {
     UA: {
       label: 'Ukraine',
       city: 'Kyiv region',
-      role: 'Plant, engineering, QC',
+      role: 'Production, engineering, QC',
       person: 'Name, role',
-      heroLine: 'Plant and engineering in the Kyiv region. Projects in Ukraine, the United States and Montenegro.',
+      heroLine: 'Production and engineering in the Kyiv region. Projects in Ukraine, the United States and Montenegro.',
     },
     US: {
       label: 'United States',

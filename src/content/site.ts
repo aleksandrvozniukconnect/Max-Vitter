@@ -105,7 +105,7 @@ export const photos = {
   detailA: '/images/hero-detail-a.webp',
   detailB: '/images/hero-detail-b.webp',
   process: '/images/process-floor.webp',
-  plant: '/images/company.webp',
+  plant: '/images/projects/house/01.webp',
   capabilities: [
     '/images/mosaic-interior.webp',
     '/images/mosaic-material.webp',

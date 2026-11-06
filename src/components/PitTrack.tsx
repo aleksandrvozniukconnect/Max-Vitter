@@ -68,10 +68,10 @@ export function PitTrack({ band }: Props) {
   const car = useRef<SVGGElement>(null)
   const stopsRef = useRef<(Stop & { top: number; bottom: number })[]>([])
   const roadXRef = useRef(ROAD_X)
-  const posRef = useRef(0)
+  const startYRef = useRef(0)
+  const posRef = useRef(-1)
   const targetRef = useRef(-1)
   const frame = useRef(0)
-  const placed = useRef(false)
   const { scrollY } = useScroll()
 
   const apply = () => {
@@ -79,7 +79,7 @@ export function PitTrack({ band }: Props) {
     if (!node || stopsRef.current.length === 0) return
     const pos = posRef.current
     setCurrent(Math.round(pos))
-    const pose = carPlacement(pos, stopsRef.current, roadXRef.current)
+    const pose = carPlacement(pos, stopsRef.current, roadXRef.current, startYRef.current)
     node.setAttribute(
       'transform',
       `translate(${pose.x.toFixed(1)} ${pose.y.toFixed(1)}) rotate(${pose.angle.toFixed(1)})`,
@@ -89,8 +89,7 @@ export function PitTrack({ band }: Props) {
   const driveTo = (target: number) => {
     cancelAnimationFrame(frame.current)
     const from = posRef.current
-    if (!placed.current || from === target) {
-      placed.current = true
+    if (from === target) {
       posRef.current = target
       apply()
       return
@@ -112,7 +111,10 @@ export function PitTrack({ band }: Props) {
   const watch = () => {
     const el = band.current
     if (!el || stopsRef.current.length === 0) return
-    const top = el.getBoundingClientRect().top
+    const rect = el.getBoundingClientRect()
+    // The car waits at the start of the road until the section is on screen.
+    if (rect.top > window.innerHeight * 0.85 || rect.bottom < 0) return
+    const top = rect.top
     const inset = (document.querySelector('header')?.getBoundingClientRect().bottom ?? 0) | 0
     const spans = stopsRef.current.map((stop) => ({ top: stop.top + top, bottom: stop.bottom + top }))
     const target = targetStop(spans, inset, window.innerHeight, Math.max(0, targetRef.current))
@@ -145,8 +147,9 @@ export function PitTrack({ band }: Props) {
       bayX: bayX(card),
     }))
     roadXRef.current = layout.roadX
+    startYRef.current = layout.top + 56 * layout.scale
+    apply()
     if (targetRef.current < 0) watch()
-    else apply()
   })
 
   useEffect(() => () => cancelAnimationFrame(frame.current), [])

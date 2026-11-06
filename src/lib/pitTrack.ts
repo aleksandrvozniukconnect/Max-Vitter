@@ -69,8 +69,15 @@ export function carPlacement(
   index: number,
   stops: readonly Stop[],
   roadX: number = ROAD_X,
+  /** Where the road starts: index -1 is here, driving down to stop 0. */
+  startY?: number,
 ): { x: number; y: number; angle: number } {
   if (stops.length === 0) return { x: roadX, y: 0, angle: 0 }
+  if (index < 0) {
+    const first = stops[0].y
+    const from = startY ?? first - 300
+    return { x: roadX, y: first + (first - from) * Math.max(-1, index), angle: 0 }
+  }
   const lo = Math.min(stops.length - 1, Math.max(0, Math.floor(index)))
   const hi = Math.min(stops.length - 1, lo + 1)
   const t = index - lo

@@ -18,9 +18,9 @@ export const projectPhotos = {
     { src: '/images/projects/house/12.webp', width: 1200, height: 1600 },
   ],
   restaurant: [
+    { src: '/images/projects/restaurant/03.webp', width: 1200, height: 1600 },
     { src: '/images/projects/restaurant/01.webp', width: 1200, height: 1600 },
     { src: '/images/projects/restaurant/02.webp', width: 1200, height: 1600 },
-    { src: '/images/projects/restaurant/03.webp', width: 1200, height: 1600 },
     { src: '/images/projects/restaurant/04.webp', width: 1200, height: 1600 },
     { src: '/images/projects/restaurant/05.webp', width: 1200, height: 1600 },
     { src: '/images/projects/restaurant/06.webp', width: 1200, height: 1600 },

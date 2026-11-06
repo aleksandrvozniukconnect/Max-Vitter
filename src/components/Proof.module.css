@@ -85,8 +85,8 @@ a.seeAll:hover::after {
   flex: none;
   display: grid;
   place-items: center;
-  width: 96px;
-  height: 96px;
+  width: 128px;
+  height: 128px;
 }
 
 .audienceIcon img {
@@ -94,6 +94,21 @@ a.seeAll:hover::after {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  transition: transform 260ms ease;
+}
+
+.audience:hover .audienceIcon img {
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audienceIcon img {
+    transition: none;
+  }
+
+  .audience:hover .audienceIcon img {
+    transform: none;
+  }
 }
 
 .audience h3 {
@@ -112,6 +127,7 @@ a.seeAll:hover::after {
 .audienceBridge {
   display: flex;
   justify-content: center;
+  margin-top: 24px;
 }
 
 .audienceNote {
