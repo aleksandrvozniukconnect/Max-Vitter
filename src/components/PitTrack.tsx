@@ -189,11 +189,12 @@ export function PitTrack({ band }: Props) {
           preserveAspectRatio="none"
         />
       ))}
-      <rect x={roadX - roadW / 2} y={layout.top} width={roadW} height={layout.bottom - layout.top - finishH + 1} fill="url(#road-tile)" />
+      <rect x={roadX - roadW / 2} y={layout.top} width={roadW} height={layout.bottom - layout.top} fill="url(#road-tile)" />
+      {/* The chequered flag sits just before the last pit bay: the car crosses it, then pulls in. */}
       <image
         href="/images/track/finish.webp"
         x={roadX - roadW / 2}
-        y={layout.bottom - finishH}
+        y={bays[bays.length - 1].y - finishH * 0.55 - 14 * scale}
         width={roadW}
         height={finishH}
         preserveAspectRatio="none"
