@@ -1,0 +1,29 @@
+src/content/projectPhotos.ts
+  s_08673d0dfe1d25::t_c85249a7bde066 2-3,56-80
+src/content/projects.test.ts
+  s_08673d0dfe1d25::t_ae3f3500d8f5d9 43-47
+src/content/site.ts
+  s_08673d0dfe1d25::t_56a0f2b0aee75a 48-57,69-71
+src/i18n/en.ts
+  s_08673d0dfe1d25::t_83b30647378b78 347-370
+src/i18n/ru.ts
+  s_08673d0dfe1d25::t_00dc1c96c0a56c 197-220
+src/i18n/uk.ts
+  s_08673d0dfe1d25::t_03b6a6482af536 197-220
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b1dd78bd6dc62212549aaa2bf40dc1a7a63bf8c1",
+  "prompts": {},
+  "sessions": {
+    "s_08673d0dfe1d25": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fcbdedf9-0c43-471e-a214-1d47ddb2de9f",
+        "model": "unknown"
+      },
+      "human_author": "prodavecsladostei <33965284+prodavecsladostei@users.noreply.github.com>"
+    }
+  }
+}
